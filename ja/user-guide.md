@@ -336,7 +336,7 @@ ingress-nginx   LoadBalancer   10.254.2.128   133.186.154.41   80:30820/TCP,443:
 
 ### 예제 1. URI 기반 서비스 분기 Ingress
 이번 예제는 URI에 기반하여 서비스를 분기하는 예제 입니다.
-![image.png](/files/2717605393345241232)
+![ingress-01.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/ingress-01.png)
 
 
 #### Service 및 Pod 생성
@@ -583,7 +583,7 @@ service "tea-svc" deleted
 
 ### 예제 2. 호스트 기반 서비스 분기 Ingress
 이번 예제는 호스트 이름에 기반하여 서비스를 분기하는 예제 입니다.
-![image.png](/files/2717605520759514648)
+![ingress-02.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/ingress-02.png)
 
 #### Service 및 Pod 생성
 예제1과 동일한 Service 및 Pod를 사용합니다.
@@ -815,7 +815,7 @@ Events:
 이번 절에서는 로드밸런서 서비스 객체를 이용해 쿠버네티스 대시보드를 외부에 노출하는 방법에 대해 설명합니다.
 
 ##### 개념
-![image.png](/files/2718742045294789608)
+![dashboard-01.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/dashboard-01.png)
 로드밸런서 서비스 객체를 생성하면 클러스터 외부에 로드밸런서가 생성되고, 이 로드밸런서와 서비스 객체가 연결됩니다. 로드밸런서의 IP 주소는 서비스 객체 조회 시 `EXTERNAL-IP` 필드로 표시됩니다. 외부에서는 이 IP 주소를 통해 클러스터 내부의 서비스를 접근할 수 있습니다.
 
 ##### 설정
@@ -851,8 +851,7 @@ kubernetes-dashboard   LoadBalancer   10.254.95.176   133.186.154.81   443:30963
 [~]#
 ```
 
-`EXTERNAL-IP`에 표시된 IP 주소는 외부에서 접근할 수 있는 공인 IP 주소로써 웹브라우져에서 IP 주소로 접속(https)하면 쿠버네티스 대시보드에 접속할 수 있습니다. 이 IP 주소는 TOAST 웹콘솔의 Floating IP 페이지에 표시됩니다. 웹브라우져에서 `https://EXTERNAL-IP`로 접속하면 다음과 같이 쿠버네티스 대시보드가 표시되는 것을 확인할 수 있습니다.
-![image.png](/files/2718707245736601155)
+`EXTERNAL-IP`에 표시된 IP 주소는 외부에서 접근할 수 있는 공인 IP 주소로써 웹브라우져에서 IP 주소로 접속(https)하면 쿠버네티스 대시보드에 접속할 수 있습니다. 이 IP 주소는 TOAST 웹콘솔의 Floating IP 페이지에 표시됩니다. 웹브라우져에서 `https://EXTERNAL-IP`로 접속하면 쿠버네티스 대시보드가 표시되는 것을 확인할 수 있습니다.
 
 (참고)
 * 쿠버네티스 대시보드가 자동생성되는 임시 사설 인증서를 사용하기 때문에 웹브라우저의 종류와 보안 설정에 따라 안전하지 않은 페이지로 표시됩니다.
@@ -863,7 +862,7 @@ kubernetes-dashboard   LoadBalancer   10.254.95.176   133.186.154.81   443:30963
 이번 절에서는 Ingress를 이용해 쿠버네티스 대시보드를 외부에 노출하는 방법에 대해 설명합니다.
 
 ##### 개념
-![image.png](/files/2718743875065238486)
+![dashboard-02.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/dashboard-02.png)
 Ingress는 클러스터 내부의 여러 서비스들을 외부에 노출하기 위한 개념 입니다. 클러스터 내에 Ingress Controller가 존재하고, Ingress Controller는 설정된 Ingress 객체의 설정에 따라 트래픽을 라우팅 합니다.
 
 <br>
@@ -915,7 +914,6 @@ ingress-nginx   LoadBalancer   10.254.211.113   133.186.154.29   80:32680/TCP,44
 ```
 
 4. 웹브라우져에서 `https://EXTERNAL-IP`로 접속합니다.
-![image.png](/files/2718754580254025696)
 
 (참고)
 * 쿠버네티스 대시보드가 자동생성되는 임시 사설 인증서를 사용하기 때문에 웹브라우저의 종류와 보안 설정에 따라 안전하지 않은 페이지로 표시됩니다.
@@ -934,7 +932,7 @@ eyJh ...(중략) y3w
 ```
 
 출력된 토큰값을 브라우져의 토큰 입력창에 입력하면 첫번째 과정에서 권한을 부여받은 사용자로 로그인하게 됩니다.
-![image.png](/files/2718711202108781693)
+![dashboard-03.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/dashboard-03.png)
 
 
 ### 참고. 방법1에서 실행한 내용 되돌리기
@@ -1148,9 +1146,8 @@ TOAST에서 PV/PVC 기능 관련하여 다음과 같은 제약사항이 있습�
 
 #### Step 1. 블록 스토리지 생성
 웹콘솔의 블록 스토리지 화면에서 PV와 연동할 블록 스토리지를 생성합니다. 저장장치 타입과 용량 등을 적절히 입력합니다.
-![image.png](/files/2716558041632314915)
-
 이후 PV 생성을 위해서는 이 스토리지의 ID를 알고 있어야 합니다. 웹콘솔에서 확인할 수 있습니다.
+![pv-01.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/pv-01.png)
 
 #### Step 2. StorageClass 생성
 다음과 같이 스토리지클래스를 생성합니다.
@@ -1299,7 +1296,6 @@ tmpfs           920M     0  920M   0% /sys/firmware
 ```
 
 이제 블록 스토리지의 연결정보에도 관련 내용이 표시되는 것을 확인할 수 있습니다.
-![image.png](/files/2716568031182605559)
 
 #### Step 6. 테스트 리소스 삭제
 다음과 같이 pod를 삭제합니다.
@@ -1365,7 +1361,7 @@ persistentvolumeclaim/pvc-dynamic   Bound    pvc-c63da3f9-dfcb-4cae-a9a9-6713799
 ```
 
 자동으로 생성된 블록 스토리지는 웹콘솔에서 확인할 수 있습니다.
-![image.png](/files/2716578560206454334)
+![pv-02.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/pv-02.png)
 
 
 #### Step 3. Pod 연동
