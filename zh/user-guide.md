@@ -1,15 +1,15 @@
-# Container > Kubernetes > 사용 가이드
+## Container > Kubernetes > 사용 가이드
 
 <br>
 <br>
 
-# kubectl 설치 및 설정
+## kubectl 설치 및 설정
 kubectl은 쿠버네티스가 제공하는 CLI tool로써 원격의 호스트에서 쿠버네티스 클러스터에 대한 조작이 가능하다. 이번 장에서는 호스트에 kubectl을 설치하고, 쿠버네티스 클러스터를 조작하는 방법에 대해 설명합니다. 
 
-## kubectl 설치
+### kubectl 설치
 kubectl을 설치하는 과정을 설명합니다.
 
-### 파일 다운로드
+#### 파일 다운로드
 kubectl은 단독 실행 파일 입니다. 그래서 특별한 설치 과정이 필요없고, 실행 파일을 다운로드 받아 사용할 수 있습니다. 운영체제 별 다운로드 받는 방법은 다음과 같습니다. 
 
 | 운영체제 | 다운로드 커맨드 |
@@ -21,13 +21,13 @@ kubectl은 단독 실행 파일 입니다. 그래서 특별한 설치 과정이 
 그 외 설치 방법과 옵션 등 자세한 사항은 아래 링크를 참조하세요.
 https://kubernetes.io/docs/tasks/tools/install-kubectl/
 
-### 퍼미션 변경
+#### 퍼미션 변경
 `curl`로 다운받은 파일은 기본적으로 실행권한이 주어지지 않습니다. 아래 커맨드로 다운로드 받은 `kubectl` 파일에 아래 실행 권한을 추가해 줍니다. 
 ```
 chmod +x kubectl
 ```
 
-### 위치 변경(선택)
+#### 위치 변경(선택)
 어디에서나 `kubectl`을 실행할 수 있도록 `kubectl`을 적절한 위치로 옮겨줍니다. 
 ```
 mv kubectl /usr/local/bin/
@@ -39,19 +39,19 @@ export PATH=$PATH:$(pwd)
 ```
 
 
-## kubectl 설정
+### kubectl 설정
 kubectl의 설치만으로 클러스터에 접근할 수 없습니다. kubectl로 쿠버네티스 클러스터에 접근하기 위해서는 아래와 같은 설정이 필요합니다. 
 
-### 설정 파일 다운로드
+#### 설정 파일 다운로드
 웹콘솔의 클러스터 조회 페이지로 이동하여 '설정 파일 다운로드' 버튼을 클릭하여 설정 파일을 다운로드 받습니다. 다운로드 받은 파일은 적절한 위치로 옮겨 kubectl 실행 시 참조할 수 있도록 준비합니다. 이 설정 파일을 흔히 kubeconfig라고 부릅니다. 
 
 (주의사항)
 콘솔에서 다운받은 이 설정 파일은 클러스터에 대한 정보와 인증을 위한 토큰값 등이 포함되어 있습니다. 이 설정 파일이 있으면 해당 쿠버네티스 클러스터에 대한 권한을 갖게 됩니다. 따라서 이 파일을 절대로 분실하지 않도록 주의하시길 바랍니다.
 
-### 설정 파일을 kubectl에 적용
+#### 설정 파일을 kubectl에 적용
 kubectl은 항상 kubeconfig 파일을 로드하여 동작합니다. 따라서 kubectl 실행 시 로드할 kubeconfig 파일을 지정해야 합니다. kubectl이 실행되면서 kubeconfig 파일의 위치를 찾는 방법은 다음과 같습니다.
 
-#### KUBECONFIG 환경 변수
+##### KUBECONFIG 환경 변수
 만약 `KUBECONFIG` 환경 변수에 kubeconfig 파일의 경로가 저장되어 있다면 kubectl은 이 파일을 사용합니다.
 다음과 같이 `KUBECONFIG` 환경 변수를 설정할 수 있습니다.
 ```
@@ -63,20 +63,20 @@ kubectl 실행 시 `KUBECONFIG` 환경 변수를 변수로 넘기는 방법도 �
 KUBECONFIG=다운받은파일경로 kubectl get nodes
 ```
 
-#### 기본 파일 위치
+##### 기본 파일 위치
 `KUBECONFIG` 환경변수가 설정되어 있지 않다면 kubectl은 `$HOME/.kube/config` 파일을 사용합니다. 물론, 파일이 존재하지 않는다면 사용하지 않습니다. 다운로드 받은 파일을 `$HOME/.kube/config` 파일에 복사해 사용할 수 있습니다.
 ```
 cp -f 다운받은파일경로 ~/.kube/config`
 kubectl get nodes
 ```
 
-#### `--kubeconfig` 파라미터
+##### `--kubeconfig` 파라미터
 kubectl 호출 시 `--kubeconfig` 파라미터로 kubeconfig를 지정할 수 있습니다.
 ```
 kubectl --kubeconfig=다운받은파일경로 get nodes
 ```
 
-### 연결 확인
+#### 연결 확인
 `kubectl version` 명령어로 정상 설정되었는지 확인합니다. 
 
 이 명령을 실행하면 두 가지 정보를 출력합니다. 클라이언트 정보는 kubectl 실행 바이너리의 버전 정보를 출력하고, 서버 정보는 쿠버네티스 클러스터에 적용되어 있는 쿠버네티스 정보를 출력합니다. 따라서 정상적으로 연결된 경우에만 서버 정보가 출력됩니다. 
@@ -108,16 +108,16 @@ Server Version: version.Info{Major:"1", Minor:"15", GitVersion:"v1.15.7", GitCom
 
 
 
-# 로드밸런서 서비스 객체를 이용한 서비스 노출
+## 로드밸런서 서비스 객체를 이용한 서비스 노출
 pod는 쿠버네티스 클러스터 내부에 존재하고, CNI(Container Network Interface)에 의해 클러스터에 연결됩니다. 클러스터 외부에서 pod로의 네트워크 통신은 기본적으로 불가능한 상태로 만들어집니다. Pod에서 제공하는 서비스를 인터넷 혹은 클러스터 외부에 제공하기 위해서는 별도의 설정이 필요합니다. 이 문서에서는 쿠버네티스의 서비스 객체 중 로드밸런서 서비스 객체를 이용해 서비스를 외부에 노출하는 방법에 대해 설명합니다.
 
-## 개념 
+### 개념 
 쿠버네티스의 서비스 객체를 `LoadBalancer` 유형으로 생성하면 쿠버네티스 외부에 로드밸런서가 생성됩니다. 그리고 이 로드밸런서 서비스 객체와 외부 로드밸런서는 서로 매핑됩니다. 이 로드밸런서가 바로 "Network -> Load Balancer" 페이지에서 확인할 수 있는 로드밸런서 객체 입니다. 즉, 쿠버네티스의 로드밸런서 서비스 객체를 생성하면 로드밸런서가 생성되어 Pod의 서비스를 외부에 노출 할 수 있게 됩니다. 
 
-## 로드밸런서 서비스를 이용한 웹 서비스 노출
+### 로드밸런서 서비스를 이용한 웹 서비스 노출
 로드밸런서 서비스 객체를 이용해 Pod의 웹 서비스를 노출하는 방법에 대해 설명합니다. 
 
-### 서비스를 위한 웹서버 pod 실행
+#### 서비스를 위한 웹서버 pod 실행
 먼저, 테스트를 위해 웹서버 pod를 실행합니다. 아래의 yaml 파일을 이용해 Deployment 객체를 생성할 수 있습니다. 
 ```
 [service-lb-test]# cat nginx.yaml
@@ -158,7 +158,7 @@ nginx-deployment-7fd6966748-xd8lh   1/1     Running   0          4m13s   10.100.
 [service-lb-test]#
 ```
 
-### 웹서버를 외부에 노출하기 위한 로드밸런서 서비스 객체 생성
+#### 웹서버를 외부에 노출하기 위한 로드밸런서 서비스 객체 생성
 
 쿠버네티스의 서비스 객체를 생성할 때 다음의 필드를 사용해 서비스 객체를 정의합니다. 
 * .metadata.name: 이 서비스 객체의 이름을 정의합니다.
@@ -213,7 +213,7 @@ nginx-svc    LoadBalancer   10.254.134.18   133.186.154.30   8080:30013/TCP   3m
 [service-lb-test]#
 ```
 
-### 인터넷을 통해 서비스 테스트
+#### 인터넷을 통해 서비스 테스트
 인터넷에 연결된 호스트에서 쿠버네티스 클러스터의 웹서버 Pod에 접속 테스트를 수행합니다. 로드밸런서의 Floating IP주소로 HTTP 요청을 보내 응답을 제대로 받아오는지 확인하는 것 입니다.
 
 아래와 같이 Floating IP의 TCP/80으로 HTTP 요청을 보내면 다음과 같이 에러가 발생합니다. 서비스 객체가 TCP/8080을 열고 기다리기 때문에 TCP/80으로 보낸 요청은 연결에 실패하는 것입니다. 
@@ -263,10 +263,10 @@ Commercial support is available at
 
 
 
-# nginx ingress controller 설치 및 사용 예제
+## nginx ingress controller 설치 및 사용 예제
 이 장에서는 많이 사용되는 Ingress controller 중의 하나인 Nginx ingress controller를 클러스터에 설치하는 방법에 대해 설명합니다. 또 Ingress를 이용하여 서비스를 분기하는 방법에 대한 예제를 보여드립니다. 
 
-## Nginx Ingress Controller 설치 방법
+### Nginx Ingress Controller 설치 방법
 이 장에서는 Nginx ingress controller를 설치하는 방법에 대해 기술합니다.
 <br>
 좀 더 자세한 사항은 아래 링크를 참고하세요.
@@ -274,7 +274,7 @@ Commercial support is available at
 - https://docs.nginx.com/nginx-ingress-controller/installation/installation-with-manifests/
 
 
-### 필요 리소스 설치
+#### 필요 리소스 설치
 다음과 같이 Nginx ingress controller에 필요한 리소스를 생성합니다.
 ```
 [nginx-ingress-test]# kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/mandatory.yaml
@@ -292,7 +292,7 @@ limitrange/ingress-nginx created
 [nginx-ingress-test]#
 ```
 
-### LoadBalancer 생성
+#### LoadBalancer 생성
 Ingress를 외부에 노출하기 위해서는 로드밸런서(LoadBalancer) 서비스 혹은 노드포트(NodePort) 서비스를 생성해야 합니다. 이 문서에서는 로드밸런서 서비스를 생성하여 Ingress를 외부에 노출하도록 합니다. 
 
 다음과 같이 HTTP와 HTTPS를 처리할 수 있는 로드밸런서 서비스 객체를 생성합니다.
@@ -337,12 +337,12 @@ ingress-nginx   LoadBalancer   10.254.2.128   133.186.154.41   80:30820/TCP,443:
 [nginx-ingress-test]#
 ```
 
-## 예제 1. URI 기반 서비스 분기 Ingress
+### 예제 1. URI 기반 서비스 분기 Ingress
 이번 예제는 URI에 기반하여 서비스를 분기하는 예제 입니다. 
 ![image.png](/files/2717605393345241232)
 
 
-### Service 및 Pod 생성
+#### Service 및 Pod 생성
 다음과 같이 테스트를 위한 `tea-svc` 서비스와 `coffee-svc` 서비스를 생성합니다. `tea-svc` 서비스에는 `tea` pod이 연결되고, `coffee-svc` 서비스에는 `coffee`  pod가 연결됩니다. 
 
 ```
@@ -443,7 +443,7 @@ pod/tea-7df475c6-lxqsx        1/1     Running   0          18s
 [nginx-ingress-test]#
 ```
 
-### URI를 기반으로 서비스와 연결하는 Ingress 생성
+#### URI를 기반으로 서비스와 연결하는 Ingress 생성
 다음과 같이 URI를 기반으로 서비스와 연결하는 Ingress를 생성합니다. 
 - URI `/tea` 로의 요청은 `tea-svc` 서비스에 연결
 - URI `/coffee`로의 요청은 `coffee-svc` 서비스에 연결
@@ -484,10 +484,10 @@ cafe-ingress-uri   *       133.186.154.44   80      88s
 [nginx-ingress-test]#
 ```
 
-### HTTP Request 전송
+#### HTTP Request 전송
 외부 호스트에서 ingress의 `ADDRESS` 필드에 설정된 IP 주소로 HTTP request를 전송합니다. 
 
-#### 1. 정의되지 않은 URI
+##### 1. 정의되지 않은 URI
 정의되지 않은 URI에 대한 요청은 `404 Not Found`를 리턴합니다.
 ```
 [~]# curl http://133.186.154.44/
@@ -510,7 +510,7 @@ cafe-ingress-uri   *       133.186.154.44   80      88s
 [~]#
 ```
 
-#### 2. `/coffee` 요청
+##### 2. `/coffee` 요청
 `/coffee`에 대한 요청은 "coffee service"에 전달되어 서비스 됩니다. 아래 실행 로그 중 `Server name`을 유심히 보시면, coffee service에 연결된 Pod이 라운드로빈으로 동작하고 있음을 확인하실 수 있습니다.
 
 ```
@@ -537,7 +537,7 @@ Request ID: cd5813933d6389032c18e5cfb5ad9df4
 [~]#
 ```
 
-#### 3. `/tea` 요청
+##### 3. `/tea` 요청
 `/tea`에 대한 요청은 "tea service"에 전달되어 서비스 됩니다. 아래 실행 로그 중 `Server name`을 유심히 보시면, "tea service"에 연결된 Pod이 라운드로빈으로 동작하고 있음을 확인하실 수 있습니다.
 
 ```
@@ -571,7 +571,7 @@ Request ID: 7d6a7c1858424400f481057a75e8a263
 [~]#
 ```
 
-### 테스트 용 리소스 삭제
+#### 테스트 용 리소스 삭제
 다음과 같이 테스트를 위해 생성한 리소스를 삭제할 수 있습니다.
 ```
 [nginx-ingress-test]# kubectl delete -f cafe-ingress-uri.yaml
@@ -584,14 +584,14 @@ service "tea-svc" deleted
 [nginx-ingress-test]#
 ```
 
-## 예제 2. 호스트 기반 서비스 분기 Ingress
+### 예제 2. 호스트 기반 서비스 분기 Ingress
 이번 예제는 호스트 이름에 기반하여 서비스를 분기하는 예제 입니다. 
 ![image.png](/files/2717605520759514648)
 
-### Service 및 Pod 생성
+#### Service 및 Pod 생성
 예제1과 동일한 Service 및 Pod를 사용합니다. 
 
-### 호스트를 기반으로 서비스와 연결하는 Ingress 생성
+#### 호스트를 기반으로 서비스와 연결하는 Ingress 생성
 다음과 같이 URI를 기반으로 서비스와 연결하는 Ingress를 생성합니다. 
 - Host `tea.cafe.example.com`으로의 요청은 `tea-svc` 서비스에 연결
 - Host `coffee.cafe.example.com`으로의 요청은 `tea-svc` 서비스에 연결
@@ -639,13 +639,13 @@ cafe-ingress-host   tea.cafe.example.com,coffee.cafe.example.com   133.186.154.4
 
 
 
-### HTTP Request 전송
+#### HTTP Request 전송
 외부 호스트에서 ingress의 ADDRESS에 설정된 IP 주소로 HTTP request를 전송합니다. 다만 호스트에 기반한 HTTP Request를 보내야 합니다. 
 
 (참고)
 임의의 호스트 이름을 사용하여 테스트 하기 위해 `curl`의 `--resolve` 옵션을 사용합니다. `--resolve` 옵션은 `호스트이름:포트번호:IP주소`의 형식으로 입력합니다. 이는 "호스트이름"으로 보내는 "포트번호"에 대한 요청은 "IP주소"로 해석(resolve)하라는 의미 입니다. 
 
-#### 1. Unknown host
+##### 1. Unknown host
 알려지지 않은 호스트에 대한 요청은 `404 Not Found`를 리턴합니다.
 ```
 [~]# curl http://133.186.154.44
@@ -668,7 +668,7 @@ cafe-ingress-host   tea.cafe.example.com,coffee.cafe.example.com   133.186.154.4
 [~]#
 ```
 
-#### 2. `coffee.cafe.example.com`으로 요청
+##### 2. `coffee.cafe.example.com`으로 요청
 호스트 `coffee.cafe.example.com`에 대한 요청은 `coffee-svc` 서비스에 전달됩니다. 아래 실행 로그 중 `Server name`을 유심히 보시면, `coffee-svc` 서비스에 연결된 Pod이 라운드로빈으로 동작하고 있음을 확인하실 수 있습니다.
 
 ```
@@ -695,7 +695,7 @@ Request ID: f47cf9f4ee725fca440a7d50630cb25a
 [~]#
 ```
 
-#### 3. `tea.cafe.example.com`으로 요청
+##### 3. `tea.cafe.example.com`으로 요청
 호스트 `tea.cafe.example.com`에 대한 요청은 `tea-svc` 서비스에 전달됩니다. 아래 실행 로그 중 `Server name`을 유심히 보시면, `tea-svc` 서비스에 연결된 Pod이 라운드로빈으로 동작하고 있음을 확인하실 수 있습니다.
 
 ```
@@ -730,7 +730,7 @@ Request ID: 58d26bdc750de30c0c4370bc1b641fd0
 ```
 
 
-### 테스트 용 리소스 삭제
+#### 테스트 용 리소스 삭제
 다음과 같이 테스트를 위해 생성한 리소스를 삭제할 수 있습니다.
 ```
 [nginx-ingress-test]# kubectl delete -f cafe-ingress-host.yaml
@@ -748,7 +748,7 @@ service "tea-svc" deleted
 
 
 
-# 쿠버네티스 대시보드 활성화
+## 쿠버네티스 대시보드 활성화
 이 장에서는 쿠버네티스 대시보드를 활성화하고 사용하는데 필요한 과정을 설명합니다. 
 
 <br>
@@ -756,7 +756,7 @@ service "tea-svc" deleted
 쿠버네티스 대시보드에 대한 자세한 내용은 아래 링크를 참고해주세요.
 https://kubernetes.io/ko/docs/tasks/access-application-cluster/web-ui-dashboard/
 
-## 대시보드 권한 설정
+### 대시보드 권한 설정
 대시보드 사용자에게 권한을 부여합니다. 이 예제에서는 모든 권한을 부여하도록 합니다. 
 
 ```
@@ -787,7 +787,7 @@ PolicyRule:
 [~]#
 ```
 
-## 서비스 노출
+### 서비스 노출
 쿠버네티스 대시보드를 위해 `kubernetes-dashboard`라는 서비스 객체가 미리 생성되어 있습니다. 
 ```
 [~]# kubectl get svc kubernetes-dashboard -n kube-system
@@ -814,14 +814,14 @@ Events:
 * 방법2. Ingress를 이용해 서비스 노출
 
 
-### 방법1. LoadBalancer를 이용해 서비스 노출
+#### 방법1. LoadBalancer를 이용해 서비스 노출
 이번 절에서는 로드밸런서 서비스 객체를 이용해 쿠버네티스 대시보드를 외부에 노출하는 방법에 대해 설명합니다. 
 
-#### 개념
+##### 개념
 ![image.png](/files/2718742045294789608)
 로드밸런서 서비스 객체를 생성하면 클러스터 외부에 로드밸런서가 생성되고, 이 로드밸런서와 서비스 객체가 연결됩니다. 로드밸런서의 IP 주소는 서비스 객체 조회 시 `EXTERNAL-IP` 필드로 표시됩니다. 외부에서는 이 IP 주소를 통해 클러스터 내부의 서비스를 접근할 수 있습니다. 
 
-#### 설정
+##### 설정
 미리 생성되어 있는 `kubernetes-dashboard`라는 서비스 객체의 유형은 `ClusterIP` 입니다. 이 서비스 객체의 유형을 `LoadBalancer`로 변경해야 합니다. `LoadBalancer`로 변경하기 위해서는 다음의 커맨드를 사용할 수 있습니다.
 `kubectl -n kube-system patch svc/kubernetes-dashboard -p '{"spec":{"type":"LoadBalancer"}}'`
 
@@ -861,11 +861,11 @@ kubernetes-dashboard   LoadBalancer   10.254.95.176   133.186.154.81   443:30963
 * 쿠버네티스 대시보드가 자동생성되는 임시 사설 인증서를 사용하기 때문에 웹브라우저의 종류와 보안 설정에 따라 안전하지 않은 페이지로 표시됩니다.
 * 로그인을 위해 필요한 토큰값은 이 문서의 "쿠버네티스 대시보드 접속을 위한 토큰값 획득"을 참고하세요.
 
-### 방법2. Ingress를 이용해 서비스 노출
+#### 방법2. Ingress를 이용해 서비스 노출
 <span style="color:#e11d21">**만약 방법1을 수행한 상태라면 이 문서의 "참고. 방법1에서 실행한 내용 되돌리기" 항목을 먼저 수행하셔야 합니다.**</span>
 이번 절에서는 Ingress를 이용해 쿠버네티스 대시보드를 외부에 노출하는 방법에 대해 설명합니다.
 
-#### 개념
+##### 개념
 ![image.png](/files/2718743875065238486)
 Ingress는 클러스터 내부의 여러 서비스들을 외부에 노출하기 위한 개념 입니다. 클러스터 내에 Ingress Controller가 존재하고, Ingress Controller는 설정된 Ingress 객체의 설정에 따라 트래픽을 라우팅 합니다. 
 
@@ -874,7 +874,7 @@ Ingress는 클러스터 내부의 여러 서비스들을 외부에 노출하기 
 https://kubernetes.io/ko/docs/concepts/services-networking/ingress/
 
 
-#### 설정
+##### 설정
 1. Ingress controller를 설치합니다. 이 예제는 nginx ingress controller를 기준으로 작성되었습니다. Nginx ingress controller의 설치 방법은 "nginx ingress controller 설치 및 사용 예제"장을 참고해주세요.
 2. 다음과 같이 `kubernetes-dashboard` 서비스를 위한 ingress 객체를 생성합니다.
 ```
@@ -926,7 +926,7 @@ ingress-nginx   LoadBalancer   10.254.211.113   133.186.154.29   80:32680/TCP,44
 
 
 
-## 쿠버네티스 대시보드 접속을 위한 토큰값 획득
+### 쿠버네티스 대시보드 접속을 위한 토큰값 획득
 쿠버네티스 대시보드에 접속하면 토큰을 입력해 로그인을 할 수 있습니다. 토큰값은 다음과 같이 `kubectl` 커맨드로 알아낼 수 있습니다.
 
 ```
@@ -940,7 +940,7 @@ eyJh ...(중략) y3w
 ![image.png](/files/2718711202108781693)
 
 
-## 참고. 방법1에서 실행한 내용 되돌리기
+### 참고. 방법1에서 실행한 내용 되돌리기
 <span style="color:#e11d21">**(위의 방법1을 실행하지 않은 상태라면 아래 내용을 수행할 필요가 없습니다)**</span>
 위의 방법1에서 `kubernetes-dashboard` Service 객체를 `LoadBalancer` type으로 변경했다면, 이 객체의 type을 다시 `ClusterIP` type으로 변경하거나 기존 객체를 삭제하고 `ClusterIP` type으로 다시 생성할 수 있습니다.
 
@@ -953,10 +953,10 @@ eyJh ...(중략) y3w
 
 아래는 `kubectl edit` 명령이 실행된 상태이며 내용은 수정하지 않았습니다.
 ```
-# Please edit the object below. Lines beginning with a '#' will be ignored,
-# and an empty file will abort the edit. If an error occurs while saving this file will be
-# reopened with the relevant failures.
-#
+## Please edit the object below. Lines beginning with a '#' will be ignored,
+## and an empty file will abort the edit. If an error occurs while saving this file will be
+## reopened with the relevant failures.
+##
 apiVersion: v1
 kind: Service
 metadata:
@@ -991,10 +991,10 @@ status:
 
 아래는 위의 지침대로 수정한 상태 입니다. 
 ```
-# Please edit the object below. Lines beginning with a '#' will be ignored,
-# and an empty file will abort the edit. If an error occurs while saving this file will be
-# reopened with the relevant failures.
-#
+## Please edit the object below. Lines beginning with a '#' will be ignored,
+## and an empty file will abort the edit. If an error occurs while saving this file will be
+## reopened with the relevant failures.
+##
 apiVersion: v1
 kind: Service
 metadata:
@@ -1089,22 +1089,22 @@ kubernetes-dashboard   ClusterIP   10.254.223.159   <none>        443/TCP       
 
 
 
-# Pod에 Persistent volume 연동
+## Pod에 Persistent volume 연동
 이 장에서는 쿠버네티스의 Persistent Volume(PV)과 Persistent Volume Claims(PVC)에 대한 개념에 대해 알아보고, Pod에 Persistent volume을 연동하는 방법에 대해 기술합니다. 
 
 <br>
 좀 더 상세한 내용을 원하신다면 다음 링크를 참조하세요. 
 - https://kubernetes.io/docs/concepts/storage/persistent-volumes/
 
-## 개념
-### 스토리지클래스
+### 개념
+#### 스토리지클래스
 스토리지클래스(StorageClass)는 저장장치의 특성에 대한 표현한 개념 입니다. 일종의 저장장치에 대한 프로파일이라고 볼 수 있습니다. 다음과 같은 속성이 있습니다.
 
 좀 더 자세한 사항은 아래 링크를 참조하세요.
 - https://kubernetes.io/docs/concepts/storage/storage-classes/
 
 
-### Persistent Volume & Persisten Volume Claims
+#### Persistent Volume & Persisten Volume Claims
 Persistent Volume(PV)는 저장장치 그 자체를 나타내는 개념입니다. PV는 물리 저장장치를 표현하는 쿠버네티스 리소스 입니다. 따라서 하나의 PV는 하나의 TOAST 블록스토리지 리소스와 매핑됩니다. 
 
 Persistent Volume Claims(PVC)는 PV에 대한 요구 입니다. 사용자가 어떤 저장장치를 사용하고 싶다는 요구사항을 보내는 것으로 생각할 수 있습니다. 이 요구사항에는 저장장치의 용량, 읽기/쓰기 모드 등 저장장치의 특성이 포함됩니다.  동적 프로비져닝(Provisioning)의 경우 스토리지클래스에 기반하여 동작합니다. 
@@ -1112,50 +1112,50 @@ Persistent Volume Claims(PVC)는 PV에 대한 요구 입니다. 사용자가 어
 이렇게 저장장치와 저장장치에 대한 요구를 분리함으로써 사용자는 사용하고 싶은 저장장치에 대한 특성만 지정하고, 시스템에서는 그 요구사항에 맞는 저장장치 리소스를 할당함으로써 리소스의 사용과 관리를 분리할 수 있게 됩니다. 
 
 
-### PV/PVC의 생명주기 
+#### PV/PVC의 생명주기 
 PV/PVC는 아래와 같이 4단계의 생명주기를 갖습니다.
 
-#### 1. Provisioning
+##### 1. Provisioning
 저장장치를 확보하는 단계입니다. 저장장치를 확보하는 방법에는 정적인 방법과 동적인 방법이 있습니다.
-##### 정적 provisioning
+###### 정적 provisioning
 관리자가 직접 저장장치를 확보하고 이에 연결된 PV를 생성합니다.
 
-##### 동적 provisioning
+###### 동적 provisioning
 PVC와 매치되는 저장장치가 없는 경우, 클러스터가 자동으로 저장장치를 확보하고 이에 연결된 PV를 생성합니다. 
 
-#### 2. Binding
+##### 2. Binding
 PV와 PVC를 바인드하는 단계입니다. PV와 PVC는 1:1로 매핑되며, PV의 provisioning 방법과는 무관합니다. 
 
-#### 3. Using
+##### 3. Using
 PV를 Pod에 마운트하여 저장장치로 사용할 수 있습니다. 
 
-#### 4. Reclaiming
+##### 4. Reclaiming
 사용을 마친 PV에 연결된 저장장치를 회수하는 단계 입니다. PV 별로 회수 방법을 지정해놓을 수 있습니다.
-##### Delete
+###### Delete
 Delete 회수 방법은 PV가 삭제될 때 연결되어 있는 저장장치를 삭제합니다. 
 
-##### Retain
+###### Retain
 Retain 회수 방법은 PV가 삭제될 때 연결되어 있는 저장장치를 그대로 두는 것 입니다. 이 저장장치를 회수하기 위해서는 사용자가 직접 회수 처리를 해야 합니다. 
 
-##### Recycle
+###### Recycle
 Recycle 회수 방법은 PV가 삭제되면서 자동으로 다시 사용할 수 있는 상태를 만드는 방법입니다. 이 방법은 deprecated 되었습니다.
 
-## TOAST의 PV/PVC 관련 사항
+### TOAST의 PV/PVC 관련 사항
 TOAST에서 PV/PVC 기능 관련하여 다음과 같은 제약사항이 있습니다. 
 1. 스토리지 접근 모드는 `ReadWriteOnce`만 지원합니다.
 2. 스토리지클래스의 `Provisioner`는 `kubernetes.io/cinder`으로 지정해야 합니다.
 
 
-## 정적 Provisioning으로 PV를 확보하여 Pod 연동
+### 정적 Provisioning으로 PV를 확보하여 Pod 연동
 이번 장에서는 정적 Provisioning 방법으로 PV를 확보하고, 이를 Pod에 연동해 사용하는 방법에 대해 설명합니다.
 
-### Step 1. 블록 스토리지 생성
+#### Step 1. 블록 스토리지 생성
 웹콘솔의 블록 스토리지 화면에서 PV와 연동할 블록 스토리지를 생성합니다. 저장장치 타입과 용량 등을 적절히 입력합니다. 
 ![image.png](/files/2716558041632314915)
 
 이후 PV 생성을 위해서는 이 스토리지의 ID를 알고 있어야 합니다. 웹콘솔에서 확인할 수 있습니다. 
 
-### Step 2. StorageClass 생성
+#### Step 2. StorageClass 생성
 다음과 같이 스토리지클래스를 생성합니다.
 ```
 ➜  pv-test# cat storage_class.yaml
@@ -1174,7 +1174,7 @@ sc-default   kubernetes.io/cinder   8s
 ➜  pv-test#
 ```
 
-### Step 3. PV 생성
+#### Step 3. PV 생성
 다음과 같이 생성해놓은 저장장치에 연결된 PV를 생성합니다. 
 ```
 ➜  pv-test# cat pv-static.yaml
@@ -1207,7 +1207,7 @@ PV 생성시 다음을 유의해야 합니다.
 * `accessModes`는 반드시 `ReadWriteOnce`로 지정해야 합니다.
 * `presistentVolumeReclaimPolicy`는 `Delete` 혹은 `Retain`으로 설정할 수 있습니다.
 
-### Step 4. PVC 생성
+#### Step 4. PVC 생성
 다음과 같이 위에서 생성한 PV를 사용하도록 하는 PVC를 생성합니다.
 ```
 ➜  pv-test# cat pvc-static.yaml
@@ -1246,7 +1246,7 @@ pv-static-001   10Gi       RWO            Delete           Bound    default/pvc-
 ➜  pv-test#
 ```
 
-### Step 5. Pod 연동
+#### Step 5. Pod 연동
 다음과 같이 PVC로 요청한 저장장치를 마운트하는 pod를 생성합니다.
 ```
 ➜  pv-test# cat pod-static-pvc.yaml
@@ -1304,7 +1304,7 @@ tmpfs           920M     0  920M   0% /sys/firmware
 이제 블록 스토리지의 연결정보에도 관련 내용이 표시되는 것을 확인할 수 있습니다.
 ![image.png](/files/2716568031182605559)
 
-### Step 6. 테스트 리소스 삭제
+#### Step 6. 테스트 리소스 삭제
 다음과 같이 pod를 삭제합니다.
 ```
 ➜  pv-test# kubectl delete pod/nginx-with-static-pv
@@ -1326,12 +1326,12 @@ persistentvolumeclaim "pvc-static" deleted
 만약, PV의 `reclaimPolicy`를 `Retain`으로 설정했다면 PVC가 삭제될 때 PV가 삭제되지 않습니다. 이후 PV를 삭제하더라도 블록스토리지까지 삭제되지 않습니다. PV 삭제 시 블록스토리지까지 삭제하려면 PV의 `reclaimPolicy`를 `Delete`로 변경해야 합니다.
 
 
-## 동적 Provisioning으로 PV를 확보하여 Pod 연동
+### 동적 Provisioning으로 PV를 확보하여 Pod 연동
 
-### Step 1. 스토리지클래스 생성
+#### Step 1. 스토리지클래스 생성
 정적 Provisioning의 스토리지클래스 생성 과정과 동일합니다.
 
-### Step 2. PVC 생성
+#### Step 2. PVC 생성
 다음과 같이 동적 provisioning을 수행하는 PVC를 생성합니다. PVC 생성 시 `volumeName` 필드가 없는 것을 유의하세요.
 ```
 ➜  pv-test# cat pvc-dynamic.yaml
@@ -1371,7 +1371,7 @@ persistentvolumeclaim/pvc-dynamic   Bound    pvc-c63da3f9-dfcb-4cae-a9a9-6713799
 ![image.png](/files/2716578560206454334)
 
 
-### Step 3. Pod 연동
+#### Step 3. Pod 연동
 다음과 같이 PVC로 요청한 저장장치를 마운트하는 pod를 생성합니다.
 ```
 ➜  pv-test# cat pod-dynamic-pvc.yaml
@@ -1418,10 +1418,10 @@ tmpfs           920M     0  920M   0% /sys/firmware
 ➜  pv-test#
 ```
 
-### Step 4. 테스트 리소스 삭제
+#### Step 4. 테스트 리소스 삭제
 정적 Provisioning의 스토리지클래스 생성 과정과 동일합니다. `reclaimPolicy`가 `Delete`이기 때문에 PVC를 삭제하면 PV도 삭제되고, PV가 삭제되면 블록 스토리지도 삭제됩니다.
 
-### 주의사항
+#### 주의사항
 * 동적 Provisioning에 의해 생성된 블록 스토리지는 다음의 특성이 있습니다.
     * 연결된 PV가 삭제되면 자동으로 삭제됩니다.
     * 웹콘솔의 블록 스토리지 페이지에서 삭제가 불가능 합니다.
