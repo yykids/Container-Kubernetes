@@ -964,7 +964,6 @@ eyJh ...(중략) y3w
 ```
 
 출력된 토큰값을 브라우져의 토큰 입력창에 입력하면 첫번째 과정에서 권한을 부여받은 사용자로 로그인하게 됩니다.
-![dashboard-03.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/dashboard-03.png)
 
 
 ### 참고. 방법1에서 실행한 내용 되돌리기
