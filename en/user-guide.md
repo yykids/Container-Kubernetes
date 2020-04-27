@@ -155,6 +155,37 @@ nginx-deployment-7fd6966748-xd8lh   1/1     Running   0          4m13s   10.100.
 [service-lb-test]#
 ```
 
+만약 TOAST Container Registry에 저장한 이미지를 사용하고 싶다면 먼저 사용자 레지스트리에 로그인하기 위한 시크릿(secret)을 만들어야 합니다.
+```
+# kubectl create secret docker-registry regcred --docker-server={사용자 레지스트리 주소} --docker-username={Toast 계정 email 주소} --docker-password={서비스 Appkey 또는 통합 Appkey}
+secret/regcred created
+
+# kubectl get secrets
+NAME                  TYPE                                  DATA   AGE
+regcred               kubernetes.io/dockerconfigjson        1      30m
+```
+
+Deployment 생성을 위한 매니패스트 파일에 시크릿 정보를 추가하고, 이미지 경로를 수정하면 사용자 레지스트리에 저장된 이미지를 이용해 팟을 만들 수 있습니다.
+```
+# cat nginx.yaml
+...
+spec:
+  ...
+  template:
+    ...
+    spec:
+      containers:
+      - name: nginx
+        image: {사용자 레지스트리 주소}/nginx:1.14.2
+        ...
+      imagePullSecrets:
+      - name: regcred
+
+```
+
+> [참고]
+> TOAST Container Registry 사용 방법은 [Container Registry 사용 가이드](/Container/Container%20Registry/en/user-guide) 문서를 참조하세요.
+
 #### 웹서버를 외부에 노출하기 위한 로드밸런서 서비스 객체 생성
 
 쿠버네티스의 서비스 객체를 생성할 때 다음의 필드를 사용해 서비스 객체를 정의합니다.
