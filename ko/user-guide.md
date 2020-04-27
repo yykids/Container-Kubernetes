@@ -79,10 +79,10 @@ kubectl --kubeconfig=다운받은파일경로 get nodes
 이 명령을 실행하면 두 가지 정보를 출력합니다. 클라이언트 정보는 kubectl 실행 바이너리의 버전 정보를 출력하고, 서버 정보는 쿠버네티스 클러스터에 적용되어 있는 쿠버네티스 정보를 출력합니다. 따라서 정상적으로 연결된 경우에만 서버 정보가 출력됩니다.
 
 ```
-[~]# kubectl version
+# kubectl version
 Client Version: version.Info{Major:"1", Minor:"15", GitVersion:"v1.15.7", GitCommit:"6c143d35bb11d74970e7bc0b6c45b6bfdffc0bd4", GitTreeState:"clean", BuildDate:"2019-12-11T12:42:56Z", GoVersion:"go1.12.12", Compiler:"gc", Platform:"darwin/amd64"}
 Server Version: version.Info{Major:"1", Minor:"15", GitVersion:"v1.15.7", GitCommit:"6c143d35bb11d74970e7bc0b6c45b6bfdffc0bd4", GitTreeState:"clean", BuildDate:"2019-12-11T12:34:17Z", GoVersion:"go1.12.12", Compiler:"gc", Platform:"linux/amd64"}
-[~]#
+#
 ```
 
 
@@ -117,7 +117,7 @@ pod는 쿠버네티스 클러스터 내부에 존재하고, CNI(Container Networ
 #### 서비스를 위한 웹서버 pod 실행
 먼저, 테스트를 위해 웹서버 pod를 실행합니다. 아래의 yaml 파일을 이용해 Deployment 객체를 생성할 수 있습니다.
 ```
-[service-lb-test]# cat nginx.yaml
+# cat nginx.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -139,20 +139,20 @@ spec:
         image: nginx:1.14.2
         ports:
         - containerPort: 80
-[service-lb-test]#
-[service-lb-test]# kubectl apply -f nginx.yaml
+#
+# kubectl apply -f nginx.yaml
 deployment.apps/nginx-deployment created
-[service-lb-test]#
+#
 ```
 
 pod가 생성되어 `Running` 상태가 된 것을 확인합니다.
 ```
-[service-lb-test]# kubectl get pods -o wide
+# kubectl get pods -o wide
 NAME                                READY   STATUS    RESTARTS   AGE     IP           NODE                                    NOMINATED NODE   READINESS GATES
 nginx-deployment-7fd6966748-pvrzs   1/1     Running   0          4m13s   10.100.3.4   twtest3-added-iqugtvla3klc-node-0       <none>           <none>
 nginx-deployment-7fd6966748-wv7rd   1/1     Running   0          4m13s   10.100.2.8   twtest3-default-w-pmxhlw3kwuph-node-0   <none>           <none>
 nginx-deployment-7fd6966748-xd8lh   1/1     Running   0          4m13s   10.100.3.3   twtest3-added-iqugtvla3klc-node-0       <none>           <none>
-[service-lb-test]#
+#
 ```
 
 만약 TOAST Container Registry에 저장한 이미지를 사용하고 싶다면 먼저 사용자 레지스트리에 로그인하기 위한 시크릿(secret)을 만들어야 합니다.
@@ -203,7 +203,7 @@ spec:
 아래의 yaml 파일을 이용해 로드밸런서 서비스 객체를 생성할 수 있습니다. 이 로드밸런서 서비스 객체는 `.spec.selector` 필드에 의해 "app: nginx"라는 라벨이 붙은 Pod와 연동합니다. 또, `.spec.ports` 필드에 의해 TCP/8080으로 들어온 트래픽을 Pod의 TCP/80으로 전달합니다.
 
 ```
-[service-lb-test]# cat service.yaml
+# cat service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -218,28 +218,28 @@ spec:
   selector:
     app: nginx
   type: LoadBalancer
-[service-lb-test]#
-[service-lb-test]# kubectl apply -f service.yaml
+#
+# kubectl apply -f service.yaml
 service/nginx-svc created
-[service-lb-test]#
+#
 ```
 
 서비스 객체가 생성되면 `kubectl get service` 명령어로 서비스 객체 목록을 조회할 수 있습니다. 단, 로드밸런서 서비스 객체가 생성되더라도 클러스터 외부의 로드밸런서를 생성하고 연동하는데에는 약간의 시간이 필요합니다. 외부 로드밸런서와 연동하는 중에는 `EXTERNAL-IP` 컬럼에 다음과 같이 `<pending>`이라고 표시됩니다.
 ```
-[service-lb-test]# kubectl get service
+# kubectl get service
 NAME         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
 kubernetes   ClusterIP      10.254.0.1      <none>        443/TCP          51m
 nginx-svc    LoadBalancer   10.254.134.18   <pending>     8080:30013/TCP   11s
-[service-lb-test]#
+#
 ```
 
 잠시 시간이 지나면 `EXTERNAL-IP` 컬럼에 IP 주소가 설정된 것을 확인하실 수 있습니다. 이 IP 주소는 Floating IP 주소 입니다. 이 Floating IP 주소는 "Network -> Floating IP" 페이지에서 확인하실 수 있습니다.
 ```
-[service-lb-test]# kubectl get service
+# kubectl get service
 NAME         TYPE           CLUSTER-IP      EXTERNAL-IP      PORT(S)          AGE
 kubernetes   ClusterIP      10.254.0.1      <none>           443/TCP          54m
-nginx-svc    LoadBalancer   10.254.134.18   133.186.154.30   8080:30013/TCP   3m13s
-[service-lb-test]#
+nginx-svc    LoadBalancer   10.254.134.18   123.123.123.30   8080:30013/TCP   3m13s
+#
 ```
 
 #### 인터넷을 통해 서비스 테스트
@@ -247,14 +247,14 @@ nginx-svc    LoadBalancer   10.254.134.18   133.186.154.30   8080:30013/TCP   3m
 
 아래와 같이 Floating IP의 TCP/80으로 HTTP 요청을 보내면 다음과 같이 에러가 발생합니다. 서비스 객체가 TCP/8080을 열고 기다리기 때문에 TCP/80으로 보낸 요청은 연결에 실패하는 것입니다.
 ```
-[service-lb-test]# curl http://133.186.154.30
-curl: (7) Failed to connect to 133.186.154.30 port 80: Connection refused
-[service-lb-test]#
+# curl http://123.123.123.30
+curl: (7) Failed to connect to 123.123.123.30 port 80: Connection refused
+#
 ```
 
 아래와 같이 Floating IP의 TCP/8080으로 HTTP 요청을 보내면 정상 응답을 받습니다. TCP/8080으로 보내진 요청을 서비스 객체가 Pod으로 연결할 때 TCP/80으로 바꾸었기 때문에 Pod가 서비스하는 TCP/80으로 연결될 수 있는 것 입니다.
 ```
-[service-lb-test]# curl http://133.186.154.30:8080
+# curl http://123.123.123.30:8080
 <!DOCTYPE html>
 <html>
 <head>
@@ -280,7 +280,7 @@ Commercial support is available at
 <p><em>Thank you for using nginx.</em></p>
 </body>
 </html>
-[service-lb-test]#
+#
 ```
 
 
@@ -306,7 +306,7 @@ Commercial support is available at
 #### 필요 리소스 설치
 다음과 같이 Nginx ingress controller에 필요한 리소스를 생성합니다.
 ```
-[nginx-ingress-test]# kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/mandatory.yaml
+# kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/mandatory.yaml
 namespace/ingress-nginx created
 configmap/nginx-configuration created
 configmap/tcp-services created
@@ -318,7 +318,7 @@ rolebinding.rbac.authorization.k8s.io/nginx-ingress-role-nisa-binding created
 clusterrolebinding.rbac.authorization.k8s.io/nginx-ingress-clusterrole-nisa-binding created
 deployment.apps/nginx-ingress-controller created
 limitrange/ingress-nginx created
-[nginx-ingress-test]#
+#
 ```
 
 #### LoadBalancer 생성
@@ -326,7 +326,7 @@ Ingress를 외부에 노출하기 위해서는 로드밸런서(LoadBalancer) 서
 
 다음과 같이 HTTP와 HTTPS를 처리할 수 있는 로드밸런서 서비스 객체를 생성합니다.
 ```
-[nginx-ingress-test]# cat ingress-nginx-lb.yaml
+# cat ingress-nginx-lb.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -353,17 +353,17 @@ spec:
     app.kubernetes.io/name: ingress-nginx
     app.kubernetes.io/part-of: ingress-nginx
 
-[nginx-ingress-test]# kubectl apply -f ingress-nginx-lb.yaml
+# kubectl apply -f ingress-nginx-lb.yaml
 service/ingress-nginx created
-[nginx-ingress-test]#
+#
 ```
 
 위에서 생성한 `ingress-nginx` 서비스가 제대로 생성되었는지 확인합니다. `EXTERNAL-IP` 필드에는 IP 주소가 설정되어 있음을 확인해야 합니다.
 ```
-[nginx-ingress-test]# kubectl get svc -o wide -n ingress-nginx
+# kubectl get svc -o wide -n ingress-nginx
 NAME            TYPE           CLUSTER-IP     EXTERNAL-IP      PORT(S)                      AGE   SELECTOR
-ingress-nginx   LoadBalancer   10.254.2.128   133.186.154.41   80:30820/TCP,443:30269/TCP   39s   app.kubernetes.io/name=ingress-nginx,app.kubernetes.io/part-of=ingress-nginx
-[nginx-ingress-test]#
+ingress-nginx   LoadBalancer   10.254.2.128   123.123.123.41   80:30820/TCP,443:30269/TCP   39s   app.kubernetes.io/name=ingress-nginx,app.kubernetes.io/part-of=ingress-nginx
+#
 ```
 
 ### 예제 1. URI 기반 서비스 분기 Ingress
@@ -375,7 +375,7 @@ ingress-nginx   LoadBalancer   10.254.2.128   133.186.154.41   80:30820/TCP,443:
 다음과 같이 테스트를 위한 `tea-svc` 서비스와 `coffee-svc` 서비스를 생성합니다. `tea-svc` 서비스에는 `tea` pod이 연결되고, `coffee-svc` 서비스에는 `coffee`  pod가 연결됩니다.
 
 ```
-[nginx-ingress-test]# cat cafe.yaml
+# cat cafe.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -442,18 +442,18 @@ spec:
     name: http
   selector:
     app: tea
-[nginx-ingress-test]#
-[nginx-ingress-test]# kubectl apply -f cafe.yaml
+#
+# kubectl apply -f cafe.yaml
 deployment.apps/coffee created
 service/coffee-svc created
 deployment.apps/tea created
 service/tea-svc created
-[nginx-ingress-test]#
+#
 ```
 
 생성된 Deployment, Service, Pods가 정상적으로 생성되었는지 확인합니다. 특히 Pods의 경우 `Running` 상태인 것을 확인하셔야 합니다.
 ```
-[nginx-ingress-test]# kubectl get deploy,svc,pods
+# kubectl get deploy,svc,pods
 NAME                           READY   UP-TO-DATE   AVAILABLE   AGE
 deployment.extensions/coffee   2/2     2            2           18s
 deployment.extensions/tea      3/3     3            3           18s
@@ -469,7 +469,7 @@ pod/coffee-67c6f7c5fd-c58l2   1/1     Running   0          18s
 pod/tea-7df475c6-dmxf6        1/1     Running   0          18s
 pod/tea-7df475c6-gtlx5        1/1     Running   0          18s
 pod/tea-7df475c6-lxqsx        1/1     Running   0          18s
-[nginx-ingress-test]#
+#
 ```
 
 #### URI를 기반으로 서비스와 연결하는 Ingress 생성
@@ -478,7 +478,7 @@ pod/tea-7df475c6-lxqsx        1/1     Running   0          18s
 - URI `/coffee`로의 요청은 `coffee-svc` 서비스에 연결
 
 ```
-[nginx-ingress-test]# cat cafe-ingress-uri.yaml
+# cat cafe-ingress-uri.yaml
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -495,22 +495,22 @@ spec:
         backend:
           serviceName: coffee-svc
           servicePort: 80
-[nginx-ingress-test]#
-[nginx-ingress-test]# kubectl apply -f cafe-ingress-uri.yaml
+#
+# kubectl apply -f cafe-ingress-uri.yaml
 ingress.extensions/cafe-ingress-uri created
-[nginx-ingress-test]#
+#
 ```
 
 생성된 ingress가 `ADDRESS`를 제대로 받아오는지 확인해야 합니다.
 ```
-[nginx-ingress-test]# kubectl get ingress cafe-ingress-uri
+# kubectl get ingress cafe-ingress-uri
 NAME               HOSTS   ADDRESS   PORTS   AGE
 cafe-ingress-uri   *                 80      20s
-[nginx-ingress-test]#
-[nginx-ingress-test]# kubectl get ingress cafe-ingress-uri
+#
+# kubectl get ingress cafe-ingress-uri
 NAME               HOSTS   ADDRESS          PORTS   AGE
-cafe-ingress-uri   *       133.186.154.44   80      88s
-[nginx-ingress-test]#
+cafe-ingress-uri   *       123.123.123.44   80      88s
+#
 ```
 
 #### HTTP Request 전송
@@ -519,7 +519,7 @@ cafe-ingress-uri   *       133.186.154.44   80      88s
 ##### 1. 정의되지 않은 URI
 정의되지 않은 URI에 대한 요청은 `404 Not Found`를 리턴합니다.
 ```
-[~]# curl http://133.186.154.44/
+# curl http://123.123.123.44/
 <html>
 <head><title>404 Not Found</title></head>
 <body>
@@ -527,8 +527,8 @@ cafe-ingress-uri   *       133.186.154.44   80      88s
 <hr><center>nginx/1.17.8</center>
 </body>
 </html>
-[~]#
-[~]# curl http://133.186.154.44/invalid_uri
+#
+# curl http://123.123.123.44/invalid_uri
 <html>
 <head><title>404 Not Found</title></head>
 <body>
@@ -536,81 +536,81 @@ cafe-ingress-uri   *       133.186.154.44   80      88s
 <hr><center>nginx/1.17.8</center>
 </body>
 </html>
-[~]#
+#
 ```
 
 ##### 2. `/coffee` 요청
 `/coffee`에 대한 요청은 "coffee service"에 전달되어 서비스 됩니다. 아래 실행 로그 중 `Server name`을 유심히 보시면, coffee service에 연결된 Pod이 라운드로빈으로 동작하고 있음을 확인하실 수 있습니다.
 
 ```
-[~]# curl http://133.186.154.44/coffee
+# curl http://123.123.123.44/coffee
 Server address: 10.100.3.48:8080
 Server name: coffee-67c6f7c5fd-c58l2
 Dat#e: 07/Apr/2020:08:24:27 +0000
 URI: /coffee
 Request ID: e831901e441303ad59fb02214c49d84a
-[~]#
-[~]# curl http://133.186.154.44/coffee
+#
+# curl http://123.123.123.44/coffee
 Server address: 10.100.2.23:8080
 Server name: coffee-67c6f7c5fd-98vh5
 Date: 07/Apr/2020:08:24:28 +0000
 URI: /coffee
 Request ID: e78427e68a1cd61ec633b9328359874e
-[~]#
-[~]# curl http://133.186.154.44/coffee
+#
+# curl http://123.123.123.44/coffee
 Server address: 10.100.3.48:8080
 Server name: coffee-67c6f7c5fd-c58l2
 Date: 07/Apr/2020:08:24:42 +0000
 URI: /coffee
 Request ID: cd5813933d6389032c18e5cfb5ad9df4
-[~]#
+#
 ```
 
 ##### 3. `/tea` 요청
 `/tea`에 대한 요청은 "tea service"에 전달되어 서비스 됩니다. 아래 실행 로그 중 `Server name`을 유심히 보시면, "tea service"에 연결된 Pod이 라운드로빈으로 동작하고 있음을 확인하실 수 있습니다.
 
 ```
-[~]# curl http://133.186.154.44/tea
+# curl http://123.123.123.44/tea
 Server address: 10.100.2.24:8080
 Server name: tea-7df475c6-lxqsx
 Date: 07/Apr/2020:08:25:03 +0000
 URI: /tea
 Request ID: 59303a5a5baa60802b463b1856c8ce8d
-[~]#
-[~]# curl http://133.186.154.44/tea
+#
+# curl http://123.123.123.44/tea
 Server address: 10.100.3.50:8080
 Server name: tea-7df475c6-dmxf6
 Date: 07/Apr/2020:08:25:04 +0000
 URI: /tea
 Request ID: 81683a1d9e9a5ed46fed3f597958e9d3
-[~]#
-[~]# curl http://133.186.154.44/tea
+#
+# curl http://123.123.123.44/tea
 Server address: 10.100.3.49:8080
 Server name: tea-7df475c6-gtlx5
 Date: 07/Apr/2020:08:25:05 +0000
 URI: /tea
 Request ID: 2b348f7615133ef1f99c2c4625260a68
-[~]#
-[~]# curl http://133.186.154.44/tea
+#
+# curl http://123.123.123.44/tea
 Server address: 10.100.2.24:8080
 Server name: tea-7df475c6-lxqsx
 Date: 07/Apr/2020:08:25:10 +0000
 URI: /tea
 Request ID: 7d6a7c1858424400f481057a75e8a263
-[~]#
+#
 ```
 
 #### 테스트 용 리소스 삭제
 다음과 같이 테스트를 위해 생성한 리소스를 삭제할 수 있습니다.
 ```
-[nginx-ingress-test]# kubectl delete -f cafe-ingress-uri.yaml
+# kubectl delete -f cafe-ingress-uri.yaml
 ingress.extensions "cafe-ingress-uri" deleted
-[nginx-ingress-test]# kubectl delete -f cafe.yaml
+# kubectl delete -f cafe.yaml
 deployment.apps "coffee" deleted
 service "coffee-svc" deleted
 deployment.apps "tea" deleted
 service "tea-svc" deleted
-[nginx-ingress-test]#
+#
 ```
 
 ### 예제 2. 호스트 기반 서비스 분기 Ingress
@@ -626,7 +626,7 @@ service "tea-svc" deleted
 - Host `coffee.cafe.example.com`으로의 요청은 `tea-svc` 서비스에 연결
 
 ```
-[nginx-ingress-test]# cat cafe-ingress-host.yaml
+# cat cafe-ingress-host.yaml
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -647,23 +647,23 @@ spec:
         backend:
           serviceName: coffee-svc
           servicePort: 80
-[nginx-ingress-test]#
-[nginx-ingress-test]# kubectl apply -f cafe-ingress-host.yaml
+#
+# kubectl apply -f cafe-ingress-host.yaml
 ingress.extensions/cafe-ingress-host created
-[nginx-ingress-test]#
+#
 ```
 
 생성된 ingress가 ADDRESS를 제대로 받아오는지 확인해야 합니다.
 ```
-[nginx-ingress-test]# kubectl get ingress
+# kubectl get ingress
 NAME                HOSTS                                          ADDRESS   PORTS   AGE
 cafe-ingress-host   tea.cafe.example.com,coffee.cafe.example.com             80      7s
-[nginx-ingress-test]#
-[nginx-ingress-test]#
-[nginx-ingress-test]# kubectl get ingress
+#
+#
+# kubectl get ingress
 NAME                HOSTS                                          ADDRESS          PORTS   AGE
-cafe-ingress-host   tea.cafe.example.com,coffee.cafe.example.com   133.186.154.44   80      4m29s
-[nginx-ingress-test]#
+cafe-ingress-host   tea.cafe.example.com,coffee.cafe.example.com   123.123.123.44   80      4m29s
+#
 ```
 
 
@@ -677,7 +677,7 @@ cafe-ingress-host   tea.cafe.example.com,coffee.cafe.example.com   133.186.154.4
 ##### 1. Unknown host
 알려지지 않은 호스트에 대한 요청은 `404 Not Found`를 리턴합니다.
 ```
-[~]# curl http://133.186.154.44
+# curl http://123.123.123.44
 <html>
 <head><title>404 Not Found</title></head>
 <body>
@@ -685,8 +685,8 @@ cafe-ingress-host   tea.cafe.example.com,coffee.cafe.example.com   133.186.154.4
 <hr><center>nginx/1.17.8</center>
 </body>
 </html>
-[~]#
-[~]# curl --resolve test.example.com:80:133.186.154.44 http://test.example.com/
+#
+# curl --resolve test.example.com:80:123.123.123.44 http://test.example.com/
 <html>
 <head><title>404 Not Found</title></head>
 <body>
@@ -694,82 +694,82 @@ cafe-ingress-host   tea.cafe.example.com,coffee.cafe.example.com   133.186.154.4
 <hr><center>nginx/1.17.8</center>
 </body>
 </html>
-[~]#
+#
 ```
 
 ##### 2. `coffee.cafe.example.com`으로 요청
 호스트 `coffee.cafe.example.com`에 대한 요청은 `coffee-svc` 서비스에 전달됩니다. 아래 실행 로그 중 `Server name`을 유심히 보시면, `coffee-svc` 서비스에 연결된 Pod이 라운드로빈으로 동작하고 있음을 확인하실 수 있습니다.
 
 ```
-[~]# curl --resolve coffee.cafe.example.com:80:133.186.154.44 http://coffee.cafe.example.com/
+# curl --resolve coffee.cafe.example.com:80:123.123.123.44 http://coffee.cafe.example.com/
 Server address: 10.100.2.25:8080
 Server name: coffee-67c6f7c5fd-2bbzf
 Date: 07/Apr/2020:08:45:39 +0000
 URI: /
 Request ID: 29fd8a244b9f0a5ff5f35d1dc35edccf
-[~]#
-[~]# curl --resolve coffee.cafe.example.com:80:133.186.154.44 http://coffee.cafe.example.com/
+#
+# curl --resolve coffee.cafe.example.com:80:123.123.123.44 http://coffee.cafe.example.com/
 Server address: 10.100.3.51:8080
 Server name: coffee-67c6f7c5fd-j7zrr
 Date: 07/Apr/2020:08:45:40 +0000
 URI: /
 Request ID: 54cae1d825fa8c3ffed6c03959507bb8
-[~]#
-[~]# curl --resolve coffee.cafe.example.com:80:133.186.154.44 http://coffee.cafe.example.com/
+#
+# curl --resolve coffee.cafe.example.com:80:123.123.123.44 http://coffee.cafe.example.com/
 Server address: 10.100.2.25:8080
 Server name: coffee-67c6f7c5fd-2bbzf
 Date: 07/Apr/2020:08:45:41 +0000
 URI: /
 Request ID: f47cf9f4ee725fca440a7d50630cb25a
-[~]#
+#
 ```
 
 ##### 3. `tea.cafe.example.com`으로 요청
 호스트 `tea.cafe.example.com`에 대한 요청은 `tea-svc` 서비스에 전달됩니다. 아래 실행 로그 중 `Server name`을 유심히 보시면, `tea-svc` 서비스에 연결된 Pod이 라운드로빈으로 동작하고 있음을 확인하실 수 있습니다.
 
 ```
-[~]# curl --resolve tea.cafe.example.com:80:133.186.154.44 http://tea.cafe.example.com/
+# curl --resolve tea.cafe.example.com:80:123.123.123.44 http://tea.cafe.example.com/
 Server address: 10.100.3.52:8080
 Server name: tea-7df475c6-q8mdx
 Date: 07/Apr/2020:08:53:44 +0000
 URI: /
 Request ID: fe61c1589d3ab8ef4ca4507245251ef3
-[~]#
-[~]# curl --resolve tea.cafe.example.com:80:133.186.154.44 http://tea.cafe.example.com/
+#
+# curl --resolve tea.cafe.example.com:80:123.123.123.44 http://tea.cafe.example.com/
 Server address: 10.100.3.53:8080
 Server name: tea-7df475c6-llb6w
 Date: 07/Apr/2020:08:53:46 +0000
 URI: /
 Request ID: cbca786ef9c0a11cd80d690f387f7286
-[~]#
-[~]# curl --resolve tea.cafe.example.com:80:133.186.154.44 http://tea.cafe.example.com/
+#
+# curl --resolve tea.cafe.example.com:80:123.123.123.44 http://tea.cafe.example.com/
 Server address: 10.100.2.26:8080
 Server name: tea-7df475c6-znz2n
 Date: 07/Apr/2020:08:53:47 +0000
 URI: /
 Request ID: bd27447451135b112297640575d8449c
-[~]#
-[~]# curl --resolve tea.cafe.example.com:80:133.186.154.44 http://tea.cafe.example.com/
+#
+# curl --resolve tea.cafe.example.com:80:123.123.123.44 http://tea.cafe.example.com/
 Server address: 10.100.3.52:8080
 Server name: tea-7df475c6-q8mdx
 Date: 07/Apr/2020:08:53:49 +0000
 URI: /
 Request ID: 58d26bdc750de30c0c4370bc1b641fd0
-[~]#
+#
 ```
 
 
 #### 테스트 용 리소스 삭제
 다음과 같이 테스트를 위해 생성한 리소스를 삭제할 수 있습니다.
 ```
-[nginx-ingress-test]# kubectl delete -f cafe-ingress-host.yaml
+# kubectl delete -f cafe-ingress-host.yaml
 ingress.extensions "cafe-ingress-host" deleted
-[nginx-ingress-test]# kubectl delete -f cafe.yaml
+# kubectl delete -f cafe.yaml
 deployment.apps "coffee" deleted
 service "coffee-svc" deleted
 deployment.apps "tea" deleted
 service "tea-svc" deleted
-[nginx-ingress-test]#
+#
 ```
 
 
@@ -789,10 +789,10 @@ https://kubernetes.io/ko/docs/tasks/access-application-cluster/web-ui-dashboard/
 대시보드 사용자에게 권한을 부여합니다. 이 예제에서는 모든 권한을 부여하도록 합니다.
 
 ```
-[~]# kubectl create clusterrolebinding kubernetes-dashboard --clusterrole=cluster-admin --serviceaccount=kube-system:kubernetes-dashboard
+# kubectl create clusterrolebinding kubernetes-dashboard --clusterrole=cluster-admin --serviceaccount=kube-system:kubernetes-dashboard
 clusterrolebinding.rbac.authorization.k8s.io/kubernetes-dashboard created
-[~]#
-[~]# kubectl describe clusterrolebinding kubernetes-dashboard -n kube-system
+#
+# kubectl describe clusterrolebinding kubernetes-dashboard -n kube-system
 Name:         kubernetes-dashboard
 Labels:       <none>
 Annotations:  <none>
@@ -803,8 +803,8 @@ Subjects:
   Kind            Name                  Namespace
   ----            ----                  ---------
   ServiceAccount  kubernetes-dashboard  kube-system
-[~]#
-[~]# kubectl describe ClusterRole cluster-admin
+#
+# kubectl describe ClusterRole cluster-admin
 Name:         cluster-admin
 Labels:       kubernetes.io/bootstrapping=rbac-defaults
 Annotations:  rbac.authorization.kubernetes.io/autoupdate: true
@@ -813,16 +813,16 @@ PolicyRule:
   ---------  -----------------  --------------  -----
   *.*        []                 []              [*]
              [*]                []              [*]
-[~]#
+#
 ```
 
 ### 서비스 노출
 쿠버네티스 대시보드를 위해 `kubernetes-dashboard`라는 서비스 객체가 미리 생성되어 있습니다.
 ```
-[~]# kubectl get svc kubernetes-dashboard -n kube-system
+# kubectl get svc kubernetes-dashboard -n kube-system
 NAME                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
 kubernetes-dashboard   ClusterIP   10.254.95.176   <none>        443/TCP   2d4h
-[~]# kubectl describe svc kubernetes-dashboard -n kube-system
+# kubectl describe svc kubernetes-dashboard -n kube-system
 Name:              kubernetes-dashboard
 Namespace:         kube-system
 Labels:            k8s-app=kubernetes-dashboard
@@ -856,31 +856,31 @@ Events:
 
 위의 커맨드를 실행하면 다음과 같은 메시지가 출력됩니다.
 ```
-[~]# kubectl get svc -n kube-system
+# kubectl get svc -n kube-system
 NAMESPACE       NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP      PORT(S)                      AGE
 kube-system     heapster               ClusterIP      10.254.14.112    <none>           80/TCP                       2d23h
 kube-system     kube-dns               ClusterIP      10.254.0.10      <none>           53/UDP,53/TCP,9153/TCP       2d23h
 kube-system     kubernetes-dashboard   ClusterIP      10.254.95.176    <none>           443/TCP                      2d23h
-[~]#
-[~]# kubectl -n kube-system patch svc/kubernetes-dashboard -p '{"spec":{"type":"LoadBalancer"}}'
+#
+# kubectl -n kube-system patch svc/kubernetes-dashboard -p '{"spec":{"type":"LoadBalancer"}}'
 service/kubernetes-dashboard patched
-[~]#
-[~]# kubectl get svc -n kube-system
+#
+# kubectl get svc -n kube-system
 NAME                   TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                  AGE
 heapster               ClusterIP      10.254.14.112   <none>        80/TCP                   2d23h
 kube-dns               ClusterIP      10.254.0.10     <none>        53/UDP,53/TCP,9153/TCP   2d23h
 kubernetes-dashboard   LoadBalancer   10.254.95.176   <pending>     443:31669/TCP            2d23h
-[~]#
+#
 ```
 
 서비스 객체가 `LoadBalancer`로 변경되면 잠시 후 `EXTERNAL-IP`가 설정됩니다.
 ```
-[~]# kubectl get svc -n kube-system
+# kubectl get svc -n kube-system
 NAME                   TYPE           CLUSTER-IP      EXTERNAL-IP      PORT(S)                  AGE
 heapster               ClusterIP      10.254.14.112   <none>           80/TCP                   2d23h
 kube-dns               ClusterIP      10.254.0.10     <none>           53/UDP,53/TCP,9153/TCP   2d23h
-kubernetes-dashboard   LoadBalancer   10.254.95.176   133.186.154.81   443:30963/TCP            2d23h
-[~]#
+kubernetes-dashboard   LoadBalancer   10.254.95.176   123.123.123.81   443:30963/TCP            2d23h
+#
 ```
 
 `EXTERNAL-IP`에 표시된 IP 주소는 외부에서 접근할 수 있는 공인 IP 주소로써 웹브라우져에서 IP 주소로 접속(https)하면 쿠버네티스 대시보드에 접속할 수 있습니다. 이 IP 주소는 TOAST 웹콘솔의 Floating IP 페이지에 표시됩니다. 웹브라우져에서 `https://EXTERNAL-IP`로 접속하면 쿠버네티스 대시보드가 표시되는 것을 확인할 수 있습니다.
@@ -906,7 +906,7 @@ https://kubernetes.io/ko/docs/concepts/services-networking/ingress/
 1. Ingress controller를 설치합니다. 이 예제는 nginx ingress controller를 기준으로 작성되었습니다. Nginx ingress controller의 설치 방법은 "nginx ingress controller 설치 및 사용 예제"장을 참고해주세요.
 2. 다음과 같이 `kubernetes-dashboard` 서비스를 위한 ingress 객체를 생성합니다.
 ```
-[~]# cat ./kubernetes-dashboard-ingress-tls-passthrough.yaml
+# cat ./kubernetes-dashboard-ingress-tls-passthrough.yaml
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -930,19 +930,19 @@ spec:
         path: /
   tls:
   - secretName: kubernetes-dashboard-certs
-[~]#
-[~]# kubectl apply -f kubernetes-dashboard-ingress-tls-passthrough.yaml
+#
+# kubectl apply -f kubernetes-dashboard-ingress-tls-passthrough.yaml
 ingress.extensions/k8s-dashboard-ingress created
-[~]#
+#
 ```
 
 3. 아래의 명령을 수행하여 nginx ingress controller에 연결된 `EXTERNAL-IP`를 확인합니다.
 
 ```
-[~]# kubectl get service/ingress-nginx -n ingress-nginx
+# kubectl get service/ingress-nginx -n ingress-nginx
 NAME            TYPE           CLUSTER-IP       EXTERNAL-IP      PORT(S)                      AGE
-ingress-nginx   LoadBalancer   10.254.211.113   133.186.154.29   80:32680/TCP,443:31631/TCP   19h
-[~]#
+ingress-nginx   LoadBalancer   10.254.211.113   123.123.123.29   80:32680/TCP,443:31631/TCP   19h
+#
 ```
 
 4. 웹브라우져에서 `https://EXTERNAL-IP`로 접속합니다.
@@ -957,10 +957,10 @@ ingress-nginx   LoadBalancer   10.254.211.113   133.186.154.29   80:32680/TCP,44
 쿠버네티스 대시보드에 접속하면 토큰을 입력해 로그인을 할 수 있습니다. 토큰값은 다음과 같이 `kubectl` 커맨드로 알아낼 수 있습니다.
 
 ```
-[~]# SECRET_NAME=$(kubectl -n kube-system get secrets | grep "kubernetes-dashboard-token" | cut -f1 -d ' ')
-[~]# kubectl describe secret $SECRET_NAME -n kube-system | grep -E '^token' | cut -f2 -d':' | tr -d " "
+# SECRET_NAME=$(kubectl -n kube-system get secrets | grep "kubernetes-dashboard-token" | cut -f1 -d ' ')
+# kubectl describe secret $SECRET_NAME -n kube-system | grep -E '^token' | cut -f2 -d':' | tr -d " "
 eyJh ...(중략) y3w
-[~]#
+#
 ```
 
 출력된 토큰값을 브라우져의 토큰 입력창에 입력하면 첫번째 과정에서 권한을 부여받은 사용자로 로그인하게 됩니다.
@@ -1013,7 +1013,7 @@ spec:
 status:
   loadBalancer:
     ingress:
-    - ip: 133.186.154.41
+    - ip: 123.123.123.41
 ```
 
 아래는 위의 지침대로 수정한 상태 입니다.
@@ -1050,37 +1050,37 @@ spec:
 status:
   loadBalancer:
     ingress:
-    - ip: 133.186.154.41
+    - ip: 123.123.123.41
 ```
 
 이 상태에서 `:wq` 명령으로 저장하고 vim을 빠져나오면 다음과 같은 메시지가 출력됩니다.
 ```
-[~]# kubectl edit svc/kubernetes-dashboard -n kube-system
+# kubectl edit svc/kubernetes-dashboard -n kube-system
 service/kubernetes-dashboard edited
-[~]#
+#
 ```
 
 service 객체를 조회해보면 type이 변경된 것을 확인하실 수 있습니다.
 ```
-[~]# kubectl get svc -n kube-system
+# kubectl get svc -n kube-system
 NAME                   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                  AGE
 heapster               ClusterIP   10.254.14.112    <none>        80/TCP                   3d
 kube-dns               ClusterIP   10.254.0.10      <none>        53/UDP,53/TCP,9153/TCP   3d
 kubernetes-dashboard   ClusterIP   10.254.138.151   <none>        443/TCP                  16m
-[~]#
+#
 ```
 
 2. 삭제 후 재생성
 아래와 같이 `kubernetes-dashboard` service 객체를 삭제합니다.
 ```
-[~]# kubectl delete svc/kubernetes-dashboard -n kube-system
+# kubectl delete svc/kubernetes-dashboard -n kube-system
 service "kubernetes-dashboard" deleted
-[~]#
+#
 ```
 
 아래와 같이 `kubernetes-dashboard` service 객체를 다시 생성합니다.
 ```
-[~]# cat kubernetes-dashboard-svc-cluster.yaml
+# cat kubernetes-dashboard-svc-cluster.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -1097,20 +1097,20 @@ spec:
     targetPort: 8443
   selector:
     k8s-app: kubernetes-dashboard
-[~]#
-[~]# kubectl apply -f kubernetes-dashboard-svc-cluster.yaml
+#
+# kubectl apply -f kubernetes-dashboard-svc-cluster.yaml
 service/kubernetes-dashboard created
-[~]#
+#
 ```
 
 Service 객체를 조회해보면 `kubernetes-dashboard` service 객체가 다시 생성된 것을 확인하실 수 있습니다.
 ```
-[~]# kubectl get svc -n kube-system
+# kubectl get svc -n kube-system
 NAME                   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                  AGE
 heapster               ClusterIP   10.254.14.112    <none>        80/TCP                   3d
 kube-dns               ClusterIP   10.254.0.10      <none>        53/UDP,53/TCP,9153/TCP   3d
 kubernetes-dashboard   ClusterIP   10.254.223.159   <none>        443/TCP                  9s
-[~]#
+#
 ```
 
 
@@ -1178,8 +1178,7 @@ TOAST에서 PV/PVC 기능 관련하여 다음과 같은 제약사항이 있습�
 
 #### Step 1. 블록 스토리지 생성
 웹콘솔의 블록 스토리지 화면에서 PV와 연동할 블록 스토리지를 생성합니다. 저장장치 타입과 용량 등을 적절히 입력합니다.
-이후 PV 생성을 위해서는 이 스토리지의 ID를 알고 있어야 합니다. 웹콘솔에서 확인할 수 있습니다.
-![pv-01.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/pv-01.png)
+이후 PV 생성을 위해서는 이 스토리지의 ID를 알고 있어야 합니다. 스토리지 ID는 웹콘솔의 'Block Storage > 관리 > 사용할 스토리지 선택 > 하단 정보 탭 > 블록 스토리지 이름'에서 확인할 수 있습니다. 
 
 #### Step 2. StorageClass 생성
 다음과 같이 스토리지클래스를 생성합니다.
@@ -1392,9 +1391,7 @@ persistentvolumeclaim/pvc-dynamic   Bound    pvc-c63da3f9-dfcb-4cae-a9a9-6713799
 ➜  pv-test#
 ```
 
-자동으로 생성된 블록 스토리지는 웹콘솔에서 확인할 수 있습니다.
-![pv-02.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/pv-02.png)
-
+자동으로 생성된 블록 스토리지는 웹콘솔의 'Block Storage > 관리 > 블록 스토리지 목록'에서 확인할 수 있습니다.
 
 #### Step 3. Pod 연동
 다음과 같이 PVC로 요청한 저장장치를 마운트하는 pod를 생성합니다.
