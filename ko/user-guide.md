@@ -1131,7 +1131,7 @@ kubernetes-dashboard   ClusterIP   10.254.223.159   <none>        443/TCP       
 
 
 #### Persistent Volume & Persisten Volume Claims
-Persistent Volume(PV)는 저장장치 그 자체를 나타내는 개념입니다. PV는 물리 저장장치를 표현하는 쿠버네티스 리소스 입니다. 따라서 하나의 PV는 하나의 TOAST 블록스토리지 리소스와 매핑됩니다.
+Persistent Volume(PV)는 저장장치 그 자체를 나타내는 개념입니다. PV는 물리 저장장치를 표현하는 쿠버네티스 리소스 입니다. 따라서 하나의 PV는 하나의 TOAST 블록 스토리지 리소스와 매핑됩니다.
 
 Persistent Volume Claims(PVC)는 PV에 대한 요구 입니다. 사용자가 어떤 저장장치를 사용하고 싶다는 요구사항을 보내는 것으로 생각할 수 있습니다. 이 요구사항에는 저장장치의 용량, 읽기/쓰기 모드 등 저장장치의 특성이 포함됩니다.  동적 프로비져닝(Provisioning)의 경우 스토리지클래스에 기반하여 동작합니다.
 
@@ -1143,11 +1143,9 @@ PV/PVC는 아래와 같이 4단계의 생명주기를 갖습니다.
 
 ##### 1. Provisioning
 저장장치를 확보하는 단계입니다. 저장장치를 확보하는 방법에는 정적인 방법과 동적인 방법이 있습니다.
-###### 정적 provisioning
-관리자가 직접 저장장치를 확보하고 이에 연결된 PV를 생성합니다.
 
-###### 동적 provisioning
-PVC와 매치되는 저장장치가 없는 경우, 클러스터가 자동으로 저장장치를 확보하고 이에 연결된 PV를 생성합니다.
+* 정적 provisioning: 관리자가 직접 저장장치를 확보하고 이에 연결된 PV를 생성합니다.
+* 동적 provisioning: PVC와 매치되는 저장장치가 없는 경우, 클러스터가 자동으로 저장장치를 확보하고 이에 연결된 PV를 생성합니다.
 
 ##### 2. Binding
 PV와 PVC를 바인드하는 단계입니다. PV와 PVC는 1:1로 매핑되며, PV의 provisioning 방법과는 무관합니다.
@@ -1156,15 +1154,10 @@ PV와 PVC를 바인드하는 단계입니다. PV와 PVC는 1:1로 매핑되며, 
 PV를 Pod에 마운트하여 저장장치로 사용할 수 있습니다.
 
 ##### 4. Reclaiming
-사용을 마친 PV에 연결된 저장장치를 회수하는 단계 입니다. PV 별로 회수 방법을 지정해놓을 수 있습니다.
-###### Delete
-Delete 회수 방법은 PV가 삭제될 때 연결되어 있는 저장장치를 삭제합니다.
-
-###### Retain
-Retain 회수 방법은 PV가 삭제될 때 연결되어 있는 저장장치를 그대로 두는 것 입니다. 이 저장장치를 회수하기 위해서는 사용자가 직접 회수 처리를 해야 합니다.
-
-###### Recycle
-Recycle 회수 방법은 PV가 삭제되면서 자동으로 다시 사용할 수 있는 상태를 만드는 방법입니다. 이 방법은 deprecated 되었습니다.
+사용을 마친 PV에 연결된 저장장치를 회수하는 단계 입니다. PV 별로 회수 방법을 지정해놓을 수 있습니다. 다음의 회수 방법이 있습니다.
+* Delete: Delete 회수 방법은 PV가 삭제될 때 연결되어 있는 저장장치를 삭제합니다.
+* Retain: Retain 회수 방법은 PV가 삭제될 때 연결되어 있는 저장장치를 그대로 두는 것 입니다. 이 저장장치를 회수하기 위해서는 사용자가 직접 회수 처리를 해야 합니다.
+* Recycle: Recycle 회수 방법은 PV가 삭제되면서 자동으로 다시 사용할 수 있는 상태를 만드는 방법입니다. 이 방법은 deprecated 되었습니다.
 
 ### TOAST의 PV/PVC 관련 사항
 TOAST에서 PV/PVC 기능 관련하여 다음과 같은 제약사항이 있습니다.
@@ -1176,32 +1169,35 @@ TOAST에서 PV/PVC 기능 관련하여 다음과 같은 제약사항이 있습�
 이번 장에서는 정적 Provisioning 방법으로 PV를 확보하고, 이를 Pod에 연동해 사용하는 방법에 대해 설명합니다.
 
 #### Step 1. 블록 스토리지 생성
-웹콘솔의 블록 스토리지 화면에서 PV와 연동할 블록 스토리지를 생성합니다. 저장장치 타입과 용량 등을 적절히 입력합니다.
+웹콘솔의 블록 스토리지 화면에서 PV와 연동할 블록 스토리지를 생성합니다. 가용성 영역, 저장장치 타입과 용량 등을 적절히 입력합니다.
 이후 PV 생성을 위해서는 이 스토리지의 ID를 알고 있어야 합니다. 스토리지 ID는 웹콘솔의 'Block Storage > 관리 > 사용할 스토리지 선택 > 하단 정보 탭 > 블록 스토리지 이름'에서 확인할 수 있습니다. 
+
+블록 스토리지 생성 시 다음을 유의해야 합니다.
+* 블록 스토리지와 연결할 인스턴스의 가용성 영역이 서로 다르면 연결이 불가능합니다.
 
 #### Step 2. StorageClass 생성
 다음과 같이 스토리지클래스를 생성합니다.
 ```
-➜  pv-test# cat storage_class.yaml
+# cat storage_class.yaml
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: sc-default
 provisioner: kubernetes.io/cinder
-➜  pv-test#
-➜  pv-test# kubectl apply -f storage_class.yaml
+#
+# kubectl apply -f storage_class.yaml
 storageclass.storage.k8s.io/sc-default created
-➜  pv-test#
-➜  pv-test# kubectl get sc
+#
+# kubectl get sc
 NAME         PROVISIONER            AGE
 sc-default   kubernetes.io/cinder   8s
-➜  pv-test#
+#
 ```
 
 #### Step 3. PV 생성
 다음과 같이 생성해놓은 저장장치에 연결된 PV를 생성합니다.
 ```
-➜  pv-test# cat pv-static.yaml
+# cat pv-static.yaml
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -1217,14 +1213,14 @@ spec:
   cinder:
     fsType: "ext3"
     volumeID: "e6f95191-d58b-40c3-a191-9984ce7532e5"
-➜  pv-test#
-➜  pv-test# kubectl apply -f pv-static.yaml
+#
+# kubectl apply -f pv-static.yaml
 persistentvolume/pv-static-001 created
-➜  pv-test#
-➜  pv-test# kubectl get pv -o wide
+#
+# kubectl get pv -o wide
 NAME            CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   REASON   AGE   VOLUMEMODE
 pv-static-001   10Gi       RWO            Delete           Available           sc-default              7s    Filesystem
-➜  pv-test#
+#
 ```
 PV 생성시 다음을 유의해야 합니다.
 * `storageClassName`는 위에서 생성한 스토리지클래스이름을 지정합니다. 다른 스토리지클래스를 지정할 수도 있습니다.
@@ -1234,7 +1230,7 @@ PV 생성시 다음을 유의해야 합니다.
 #### Step 4. PVC 생성
 다음과 같이 위에서 생성한 PV를 사용하도록 하는 PVC를 생성합니다.
 ```
-➜  pv-test# cat pvc-static.yaml
+# cat pvc-static.yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -1248,14 +1244,14 @@ spec:
     requests:
       storage: 10Gi
   storageClassName: sc-default
-➜  pv-test#
-➜  pv-test# kubectl apply -f pvc-static.yaml
+#
+# kubectl apply -f pvc-static.yaml
 persistentvolumeclaim/pvc-static created
-➜  pv-test#
-➜  pv-test# kubectl get pvc -o wide
+#
+# kubectl get pvc -o wide
 NAME         STATUS   VOLUME          CAPACITY   ACCESS MODES   STORAGECLASS   AGE   VOLUMEMODE
 pvc-static   Bound    pv-static-001   10Gi       RWO            sc-default     7s    Filesystem
-➜  pv-test#
+#
 ```
 PVC 생성 시 다음을 유의해야 합니다.
 * `storageClassName`는 위에서 생성한 스토리지클래스 이름을 지정합니다. 다른 스토리지클래스를 지정할 수도 있습니다.
@@ -1264,16 +1260,16 @@ PVC 생성 시 다음을 유의해야 합니다.
 
 PVC 생성 후 PV의 상태를 조회해보면 `Status`가 `Available`에서 `Bound`로 변경된 것을 확인하실 수 있습니다.
 ```
-➜  pv-test# kubectl get pv -o wide
+# kubectl get pv -o wide
 NAME            CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                STORAGECLASS   REASON   AGE   VOLUMEMODE
 pv-static-001   10Gi       RWO            Delete           Bound    default/pvc-static   sc-default              79s   Filesystem
-➜  pv-test#
+#
 ```
 
 #### Step 5. Pod 연동
 다음과 같이 PVC로 요청한 저장장치를 마운트하는 pod를 생성합니다.
 ```
-➜  pv-test# cat pod-static-pvc.yaml
+# cat pod-static-pvc.yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -1294,14 +1290,14 @@ spec:
     - name: html-volume
       persistentVolumeClaim:
         claimName: pvc-static
-➜  pv-test#
-➜  pv-test# kubectl apply -f pod-static-pvc.yaml
+#
+# kubectl apply -f pod-static-pvc.yaml
 pod/nginx-with-static-pv created
-➜  pv-test#
-➜  pv-test# kubectl get pods
+#
+# kubectl get pods
 NAME                   READY   STATUS    RESTARTS   AGE
 nginx-with-static-pv   1/1     Running   0          50s
-➜  pv-test#
+#
 ```
 
 Pod 생성 시 다음을 유의해야 합니다.
@@ -1310,7 +1306,7 @@ Pod 생성 시 다음을 유의해야 합니다.
 
 Pod에 PVC로 획득한 저장장치가 제대로 마운트되어 있는지 확인합니다. 이 예제에서는 획득한 저장장치를 `/usr/share/nginx/html` 디렉터리에 마운트 했습니다.
 ```
-➜  pv-test# kubectl exec -ti nginx-with-static-pv -- df -h
+# kubectl exec -ti nginx-with-static-pv -- df -h
 Filesystem      Size  Used Avail Use% Mounted on
 overlay          20G  2.9G   16G  16% /
 tmpfs            64M     0   64M   0% /dev
@@ -1322,7 +1318,7 @@ tmpfs           920M   12K  920M   1% /run/secrets/kubernetes.io/serviceaccount
 tmpfs           920M     0  920M   0% /proc/acpi
 tmpfs           920M     0  920M   0% /proc/scsi
 tmpfs           920M     0  920M   0% /sys/firmware
-➜  pv-test#
+#
 ```
 
 이제 블록 스토리지의 연결정보에도 관련 내용이 표시되는 것을 확인할 수 있습니다.
@@ -1330,34 +1326,51 @@ tmpfs           920M     0  920M   0% /sys/firmware
 #### Step 6. 테스트 리소스 삭제
 다음과 같이 pod를 삭제합니다.
 ```
-➜  pv-test# kubectl delete pod/nginx-with-static-pv
+# kubectl delete pod/nginx-with-static-pv
 pod "nginx-with-static-pv" deleted
-➜  pv-test#
-➜  pv-test# kubectl get pods
+#
+# kubectl get pods
 No resources found.
-➜  pv-test#
+#
 ```
 
 다음과 같이 PVC를 삭제합니다.
 ```
-➜  pv-test# kubectl delete persistentvolumeclaim/pvc-static
+# kubectl delete persistentvolumeclaim/pvc-static
 persistentvolumeclaim "pvc-static" deleted
-➜  pv-test#
+#
 ```
 
 이 예제에서는 PV의 `reclaimPolicy`를 `Delete`로 설정해두었기 때문에 PVC가 삭제되면 연결된 PV도 삭제되고, PV와 연결된 블록 스토리지까지 삭제됩니다.
-만약, PV의 `reclaimPolicy`를 `Retain`으로 설정했다면 PVC가 삭제될 때 PV가 삭제되지 않습니다. 이후 PV를 삭제하더라도 블록스토리지까지 삭제되지 않습니다. PV 삭제 시 블록스토리지까지 삭제하려면 PV의 `reclaimPolicy`를 `Delete`로 변경해야 합니다.
+만약, PV의 `reclaimPolicy`를 `Retain`으로 설정했다면 PVC가 삭제될 때 PV가 삭제되지 않습니다. 이후 PV를 삭제하더라도 블록 스토리지까지 삭제되지 않습니다. PV 삭제 시 블록 스토리지까지 삭제하려면 PV의 `reclaimPolicy`를 `Delete`로 변경해야 합니다.
 
 
 ### 동적 Provisioning으로 PV를 확보하여 Pod 연동
 
 #### Step 1. 스토리지클래스 생성
-정적 Provisioning의 스토리지클래스 생성 과정과 동일합니다.
+정적 Provisioning의 스토리지클래스 생성 과정과 유사합니다. 추가적으로 동적으로 생성되는 블록 스토리지의 특성을 정의할 수 있습니다.
+
+다음과 같이 `parameters.type` 항목에 블록 스토리지 유형을 설정할 수 있습니다. 
+```
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: cinder-storageclass
+provisioner: kubernetes.io/cinder
+parameters:
+  type: General SSD
+```
+
+설정 가능한 블록 스토리지 타입은 다음과 같습니다. 설정하지 않으면 HDD 타입으로 설정됩니다. 
+| 타입 | 설정값 |
+| --- | --- |
+| HDD | General HDD |
+| SSD | General SSD |
 
 #### Step 2. PVC 생성
 다음과 같이 동적 provisioning을 수행하는 PVC를 생성합니다. PVC 생성 시 `volumeName` 필드가 없는 것을 유의하세요.
 ```
-➜  pv-test# cat pvc-dynamic.yaml
+# cat pvc-dynamic.yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -1370,15 +1383,15 @@ spec:
     requests:
       storage: 10Gi
   storageClassName: sc-default
-➜  pv-test#
-➜  pv-test# kubectl apply -f pvc-dynamic.yaml
+#
+# kubectl apply -f pvc-dynamic.yaml
 persistentvolumeclaim/pvc-dynamic created
-➜  pv-test#
+#
 ```
 
 PVC만 생성했지만 PV가 자동으로 생성된 것을 확인할 수 있습니다.
 ```
-➜  pv-test# kubectl get sc,pv,pvc
+# kubectl get sc,pv,pvc
 NAME                                     PROVISIONER            AGE
 storageclass.storage.k8s.io/sc-default   kubernetes.io/cinder   10m
 
@@ -1387,7 +1400,7 @@ persistentvolume/pvc-c63da3f9-dfcb-4cae-a9a9-67137994febc   10Gi       RWO      
 
 NAME                                STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
 persistentvolumeclaim/pvc-dynamic   Bound    pvc-c63da3f9-dfcb-4cae-a9a9-67137994febc   10Gi       RWO            sc-default     17s
-➜  pv-test#
+#
 ```
 
 자동으로 생성된 블록 스토리지는 웹콘솔의 'Block Storage > 관리 > 블록 스토리지 목록'에서 확인할 수 있습니다.
@@ -1395,7 +1408,7 @@ persistentvolumeclaim/pvc-dynamic   Bound    pvc-c63da3f9-dfcb-4cae-a9a9-6713799
 #### Step 3. Pod 연동
 다음과 같이 PVC로 요청한 저장장치를 마운트하는 pod를 생성합니다.
 ```
-➜  pv-test# cat pod-dynamic-pvc.yaml
+# cat pod-dynamic-pvc.yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -1416,15 +1429,15 @@ spec:
     - name: html-volume
       persistentVolumeClaim:
         claimName: pvc-dynamic
-➜  pv-test#
-➜  pv-test# kubectl apply -f pod-dynamic-pvc.yaml
+#
+# kubectl apply -f pod-dynamic-pvc.yaml
 pod/nginx-with-dynamic-pvc created
-➜  pv-test#
+#
 ```
 
 다음과 같이 마운트 된 것을 확인할 수 있습니다.
 ```
-➜  pv-test# kubectl exec -ti nginx-with-dynamic-pvc -- df -h
+# kubectl exec -ti nginx-with-dynamic-pvc -- df -h
 Filesystem      Size  Used Avail Use% Mounted on
 overlay          20G  2.9G   16G  16% /
 tmpfs            64M     0   64M   0% /dev
@@ -1436,15 +1449,140 @@ tmpfs           920M   12K  920M   1% /run/secrets/kubernetes.io/serviceaccount
 tmpfs           920M     0  920M   0% /proc/acpi
 tmpfs           920M     0  920M   0% /proc/scsi
 tmpfs           920M     0  920M   0% /sys/firmware
-➜  pv-test#
+#
 ```
 
 #### Step 4. 테스트 리소스 삭제
 정적 Provisioning의 스토리지클래스 생성 과정과 동일합니다. `reclaimPolicy`가 `Delete`이기 때문에 PVC를 삭제하면 PV도 삭제되고, PV가 삭제되면 블록 스토리지도 삭제됩니다.
 
 #### 주의사항
-* 동적 Provisioning에 의해 생성된 블록 스토리지는 다음의 특성이 있습니다.
-    * 연결된 PV가 삭제되면 자동으로 삭제됩니다.
-    * 웹콘솔의 블록 스토리지 페이지에서 삭제가 불가능 합니다.
-    * 클러스터 삭제 시 자동으로 삭제되지 않습니다.
-        * 따라서 클러스터 삭제 전에 관련 PVC 및 PV를 미리 삭제해야 합니다.
+동적 Provisioning에 의해 생성된 블록 스토리지는 다음의 특성이 있습니다.
+* `reclaimPolicy`가 `Delete`이면 연결된 PV가 삭제되면 자동으로 삭제됩니다.
+* 웹콘솔의 블록 스토리지 페이지에서 삭제가 불가능 합니다.
+* 클러스터 삭제 시 자동으로 삭제되지 않습니다. 따라서 클러스터 삭제 전에 관련 PVC 및 PV를 미리 삭제해야 합니다.
+
+
+### `reclaimPolicy`가 `Retain`인 PV에 연결된 동적 Provisioning에 의해 생성된 블록 스토리지 삭제 방법
+동적 Provisioning에 의해 생성된 블록 스토리지는 쿠버네티스 수준에서 생성된 것입니다. 그래서 이 블록 스토리지는 웹콘솔에서 삭제할 수 없고 쿠버네티스 수준에서 삭제해야 합니다. PV의 `reclaimPolicy`가 `Delete`인 경우, 이 PV가 삭제되면 연결된 블록 스토리지도 같이 삭제됩니다. 이 방법이 블록 스토리지를 가장 간편하고 깔끔하게 사용하고 삭제하는 방법입니다. `reclaimPolicy`를 `Retain`으로 설정한 경우, PV가 삭제되어도 연결된 블록 스토리지는 삭제되지 않습니다. 쿠버네티스 수준에서 이 블록 스토리지를 삭제해야 합니다. 
+
+다음 예제는 동적 Provisioning 방법으로 블록 스토리지를 생성한 PV/PVC의 `reclaimPolicy`를 `Retain`으로 변경하고, 해당 PVC를 삭제했을 때 삭제되지 않는 블록 스토리지를 삭제하는 방법에 대한 예지 입니다. 
+
+위와 같은 방법으로 동적 Provision 방법을 사용하는 PV/PVC를 생성했습니다. 그리고 `kubectl patch` 명령어로 `reclaimPoliocy`를 `Retain`으로 변경했습니다.
+```
+# kubectl get pv,pvc -o wide
+NAME                                                        CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                STORAGECLASS          REASON   AGE   VOLUMEMODE
+persistentvolume/pvc-0d2cf41b-a83a-4565-a80a-a0f67cb393f0   10Gi       RWO            Delete           Bound    default/cinder-pvc   cinder-storageclass            8s    Filesystem
+
+NAME                               STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS          AGE   VOLUMEMODE
+persistentvolumeclaim/cinder-pvc   Bound    pvc-0d2cf41b-a83a-4565-a80a-a0f67cb393f0   10Gi       RWO            cinder-storageclass   8s    Filesystem
+#
+# kubectl patch persistentvolume/pvc-0d2cf41b-a83a-4565-a80a-a0f67cb393f0 -p '{"spec":{"persistentVolumeReclaimPolicy" : "Retain"} }'
+persistentvolume/pvc-0d2cf41b-a83a-4565-a80a-a0f67cb393f0 patched
+# kubectl get pv,pvc -o wide
+NAME                                                        CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                STORAGECLASS          REASON   AGE   VOLUMEMODE
+persistentvolume/pvc-0d2cf41b-a83a-4565-a80a-a0f67cb393f0   10Gi       RWO            Retain           Bound    default/cinder-pvc   cinder-storageclass            51s   Filesystem
+
+NAME                               STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS          AGE   VOLUMEMODE
+persistentvolumeclaim/cinder-pvc   Bound    pvc-0d2cf41b-a83a-4565-a80a-a0f67cb393f0   10Gi       RWO            cinder-storageclass   51s   Filesystem
+#
+```
+
+이 상태에서 PVC를 삭제하면 PVC는 삭제되지만 PVC와 연결되어 있던 PV는 삭제되지 않습니다. 그래서 PV와 연결된 블록 스토리지도 삭제되지 않습니다.
+```
+# kubectl delete persistentvolumeclaim/cinder-pvc
+persistentvolumeclaim "cinder-pvc" deleted
+#
+# kubectl get pv,pvc -o wide
+NAME                                                        CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS     CLAIM                STORAGECLASS          REASON   AGE     VOLUMEMODE
+persistentvolume/pvc-0d2cf41b-a83a-4565-a80a-a0f67cb393f0   10Gi       RWO            Retain           Released   default/cinder-pvc   cinder-storageclass            2m26s   Filesystem
+
+#
+```
+
+이 때, 블록 스토리지와 연결된 PV가 남아있는 경우와 그렇지 않은 경우 블록 스토리지를 삭제할 수 있는 방법에 대해 가이드 합니다.
+
+#### 1. 블록 스토리지와 연결된 PV가 남아있는 경우 
+이 상태에서는 PV의 `reclaimPolicy`를 `Delete`로 변경하면 PV와 PV에 연결된 블록 스토리지가 바로 삭제됩니다.
+```
+# kubectl persistentvolume/pvc-0d2cf41b-a83a-4565-a80a-a0f67cb393f0 -p '{"spec":{"persistentVolumeReclaimPolicy" : "Delete"} }'
+persistentvolume/pvc-0d2cf41b-a83a-4565-a80a-a0f67cb393f0 patched
+#
+# kubectl get pv,pvc -o wide
+
+No resources found.
+#
+```
+
+#### 2. 블록 스토리지와 연결된 PV도 삭제된 경우
+동적 Provisioning에 의해 생성된 블록 스토리지는 웹콘솔로 삭제할 수 없습니다. 따라서 동적 Provisioning에 의해 생성되었지만 PV 삭제 시 삭제되지 않은 블록 스토리지는 웹콘솔로 삭제할 수 없어 PV로 다시 연동해 삭제해야 합니다.
+
+동적 Provisioning에 의해 생성되었지만 PV가 삭제된 블록디바이스의 ID를 "bd16029f-8677-4a2f-ac77-cc3a0ec6d4db"라고 가정합니다. 다음과 같이 이 블록 스토리지를 정적 Provisioning으로 연결하는 StorageClass, PV, PVC를 생성합니다.
+```
+# cat attach_block_storage.yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: cinder-storageclass
+provisioner: kubernetes.io/cinder
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-static-renew
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: cinder-storageclass
+  cinder:
+    volumeID: "bd16029f-8677-4a2f-ac77-cc3a0ec6d4db"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-static
+  namespace: default
+spec:
+  volumeName: pv-static-renew
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: cinder-storageclass
+
+# kubectl apply -f attach_block_storage.yaml
+storageclass.storage.k8s.io/cinder-storageclass created
+persistentvolume/pv-static-renew created
+persistentvolumeclaim/pvc-static created
+#
+```
+
+StorageClass, PV, PVC를 확인합니다. PV와 PVC의 STATUS가 Bound인지 확인합니다. 그렇지 않다면 블록 스토리지와 제대로 연결되지 않은 것 입니다. 적용한 yaml 파일을 다시 검토하시길 바랍니다.
+```
+# kubectl get sc,pv,pvc
+NAME                                              PROVISIONER            AGE
+storageclass.storage.k8s.io/cinder-storageclass   kubernetes.io/cinder   4s
+
+NAME                               CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                STORAGECLASS          REASON   AGE
+persistentvolume/pv-static-renew   10Gi       RWO            Delete           Bound    default/pvc-static   cinder-storageclass            4s
+
+NAME                               STATUS   VOLUME            CAPACITY   ACCESS MODES   STORAGECLASS          AGE
+persistentvolumeclaim/pvc-static   Bound    pv-static-renew   10Gi       RWO            cinder-storageclass   3s
+#
+```
+
+생성한 StorageClass, PV, PVC를 삭제합니다. PV의 STATUS가 Bound이고, RECLAIM POLICY가 Delete이기 때문에 PV가 삭제되면 연결된 블록 스토리지도 삭제됩니다. 
+
+```
+# kubectl delete -f attach_block_storage.yaml
+storageclass.storage.k8s.io/cinder-storageclass deleted
+persistentvolume/pv-static-renew deleted
+persistentvolumeclaim/pvc-static deleted
+#
+```
+
+웹콘솔의 블록 스토리지 관리화면에서 블록 스토리지가 삭제된 것을 확인하실 수 있습니다.
