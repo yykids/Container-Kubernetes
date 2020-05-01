@@ -580,7 +580,7 @@ service "tea-svc" deleted
 ![ingress-02.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/ingress-02.png)
 
 #### 서비스와 파드 생성
-[URI 기반 서비스 분기](/Container/Kubernetes/ko/user-guide/#1-uri-ingress)와 동일한 매니패스트를 이용해 서비스와 파드를 생성합니다.
+[URI 기반 서비스 분기](/Container/Kubernetes/ko/user-guide/#uri)와 동일한 매니패스트를 이용해 서비스와 파드를 생성합니다.
 
 #### 인그레스 생성
 호스트 이름에 따라 서비스를 연결하는 인그레스 매니패스트를 작성합니다. `tea.cafe.example.com` 호스트로 들어온 요청은 `tea-svc` 서비스에 연결하고 `coffee.cafe.example.com` 호스트로 들어온 요청은 `coffee-svc` 서비스에 연결합니다.
@@ -737,9 +737,9 @@ Events:
 
 ![dashboard-01.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/dashboard-01.png)
 
-`LoadBalancer` 유형으로 서비스 객체를 변경하면 클러스터 외부에 로드밸런서(TOAST Load Balancer)가 생성되고, 외부 로드밸런서와 서비스 객체가 연결됩니다. 서비스 객체를 조회했을 때 **EXTERNAL-IP** 필드에 로드밸런서의 IP가 표시됩니다. `LoadBalancer` 유형의 서비스 객체에 대한 설명은 [LoadBalancer 서비스]()를 참조하세요.
+`LoadBalancer` 유형으로 서비스 객체를 변경하면 클러스터 외부에 로드밸런서(TOAST Load Balancer)가 생성되고, 외부 로드밸런서와 서비스 객체가 연결됩니다. 서비스 객체를 조회했을 때 **EXTERNAL-IP** 필드에 로드밸런서의 IP가 표시됩니다. `LoadBalancer` 유형의 서비스 객체에 대한 설명은 [LoadBalancer 서비스](/Container/Kubernetes/ko/user-guide/#loadbalancer)를 참조하세요.
 
-웹 브라우져에서 `https://{EXTERNAL-IP}`로 접속하면 Kubernetes 대시보드 페이지가 로딩됩니다. 로그인을 위해 필요한 토큰은 [대시보드 엑세스 토큰]()을 참고하세요.
+웹 브라우져에서 `https://{EXTERNAL-IP}`로 접속하면 Kubernetes 대시보드 페이지가 로딩됩니다. 로그인을 위해 필요한 토큰은 [대시보드 엑세스 토큰](/Container/Kubernetes/ko/user-guide/#_24)을 참고하세요.
 
 > [참고]
 > 생성된 로드밸런서는 **Network > Load Balancer** 페이지에서 확인할 수 있습니다.
@@ -768,7 +768,7 @@ kubernetes-dashboard   LoadBalancer   10.254.95.176   123.123.123.81   443:30963
 
 ![dashboard-02.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/dashboard-02.png)
 
-인그레스는 클러스터 내부의 여러 서비스들로 접근하기 위한 라우팅을 제공하는 네트워크 객체입니다. 인그레스 객체의 설정은 인그래스 컨트롤러에 의해 구동됩니다. 인그레스와 인그레스 컨트롤러에 대한 설명은 [인그레스 컨트롤러(Ingress Controller)](/Container/Kubernetes/ko/user-guide/#ingress-controller)를 참조하세요.
+인그레스는 클러스터 내부의 여러 서비스들로 접근하기 위한 라우팅을 제공하는 네트워크 객체입니다. 인그레스 객체의 설정은 인그래스 컨트롤러에 의해 구동됩니다. 인그레스와 인그레스 컨트롤러에 대한 설명은 [인그레스 컨트롤러](/Container/Kubernetes/ko/user-guide/#_16)를 참조하세요.
 
 [NGINX Ingress Controller 설치](/Container/Kubernetes/ko/user-guide/#nginx-ingress-controller)를 참조하여 `NGINX Ingress Controller`를 설치하고 `LoadBalancer` 유형의 서비스를 생성합니다. 그리고 다음과 같이 인그레스 객체 생성을 위한 매니페스트를 작성합니다.
 
@@ -799,7 +799,7 @@ spec:
   - secretName: kubernetes-dashboard-certs
 ```
 
-매니페스트를 적용해 인그레스를 생성하고 `ingress-nginx` 서비스 객체의 **EXTERNAL-IP** 필드를 확인합니다. 웹 브라우져에서 `https://{EXTERNAL-IP}`로 접속하면 Kubernetes 대시보드 페이지가 로딩됩니다. 로그인을 위해 필요한 토큰은 [대시보드 엑세스 토큰]()을 참고하세요.
+매니페스트를 적용해 인그레스를 생성하고 `ingress-nginx` 서비스 객체의 **EXTERNAL-IP** 필드를 확인합니다. 웹 브라우져에서 `https://{EXTERNAL-IP}`로 접속하면 Kubernetes 대시보드 페이지가 로딩됩니다. 로그인을 위해 필요한 토큰은 [대시보드 엑세스 토큰](/Container/Kubernetes/ko/user-guide/#_24)을 참고하세요.
 
 ```
 $ kubectl apply -f kubernetes-dashboard-ingress-tls-passthrough.yaml
@@ -852,9 +852,9 @@ PV를 파드에 마운트해 사용합니다.
 | 재사용(Recycle) | PV를 삭제할 때 연결된 볼륨을 삭제하지 않고 재사용할 수 있는 상태로 만듭니다. 이 방법은 사용 중단(deprecated) 되었습니다. |
 
 
-### 정적 프로비저닝(Static Provisioning)
+### 정적 프로비저닝
 
-정적 프로비저닝은 사용자가 직접 블록 스토리지를 준비해야 합니다. TOAST 웹 콘솔의 **Storage > Block Storage** 서비스 페이지에서 **블록 스토리지 생성** 버튼을 클릭해 PV와 연결할 블록 스토리지를 생성합니다. 블록 스토리지 가이드의 [블록 스토리지 생성](/Storage/Block%20Storage/ko/console-guide/#_1)을 참조하세요.
+정적 프로비저닝(Static Provisioning)은 사용자가 직접 블록 스토리지를 준비해야 합니다. TOAST 웹 콘솔의 **Storage > Block Storage** 서비스 페이지에서 **블록 스토리지 생성** 버튼을 클릭해 PV와 연결할 블록 스토리지를 생성합니다. 블록 스토리지 가이드의 [블록 스토리지 생성](/Storage/Block%20Storage/ko/console-guide/#_2)을 참조하세요.
 
 PV를 생성하려면 블록 스토리지의 ID가 필요합니다. **Storage > Block Storage** 서비스 페이지의 블록 스토리지 목록에서 사용할 블록 스토리지를 선택합니다. 하단 정보 탭의 블록 스토리지 이름 항목에서 ID를 확인할 수 있습니다.  
 
@@ -954,9 +954,9 @@ pv-static-001   10Gi       RWO            Delete           Bound    default/pvc-
 ```
 
 
-### 동적 프로비저닝(Dynamic Provisioning)
+### 동적 프로비저닝
 
-동적 프로비저닝은 스토리지 클래스에 정의된 속성을 참조하여 자동으로 블록 스토리지를 생성합니다. **parameters.type**에 TOAST Block Storage 유형을 설정할 수 있습니다. 설정하지 않으면 HDD 유형으로 설정됩니다.
+동적 프로비저닝(Dynamic Provisioning)은 스토리지 클래스에 정의된 속성을 참조하여 자동으로 블록 스토리지를 생성합니다. **parameters.type**에 TOAST Block Storage 유형을 설정할 수 있습니다. 설정하지 않으면 HDD 유형으로 설정됩니다.
 
 | 타입 | 설정값 |
 | --- | --- |
