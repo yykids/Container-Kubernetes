@@ -1,5 +1,89 @@
 ## Container > Kubernetes > 사용 가이드
 
+## 클러스터
+클러스터는 사용자의 Kubernetes를 구성하는 인스턴스들의 그룹입니다.
+
+### 클러스터 생성
+Kubernetes 서비스를 사용하려면 먼저 클러스터를 생성해야 합니다. **Container > Kubernetes** 서비스 페이지에서 **클러스터 생성** 버튼을 클릭하면 클러스터 생성 페이지가 나타납니다. 클러스터 생성에 필요한 항목은 다음과 같습니다.
+
+| 항목 | 설명 |
+| --- | --- |
+| 클러스터 이름 | Kubernetes 클러스터의 이름, 20자 이내의 영문자와 숫자, '-', '.'로 구성 |
+| 쿠버네티스 버전 | 사용할 Kubernetes 버전 |
+| VPC | 클러스터에 연결할 VPC 네트워크 |
+| 서브넷 | VPC에 정의된 서브넷 중 클러스터를 구성하는 인스턴스에 연결할 서브넷 |
+| 이미지 | 클러스터를 구성하는 인스턴스에 사용할 이미지 |
+| 가용성 영역 | 기본 노드 그룹 인스턴스를 생성할 영역 |
+| 인스턴스 타입 | 기본 노드 그룹 인스턴스 사양 |
+| 노드 수 | 기본 노드 그룹 인스턴스 수 |
+| 키 페어 | 기본 노드 그룹 접근에 사용할 키 페어 |
+| 블록 스토리지 타입 | 기본 노드 그룹 인스턴스의 블록 스토리지 종류 |
+| 블록 스토리지 크기 | 기본 노드 그룹 인스턴스의 블록 스토리지 크기 |
+
+필요한 정보를 입력하고 **클러스터 생성** 버튼을 클릭하면 클러스터 생성이 시작됩니다. 클러스터 목록에서 상태를 확인할 수 있습니다. 클러스터 생성에는 수 분의 시간이 소요됩니다.
+
+> [참고]
+> 클러스터를 생성하면 기본 노드 그룹이 만들어집니다. 기본 노드 그룹이 생성된 이후에는 노드 수를 변경 할 수 없습니다. 추가 노드가 필요하다면 추가 노드 그룹을 만들어야 합니다.
+
+
+### 클러스터 조회
+생성한 클러스터는 **Container > Kubernetes** 서비스 페이지에서 확인할 수 있습니다. 클러스터를 선택하면 하단에 클러스터의 정보가 나타납니다.
+
+| 항목 | 설명 |
+| --- | --- |
+| 클러스터 이름 | Kubernetes 클러스터의 이름과 ID |
+| 노드 수 | 클러스터를 구성하는 모든 노드 인스턴스 수 |
+| 쿠버네티스 버전 | 사용 중인 Kubernetes 버전 |
+| VPC | 클러스터에 연결된 VPC 네트워크 |
+| 서브넷 | 클러스터를 구성하는 노드 인스턴스에 연결된 서브넷 |
+| API 엔드포인트 | 클러스터에 접근해 조작하기 위한 API 엔드포인트 URI |
+| 설정 파일 | 클러스터에 접근해 조작하기 위해 필요한 설정 파일 다운로드 버튼 |
+
+### 클러스터 삭제
+삭제하려는 클러스터를 선택하고 **클러스터 삭제** 버튼을 클릭하면 삭제가 진행됩니다. 클러스터 삭제는 수 분의 시간이 소요됩니다.
+
+## 노드 그룹
+노드 그룹은 Kubernetes를 구성하는 워커 노드 인스턴스들의 그룹입니다.
+
+### 노드 그룹 조회
+클러스터 목록에서 클러스터 이름을 클릭하면 노드 그룹 목록을 확인할 수 있습니다. 노드 그룹을 선택하면 하단에 노드 그룹의 정보가 나타납니다.
+
+* 기본 정보
+기본 정보 탭에서는 다음과 정보를 확인할 수 있습니다.
+
+| 항목 | 설명 |
+| --- | --- |
+| 노드 그룹 이름 | 노드 그룹 이름과 ID |
+| 클러스터 이름 | 노드 그룹이 속한 클러스터의 이름과 ID |
+| 쿠버네티스 버전 | 사용 중인 Kubernetes 버전 |
+| 가용성 영역 | 노드 그룹 인스턴스가 생성된 영역 |
+| 인스턴스 타입 | 노드 그룹 인스턴스 사양 |
+| 이미지 타입 | 노드 그룹 인스턴스에 사용한 이미지 종류 |
+| 블록 스토리지 크기 | 노드 그룹 인스턴스의 블록 스토리지 크기 |
+| 생성일 | 노드 그룹이 생성된 시각 |
+| 수정일 | 노드 그룹이 마지막으로 수정된 시각 |
+
+* 노드 목록
+노드 목록 탭에서는 노드 그룹을 구성하는 인스턴스의 목록을 확인할 수 있습니다.
+
+### 노드 그룹 생성
+클러스터를 생성하면 기본 노드 그룹이 생성되지만 필요에 따라 추가 노드 그룹을 만들 수 있습니다. 기본 노드 그룹의 인스턴스보다 높은 사양의 컨테이너 구동 환경이 필요하거나, 스케일 아웃(Scale Out)을 위해 더 많은 워커 노드 인스턴스가 필요한 경우 추가 노드 그룹을 생성해 사용할 수 있습니다. 노드 그룹 목록 페이지에서 **노드 그룹 생성** 버튼을 클릭하면 노드 그룹 생성 페이지가 나타납니다. 노드 그룹 생성에 필요한 항목은 다음과 같습니다.
+
+| 항목 | 설명 |
+| --- | --- |
+| 가용성 영역 | 클러스터를 구성하는 인스턴스를 생성할 영역 |
+| 노드 그룹 이름 | 추가 노드 그룹 이름, 20자 이내의 영문자와 숫자, '-', '.'로 구성 |
+| 인스턴스 타입 | 추가 노드 그룹 인스턴스 사양 |
+| 노드 수 | 추가 노드 그룹 인스턴스 수 |
+| 키 페어 | 추가 노드 그룹 접근에 사용할 키 페어 |
+| 블록 스토리지 타입 | 추가 노드 그룹 인스턴스의 블록 스토리지 종류 |
+| 블록 스토리지 크기 | 추가 노드 그룹 인스턴스의 블록 스토리지 크기 |
+
+필요한 정보를 입력하고 **노드 그룹 생성** 버튼을 클릭하면 노드 그룹 생성이 시작됩니다. 노드 그룹 목록에서 상태를 확인할 수 있습니다. 노드 그룹 생성에는 수 분의 시간이 소요됩니다.
+
+### 노드 그룹 삭제
+노드 그룹 목록에서 삭제하려는 노드 그룹을 선택하고 **노드 그룹 삭제** 버튼을 클릭하면 삭제가 진행됩니다. 노드 그룹 삭제는 수 분의 시간이 소요됩니다.
+
 ## 클러스터 관리
 원격의 호스트에서 클러스터를 조작하고 관리하기 위해서는 Kubernetes가 제공하는 명령줄 도구(CLI)인 `kubectl`이 필요합니다.
 
@@ -12,13 +96,13 @@ kubectl은 특별한 설치 과정 없이 실행 파일을 다운로드해 바�
 | MacOS | curl -LO https://storage.googleapis.com/-release/release/v1.15.7/bin/darwin/amd64/kubectl |
 | Windows | curl -LO https://storage.googleapis.com/-release/release/v1.15.7/bin/windows/amd64/kubectl.exe |
 
-그 외 설치 방법과 옵션 등 자세한 사항은 [Install and Set Up kubectl](https://.io/docs/tasks/tools/install-kubectl/) 문서를 참조하세요.
+그 외 설치 방법과 옵션 등 자세한 사항은 [Install and Set Up kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) 문서를 참조하세요.
 
 #### 퍼미션 변경
 다운로드한 파일은 기본적으로 실행 권한이 없습니다. 실행 권한을 추가해야 합니다.
 
 ```
-# chmod +x kubectl
+$ chmod +x kubectl
 ```
 
 #### 위치 변경 또는 경로 지정
@@ -26,25 +110,25 @@ kubectl은 특별한 설치 과정 없이 실행 파일을 다운로드해 바�
 
 * 환경 변수에 지정된 경로로 위치 변경
 ```
-# mv kubectl /usr/local/bin/
+$ sudo mv kubectl /usr/local/bin/
 ```
 
 * 환경 변수에 경로 추가
 ```
 // kubectl이 있는 경로에서 실행
-# export PATH=$PATH:$(pwd)
+$ export PATH=$PATH:$(pwd)
 ```
 
 ### 설정
-kubectl로 Kubernetes 클러스터에 접근하기 위해서는 클러스터 설정 파일(kubeconfig)이 필요합니다. TOAST 웹 콘솔에서 **Container > Kubernetes** 서비스 페이지를 열고 접근할 클러스터를 클릭합니다. 하단 **기본 정보**탭에서 **설정 파일** 항목의 다운로드 버튼을 클릭해 설정 파일을 다운로드 합니다. 다운로드한 설정 파일은 적절한 위치로 옮겨 kubectl 실행 시 참조할 수 있도록 준비합니다.
+kubectl로 Kubernetes 클러스터에 접근하기 위해서는 클러스터 설정 파일(kubeconfig)이 필요합니다. TOAST 웹 콘솔에서 **Container > Kubernetes** 서비스 페이지를 열고 접근할 클러스터를 선택합니다. 하단 **기본 정보** 탭에서 **설정 파일** 항목의 다운로드 버튼을 클릭해 설정 파일을 다운로드 합니다. 다운로드한 설정 파일은 적절한 위치로 옮겨 kubectl 실행 시 참조할 수 있도록 준비합니다.
 
 > [주의]
-> TOAST 웹 콘솔에서 다운로드 한 설정 파일은 클러스터 정보와 인증을 위한 토큰값 등이 포함되어 있습니다. 이 설정 파일이 있으면 해당 Kubernetes 클러스터에 대한 접근 권한을 갖게 됩니다. 이 파일을 절대로 분실하지 않도록 주의하시기 바랍니다.
+> TOAST 웹 콘솔에서 다운로드 한 설정 파일은 클러스터 정보와 인증을 위한 토큰 등이 포함되어 있습니다. 이 설정 파일이 있으면 해당 Kubernetes 클러스터에 접근할 수 있는 권한을 갖게 됩니다. 이 파일을 절대로 분실하지 않도록 주의하시기 바랍니다.
 
 kubectl은 실행할 때마다 클러스터 설정 파일이 필요합니다. 따라서 매번 `--kubeconfig` 옵션을 이용해 클러스터 설정 파일을 지정해야 합니다. 그러나 환경 변수에 클러스터 설정 파일 경로가 저장되어 있다면 매번 옵션을 주지 않아도 됩니다.
 
 ```
-# export KUBECONFIG={클러스터 설정 파일 경로}
+$ export KUBECONFIG={클러스터 설정 파일 경로}
 ```
 
 클러스터 설정 파일 경로를 환경 변수에 저장하고 싶지 않다면 kubectl의 기본 설정 파일인 `$HOME/.kube/config`으로 복사해 사용할 수도 있습니다. 그러나 복수의 클러스터를 운영한다면 환경 변수 값을 변경하는 방법이 편리합니다.
@@ -53,24 +137,20 @@ kubectl은 실행할 때마다 클러스터 설정 파일이 필요합니다. �
 `kubectl version` 명령어로 정상 설정되었는지 확인합니다. 문제가 없다면 `Server Version`이 출력됩니다.
 
 ```
-# kubectl version
+$ kubectl version
 Client Version: version.Info{Major:"1", Minor:"15", GitVersion:"v1.15.7", GitCommit:"6c143d35bb11d74970e7bc0b6c45b6bfdffc0bd4", GitTreeState:"clean", BuildDate:"2019-12-11T12:42:56Z", GoVersion:"go1.12.12", Compiler:"gc", Platform:"darwin/amd64"}
 Server Version: version.Info{Major:"1", Minor:"15", GitVersion:"v1.15.7", GitCommit:"6c143d35bb11d74970e7bc0b6c45b6bfdffc0bd4", GitTreeState:"clean", BuildDate:"2019-12-11T12:34:17Z", GoVersion:"go1.12.12", Compiler:"gc", Platform:"linux/amd64"}
 ```
 
-* Client Version
-  * 실행한 kubectl 파일의 버전 정보
-* Server Version
-  * 클러스터를 구성하고 있는 Kubernetes 버전 정보
+* Client Version: 실행한 kubectl 파일의 버전 정보
+* Server Version: 클러스터를 구성하고 있는 Kubernetes 버전 정보
 
-
-## LoadBalancer 서비스 객체를 이용한 서비스 공개
-파드(pod)는 Kubernetes 클러스터 내부에 존재하고, CNI(Container Network Interface)에 의해 클러스터에 연결됩니다. 기본적으로 클러스터 외부에서 파드로의 접근은 불가능합니다. 파드의 서비스를 클러스터 외부에 공개하려면 Kubernetes의 `LoadBalancer` 서비스(Service) 객체를 이용해 외부에 공개할 경로를 만들어야 합니다. LoadBalancer 서비스 객체를 만들면 클러스터 외부에 로드밸런서(TOAST Load Balancer)가 생성되어 서비스 객체와 연결됩니다.
+## LoadBalancer 서비스
+Kubernetes 애플리케이션의 기본 실행 단위인 파드(pod)는 CNI(Container Network Interface)를 통해 클러스터 네트워크에 연결됩니다. 기본적으로 클러스터 외부에서 파드로의 접근은 불가능합니다. 파드의 서비스를 클러스터 외부에 공개하려면 Kubernetes의 `LoadBalancer` 서비스(Service) 객체를 이용해 외부에 공개할 경로를 만들어야 합니다. LoadBalancer 서비스 객체를 만들면 클러스터 외부에 로드밸런서(TOAST Load Balancer)가 생성되어 서비스 객체와 연결됩니다.
 
 ### 웹서버 파드 생성
 다음과 같이 2개의 nginx 파드를 실행하는 디플로이먼트(deployment) 객체 매니패스트 파일을 작성하고 객체를 생성합니다.
 
-* Deployment 객체 매니패스트
 ```yaml
 # nginx.yaml
 apiVersion: apps/v1
@@ -96,12 +176,13 @@ spec:
         - containerPort: 80
 ```
 
-* 디플로이먼트 객체 생성
+디플로이먼트 객체를 생성하면 매니페스트에 정의한 파드가 자동으로 생성됩니다.
+
 ```
-# kubectl apply -f nginx.yaml
+$ kubectl apply -f nginx.yaml
 deployment.apps/nginx-deployment created
 
-# kubectl get pods
+$ kubectl get pods
 NAME                                READY   STATUS    RESTARTS   AGE  
 nginx-deployment-7fd6966748-pvrzs   1/1     Running   0          4m13s
 nginx-deployment-7fd6966748-wv7rd   1/1     Running   0          4m13s
@@ -110,18 +191,18 @@ nginx-deployment-7fd6966748-wv7rd   1/1     Running   0          4m13s
 만약 TOAST Container Registry에 저장한 이미지를 사용하고 싶다면 먼저 사용자 레지스트리에 로그인하기 위한 시크릿(secret)을 만들어야 합니다.
 
 ```
-# kubectl create secret docker-registry regcred --docker-server={사용자 레지스트리 주소} --docker-username={Toast 계정 email 주소} --docker-password={서비스 Appkey 또는 통합 Appkey}
-secret/regcred created
+$ kubectl create secret docker-registry registry-credential --docker-server={사용자 레지스트리 주소} --docker-username={Toast 계정 email 주소} --docker-password={서비스 Appkey 또는 통합 Appkey}
+secret/registry-credential created
 
-# kubectl get secrets
-NAME      TYPE                   DATA   AGE
-regcred   .io/dockerconfigjson   1      30m
+$ kubectl get secrets
+NAME                  TYPE                             DATA   AGE
+registry-credential   kubernetes.io/dockerconfigjson   1      30m
 ```
 
 디플로이먼트 매니패스트 파일에 시크릿 정보를 추가하고, 이미지 이름을 변경하면 사용자 레지스트리에 저장된 이미지를 이용해 파드를 만들 수 있습니다.
 
-```
-# cat nginx.yaml
+```yaml
+# nginx.yaml
 ...
 spec:
   ...
@@ -140,22 +221,21 @@ spec:
 > [참고]
 > TOAST Container Registry 사용 방법은 [Container Registry 사용 가이드](/Container/Container%20Registry/ko/user-guide) 문서를 참조하세요.
 
-### 웹서버를 외부에 공개하기 위한 LoadBalancer 서비스 객체 생성
+### LoadBalancer 서비스 생성
 Kubernetes의 서비스 객체를 정의하려면 다음과 같은 항목으로 구성된 매니패스트가 필요합니다.
 
 | 항목 | 설명 |
 | --- | --- |
-| .metadata.name | 서비스 객체의 이름 |
-| .spec.selector | 서비스 객체와 연결할 파드 이름 |
-| .spec.ports | 외부 로드밸런서에서 들어오는 트래픽을 파드에 전달할 인터페이스 설정 |
-| .spec.ports.name | 인터페이스 이름 |
-| .spec.ports.protocol | 인터페이스에서 사용할 프로토콜 (예: TCP) |
-| .spec.ports.port | 서비스 객체 외부에 공개할 포트 번호 |
-| .spec.ports.targetPort | 서비스 객체와 연결할 파드의 포트 번호 |
-| .spec.type | 서비스 객체 유형, `LoadBalancer` |
+| metadata.name | 서비스 객체의 이름 |
+| spec.selector | 서비스 객체와 연결할 파드 이름 |
+| spec.ports | 외부 로드밸런서에서 들어오는 트래픽을 파드에 전달할 인터페이스 설정 |
+| spec.ports.name | 인터페이스 이름 |
+| spec.ports.protocol | 인터페이스에서 사용할 프로토콜 (예: TCP) |
+| spec.ports.port | 서비스 객체 외부에 공개할 포트 번호 |
+| spec.ports.targetPort | 서비스 객체와 연결할 파드의 포트 번호 |
+| spec.type | 서비스 객체 유형 |
 
-* 서비스 객체 매니패스트
-아래의 LoadBalancer 서비스 객체는 `.spec.selector` 정의에 따라 `app: nginx`라는 라벨이 붙은 파드와 연결됩니다. 그리고 `.spec.ports` 정의에 따라 TCP/8080 포트로 들어온 트래픽을 파드의 TCP/80 포트로 전달합니다.
+다음과 같이 서비스 매니페스트를 작성합니다. 이 LoadBalancer 서비스 객체는 **spec.selector**에 정의된 이름에 의해 `app: nginx` 라벨이 붙은 파드와 연결됩니다. 그리고 **spec.ports**에 정의된 대로 TCP/8080 포트로 들어온 트래픽을 파드의 TCP/80 포트로 전달합니다.
 
 ```yaml
 # service.yaml
@@ -175,21 +255,21 @@ spec:
   type: LoadBalancer
 ```
 
-LoadBalancer 서비스 객체를 생성하면 클러스터 외부에 로드밸런서를 만들고 연결하기까지 약간의 시간이 필요합니다. 외부 로드밸런서와 연결되기 전에는 `EXTERNAL-IP` 항목이 `<pending>`으로 표시됩니다.
+LoadBalancer 서비스 객체를 생성하면 클러스터 외부에 로드밸런서를 만들고 연결하기까지 약간의 시간이 필요합니다. 외부 로드밸런서와 연결되기 전에는 **EXTERNAL-IP** 항목이 `<pending>`으로 표시됩니다.
 
 ```
-# kubectl apply -f service.yaml
+$ kubectl apply -f service.yaml
 service/nginx-svc created
 
-# kubectl get service
+$ kubectl get service
 NAME         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
 nginx-svc    LoadBalancer   10.254.134.18   <pending>     8080:30013/TCP   11s
 ```
 
-외부 로드밸런서와 연결이 되면 `EXTERNAL-IP` 컬럼에 IP가 표시됩니다. 이 IP는 외부 로드밸런서의 플로팅 IP입니다.
+외부 로드밸런서와 연결이 되면 **EXTERNAL-IP** 항목에 IP가 표시됩니다. 이 IP는 외부 로드밸런서의 플로팅 IP입니다.
 
 ```
-# kubectl get service
+$ kubectl get service
 NAME         TYPE           CLUSTER-IP      EXTERNAL-IP      PORT(S)          AGE
 nginx-svc    LoadBalancer   10.254.134.18   123.123.123.30   8080:30013/TCP   3m13s
 ```
@@ -200,10 +280,10 @@ nginx-svc    LoadBalancer   10.254.134.18   123.123.123.30   8080:30013/TCP   3m
 
 
 ### 인터넷을 통한 서비스 테스트
-다음과 같이 외부 로드밸런서에 부착한 플로팅 IP로 HTTP 요청을 보내 Kubernetes 클러스터의 웹서버 파드가 응답하는지 확인합니다. 서비스 객체의 TCP/8080 포트를 파드의 TCP/80 포트와 연결하도록 설정했기 때문에 TCP/8080 포트로 요청을 보내야 합니다. 외부 로드밸런서와 서비스 객체, 파드가 잘 연결되었다면 웹서버는 nginx 기본 페이지를 응답합니다.
+로드밸런서에 부착한 플로팅 IP로 HTTP 요청을 보내 Kubernetes 클러스터의 웹서버 파드가 응답하는지 확인합니다. 서비스 객체의 TCP/8080 포트를 파드의 TCP/80 포트와 연결하도록 설정했기 때문에 TCP/8080 포트로 요청을 보내야 합니다. 외부 로드밸런서와 서비스 객체, 파드가 잘 연결되었다면 웹서버는 nginx 기본 페이지를 응답합니다.
 
 ```
-# curl http://123.123.123.30:8080
+$ curl http://123.123.123.30:8080
 <!DOCTYPE html>
 <html>
 <head>
@@ -232,17 +312,17 @@ Commercial support is available at
 ```
 
 
-## 인그레스 컨트롤러(Ingress Controller)
-인그레스 컨트롤러는 인그레스(Ingress) 객체의 설정을 참조하여 클러스터 외부에서 내부 서비스로 HTTP와 HTTPS 경로를 라우팅하고 SSL/TSL 종료, 가상 호스팅 등을 제공합니다. 인그레스 컨트롤러와 인그레스에 대한 자세한 내용은 [인그레스 컨트롤러](https://kubernetes.io/ko/docs/concepts/services-networking/ingress-controllers/), [인그레스](https://kubernetes.io/ko/docs/concepts/services-networking/ingress/) 문서를 참조하세요.
+## 인그레스 컨트롤러
+인그레스 컨트롤러(Ingress Controller)는 인그레스(Ingress) 객체에 정의된 규칙을 참조하여 클러스터 외부에서 내부 서비스로 HTTP와 HTTPS 요청을 라우팅하고 SSL/TSL 종료, 가상 호스팅 등을 제공합니다. 인그레스 컨트롤러와 인그레스에 대한 자세한 내용은 [인그레스 컨트롤러](https://kubernetes.io/ko/docs/concepts/services-networking/ingress-controllers/), [인그레스](https://kubernetes.io/ko/docs/concepts/services-networking/ingress/) 문서를 참조하세요.
 
 
 ### NGINX Ingress Controller 설치
 NGINX Ingress Controller는 많이 사용되는 인그레스 컨트롤러 중 하나입니다. 자세한 내용은 [NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/)와 [NGINX Ingress Controller for Kubernetes](https://docs.nginx.com/nginx-ingress-controller/overview/) 문서를 참조하세요.
 
-NGINX Ingress Controller는 필요한 자원을 바로 생성할 수 있도록 미리 정의한 매니패스트 파일을 제공합니다. 다음과 같이 매니패스트를 이용해 쉽게 필요한 자원을 생성할 수 있습니다.
+NGINX Ingress Controller는 필요한 자원을 바로 생성할 수 있도록 미리 정의한 매니패스트 파일을 제공합니다. 이 매니패스트를 이용하면 쉽게 필요한 자원을 생성할 수 있습니다.
 
 ```
-# kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/mandatory.yaml
+$ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/mandatory.yaml
 namespace/ingress-nginx created
 configmap/nginx-configuration created
 configmap/tcp-services created
@@ -256,7 +336,7 @@ deployment.apps/nginx-ingress-controller created
 limitrange/ingress-nginx created
 ```
 
-### LoadBalancer 생성
+### LoadBalancer 서비스 생성
 인그레스 컨트롤러 역시 파드로 생성되기 때문에 외부에 공개하기 위해서는 LoadBalancer 서비스 또는 NodePort 서비스를 만들어야 합니다. 다음과 같이 HTTP와 HTTPS를 처리할 수 있는 LoadBalancer 서비스 매니패스트를 정의합니다.
 
 ```yaml
@@ -267,13 +347,13 @@ metadata:
   name: ingress-nginx
   namespace: ingress-nginx
   labels:
-    app..io/name: ingress-nginx
-    app..io/part-of: ingress-nginx
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/part-of: ingress-nginx
 spec:
   type: LoadBalancer
   selector:
-    app..io/name: ingress-nginx
-    app..io/part-of: ingress-nginx
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/part-of: ingress-nginx
   ports:
     - name: http
       port: 80
@@ -284,23 +364,22 @@ spec:
       targetPort: 443
       protocol: TCP
   selector:
-    app..io/name: ingress-nginx
-    app..io/part-of: ingress-nginx
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/part-of: ingress-nginx
 ```
 
-서비스를 생성하고 외부 로드밸런서가 연결되어 있는지 확인합니다. **EXTERNAL-IP** 필드에는 플로팅 IP 주소가 설정되어 있어야 합니다.
+서비스 객체를 생성하고 외부 로드밸런서가 연결되어 있는지 확인합니다. **EXTERNAL-IP** 필드에는 플로팅 IP 주소가 설정되어 있어야 합니다.
 
 ```
-# kubectl apply -f ingress-nginx-lb.yaml
+$ kubectl apply -f ingress-nginx-lb.yaml
 service/ingress-nginx created
 
-# kubectl get svc -o wide -n ingress-nginx
-NAME            TYPE           CLUSTER-IP     EXTERNAL-IP      PORT(S)                      AGE   SELECTOR
-ingress-nginx   LoadBalancer   10.254.2.128   123.123.123.41   80:30820/TCP,443:30269/TCP   39s   app.kubernetes.io/name=ingress-nginx,app.kubernetes.io/part-of=ingress-nginx
+$ kubectl get svc -n ingress-nginx
+NAME            TYPE           CLUSTER-IP     EXTERNAL-IP      PORT(S)                      AGE
+ingress-nginx   LoadBalancer   10.254.2.128   123.123.123.41   80:30820/TCP,443:30269/TCP   39s
 ```
 
-### 예제 1. URI 기반 서비스 분기 인그레스(Ingress)
-URI를 이용해 서비스를 분기하는 인그레스 구성 예제입니다.
+### URI 기반 서비스 분기
 
 ![ingress-01.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/ingress-01.png)
 
@@ -314,7 +393,7 @@ kind: Deployment
 metadata:
   name: coffee
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: coffee
@@ -380,15 +459,15 @@ spec:
 매니패스트를 적용하고 디플로이먼트, 서비스, 파드가 생성되었는지 확인합니다. 파드는 **Running** 상태여야 합니다.
 
 ```
-# kubectl apply -f cafe.yaml
+$ kubectl apply -f cafe.yaml
 deployment.apps/coffee created
 service/coffee-svc created
 deployment.apps/tea created
 service/tea-svc created
 
-# kubectl get deploy,svc,pods
+$ kubectl get deploy,svc,pods
 NAME                           READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.extensions/coffee   2/2     2            2           18s
+deployment.extensions/coffee   3/3     3            3           18s
 deployment.extensions/tea      2/2     2            2           18s
 
 NAME                 TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
@@ -398,12 +477,13 @@ service/tea-svc      ClusterIP   10.254.210.170   <none>        80/TCP    18s
 NAME                          READY   STATUS    RESTARTS   AGE
 pod/coffee-67c6f7c5fd-98vh5   1/1     Running   0          18s
 pod/coffee-67c6f7c5fd-c58l2   1/1     Running   0          18s
-pod/tea-7df475c6-dmxf6        1/1     Running   0          18s
+pod/coffee-67c6f7c5fd-dmxf6   1/1     Running   0          18s
 pod/tea-7df475c6-gtlx5        1/1     Running   0          18s
+pod/tea-7df475c6-lxqsx        1/1     Running   0          18s
 ```
 
-#### 인그레스 생성
-다음과 같이 URI를 기반으로 서비스와 연결하는 인그레스를 생성합니다. 엔드포인트가 `/tea`인 요청은 `tea-svc` 서비스에 연결하고 `/coffee`인 요청은 `coffee-svc` 서비스에 연결합니다.
+#### 인그레스(Ingress) 생성
+요청 경로에 따라 서비스를 연결하는 인그레스 매니패스트를 작성합니다. 엔드포인트가 `/tea`인 요청은 `tea-svc` 서비스에 연결하고 `/coffee`인 요청은 `coffee-svc` 서비스에 연결합니다.
 
 ```yaml
 # cafe-ingress-uri.yaml
@@ -428,28 +508,28 @@ spec:
 인그레스를 생성하고 잠시 후 확인했을 때 **ADDRESS** 필드에 IP가 설정되어 있어야 합니다.
 
 ```
-# kubectl apply -f cafe-ingress-uri.yaml
+$ kubectl apply -f cafe-ingress-uri.yaml
 ingress.extensions/cafe-ingress-uri created
 
-# kubectl get ingress cafe-ingress-uri
+$ kubectl get ingress cafe-ingress-uri
 NAME               HOSTS   ADDRESS          PORTS   AGE
 cafe-ingress-uri   *       123.123.123.44   80      88s
 ```
 
 #### HTTP 요청 전송
-외부 호스트에서 ingress의 **ADDRESS** 필드에 설정된 IP 주소로 HTTP 요청을 전송해 인그레스가 설정이 올바른지 확인합니다.
+외부 호스트에서 ingress의 **ADDRESS** 필드에 설정된 IP 주소로 HTTP 요청을 전송해 인그레스가 올바르게 설정되었는지 확인합니다.
 
-엔드포인트 `/coffee`에 대한 요청은 `coffee-svc` 서비스에 전달되어 `coffee` 파드가 응답합니다. 실행 로그에서 **Server name**을 보면 `coffee` 파드들이 라운드-로빈 방식으로 번갈아 응답하는 것을 확인할 수 있습니다.
+엔드포인트 `/coffee`에 대한 요청은 `coffee-svc` 서비스에 전달되어 `coffee` 파드가 응답합니다. 응답의 **Server name** 항목을 보면 `coffee` 파드들이 라운드-로빈 방식으로 번갈아 응답하는 것을 확인할 수 있습니다.
 
 ```
-# curl http://123.123.123.44/coffee
+$ curl http://123.123.123.44/coffee
 Server address: 10.100.3.48:8080
 Server name: coffee-67c6f7c5fd-c58l2
 Dat#e: 07/Apr/2020:08:24:27 +0000
 URI: /coffee
 Request ID: e831901e441303ad59fb02214c49d84a
 
-# curl http://123.123.123.44/coffee
+$ curl http://123.123.123.44/coffee
 Server address: 10.100.2.23:8080
 Server name: coffee-67c6f7c5fd-98vh5
 Date: 07/Apr/2020:08:24:28 +0000
@@ -460,25 +540,18 @@ Request ID: e78427e68a1cd61ec633b9328359874e
 마찬가지로 엔드포인트 `/tea`에 대한 요청은 `tea-svc` 서비스에 전달되어 전달되어 `tea` 파드가 응답합니다.
 
 ```
-# curl http://123.123.123.44/tea
+$ curl http://123.123.123.44/tea
 Server address: 10.100.2.24:8080
 Server name: tea-7df475c6-lxqsx
 Date: 07/Apr/2020:08:25:03 +0000
 URI: /tea
 Request ID: 59303a5a5baa60802b463b1856c8ce8d
-
-# curl http://123.123.123.44/tea
-Server address: 10.100.3.49:8080
-Server name: tea-7df475c6-gtlx5
-Date: 07/Apr/2020:08:25:05 +0000
-URI: /tea
-Request ID: 2b348f7615133ef1f99c2c4625260a68
 ```
 
 정의되지 않은 URI로 요청을 보내면 인그레스 컨트롤러가 `404 Not Found`를 응답합니다.
 
 ```
-# curl http://123.123.123.44/
+$ curl http://123.123.123.44/
 <html>
 <head><title>404 Not Found</title></head>
 <body>
@@ -492,26 +565,25 @@ Request ID: 2b348f7615133ef1f99c2c4625260a68
 테스트에 사용한 자원들은 생성할 때 사용한 매니패스트를 이용해 삭제할 수 있습니다.
 
 ```
-# kubectl delete -f cafe-ingress-uri.yaml
+$ kubectl delete -f cafe-ingress-uri.yaml
 ingress.extensions "cafe-ingress-uri" deleted
 
-# kubectl delete -f cafe.yaml
+$ kubectl delete -f cafe.yaml
 deployment.apps "coffee" deleted
 service "coffee-svc" deleted
 deployment.apps "tea" deleted
 service "tea-svc" deleted
 ```
 
-### 예제 2. 호스트 기반 서비스 분기 인그레스
-호스트 이름을 이용하여 서비스를 분기하는 예제입니다.
+### 호스트 기반 서비스 분기
 
 ![ingress-02.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/ingress-02.png)
 
 #### 서비스와 파드 생성
-예제1과 동일한 매니패스트를 이용해 서비스와 파드를 생성합니다.
+[URI 기반 서비스 분기](/Container/Kubernetes/ko/user-guide/#1-uri-ingress)와 동일한 매니패스트를 이용해 서비스와 파드를 생성합니다.
 
 #### 인그레스 생성
-다음과 같이 호스트 이름을 이용해 서비스와 연결하는 인그레스 매니패스트를 작성합니다. `tea.cafe.example.com` 호스트로 들어온 요청은 `tea-svc` 서비스에 연결하고 `coffee.cafe.example.com` 호스트로 들어온 요청은 `coffee-svc` 서비스에 연결합니다.
+호스트 이름에 따라 서비스를 연결하는 인그레스 매니패스트를 작성합니다. `tea.cafe.example.com` 호스트로 들어온 요청은 `tea-svc` 서비스에 연결하고 `coffee.cafe.example.com` 호스트로 들어온 요청은 `coffee-svc` 서비스에 연결합니다.
 
 ```yaml
 # cafe-ingress-host.yaml
@@ -540,13 +612,12 @@ spec:
 인그레스를 생성하고 잠시 후 확인했을 때 **ADDRESS** 필드에 IP가 설정되어 있어야 합니다.
 
 ```
-# kubectl apply -f cafe-ingress-host.yaml
+$ kubectl apply -f cafe-ingress-host.yaml
 ingress.extensions/cafe-ingress-host created
 
-# kubectl get ingress
+$ kubectl get ingress
 NAME                HOSTS                                          ADDRESS          PORTS   AGE
 cafe-ingress-host   tea.cafe.example.com,coffee.cafe.example.com   123.123.123.44   80      4m29s
-#
 ```
 
 #### HTTP Request 전송
@@ -559,7 +630,7 @@ cafe-ingress-host   tea.cafe.example.com,coffee.cafe.example.com   123.123.123.4
 호스트 `coffee.cafe.example.com`로 요청을 전송하면 `coffee-svc` 서비스에 전달되어 `coffee` 파드가 응답합니다.
 
 ```
-# curl --resolve coffee.cafe.example.com:80:123.123.123.44 http://coffee.cafe.example.com/
+$ curl --resolve coffee.cafe.example.com:80:123.123.123.44 http://coffee.cafe.example.com/
 Server address: 10.100.2.25:8080
 Server name: coffee-67c6f7c5fd-2bbzf
 Date: 07/Apr/2020:08:45:39 +0000
@@ -570,7 +641,7 @@ Request ID: 29fd8a244b9f0a5ff5f35d1dc35edccf
 호스트 `tea.cafe.example.com`로 요청을 전송하면 `tea-svc` 서비스에 전달되어 `tea` 파드가 응답합니다.
 
 ```
-# curl --resolve tea.cafe.example.com:80:123.123.123.44 http://tea.cafe.example.com/
+$ curl --resolve tea.cafe.example.com:80:123.123.123.44 http://tea.cafe.example.com/
 Server address: 10.100.3.52:8080
 Server name: tea-7df475c6-q8mdx
 Date: 07/Apr/2020:08:53:44 +0000
@@ -579,8 +650,9 @@ Request ID: fe61c1589d3ab8ef4ca4507245251ef3
 ```
 
 알려지지 않은 호스트로 요청을 보내면 인그레스 컨트롤러가 `404 Not Found`를 응답합니다.
+
 ```
-# curl http://123.123.123.44
+$ curl http://123.123.123.44
 <html>
 <head><title>404 Not Found</title></head>
 <body>
@@ -589,7 +661,7 @@ Request ID: fe61c1589d3ab8ef4ca4507245251ef3
 </body>
 </html>
 
-# curl --resolve test.example.com:80:123.123.123.44 http://test.example.com/
+$ curl --resolve test.example.com:80:123.123.123.44 http://test.example.com/
 <html>
 <head><title>404 Not Found</title></head>
 <body>
@@ -599,12 +671,8 @@ Request ID: fe61c1589d3ab8ef4ca4507245251ef3
 </html>
 ```
 
-#### 리소스 삭제
-예제 1과 마찬가지로 테스트 자원들은 생성할 때 사용한 매니패스트를 이용해 삭제할 수 있습니다.
-
-
-## Kubernetes 대시보드 활성화
-TOAST Kubernetes 서비스는 기본 웹 UI 대시보드를 제공합니다. Kubernetes 대시보드에 대한 자세한 내용은 [웹 UI (대시보드)](https://kubernetes.io/ko/docs/tasks/access-application-cluster/web-ui-dashboard/) 문서를 참조하세요.
+## Kubernetes 대시보드
+TOAST Kubernetes 서비스는 기본 웹 UI 대시보드(Dashboard)를 제공합니다. Kubernetes 대시보드에 대한 자세한 내용은 [웹 UI (대시보드)](https://kubernetes.io/ko/docs/tasks/access-application-cluster/web-ui-dashboard/) 문서를 참조하세요.
 
 ### 대시보드 권한 설정
 대시보드를 사용하려면 사용자에게 접근 권한을 부여해야 합니다. 역할 기반 엑세스 제어에 대한 자세한 내용은 [Using RBAC Authorization](https://kubernetes.io/docs/reference/access-authn-authz/rbac/)을 참조하세요.
@@ -612,10 +680,10 @@ TOAST Kubernetes 서비스는 기본 웹 UI 대시보드를 제공합니다. Kub
 다음 명령은 사용자에게 모든 권한을 가진 클러스터 관리자 역할 부여합니다.
 
 ```
-# kubectl create clusterrolebinding kubernetes-dashboard --clusterrole=cluster-admin --serviceaccount=kube-system:kubernetes-dashboard
+$ kubectl create clusterrolebinding kubernetes-dashboard --clusterrole=cluster-admin --serviceaccount=kube-system:kubernetes-dashboard
 clusterrolebinding.rbac.authorization.k8s.io/kubernetes-dashboard created
 
-# kubectl describe clusterrolebinding kubernetes-dashboard -n kube-system
+$ kubectl describe clusterrolebinding kubernetes-dashboard -n kube-system
 Name:         kubernetes-dashboard
 Labels:       <none>
 Annotations:  <none>
@@ -627,7 +695,7 @@ Subjects:
   ----            ----                  ---------
   ServiceAccount  kubernetes-dashboard  kube-system
 
-# kubectl describe ClusterRole cluster-admin
+$ kubectl describe ClusterRole cluster-admin
 Name:         cluster-admin
 Labels:       kubernetes.io/bootstrapping=rbac-defaults
 Annotations:  rbac.authorization.kubernetes.io/autoupdate: true
@@ -642,11 +710,11 @@ PolicyRule:
 사용자 Kubernetes에는 대시보드를 공개하기 위한 `kubernetes-dashboard` 서비스 객체가 미리 생성되어 있습니다.
 
 ```
-# kubectl get svc kubernetes-dashboard -n kube-system
+$ kubectl get svc kubernetes-dashboard -n kube-system
 NAME                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
 kubernetes-dashboard   ClusterIP   10.254.95.176   <none>        443/TCP   2d4h
 
-# kubectl describe svc kubernetes-dashboard -n kube-system
+$ kubectl describe svc kubernetes-dashboard -n kube-system
 Name:              kubernetes-dashboard
 Namespace:         kube-system
 Labels:            k8s-app=kubernetes-dashboard
@@ -663,15 +731,15 @@ Events:
 ...
 ```
 
-이 서비스 객체는 `ClusterIP` 유형이기 때문에 아직 클러스터 외부에 공개되어 있지 않습니다. 대시보드를 외부 공개하려면 다음 두 방법 중 하나를 수행해야 합니다.
+그러나 `kubernetes-dashboard` 서비스 객체는 ClusterIP 유형이기 때문에 아직 클러스터 외부에 공개되어 있지 않습니다. 대시보드를 외부 공개하려면 서비스 객체를 LoadBalancer 유형으로 변경하거나 인그레스 컨트롤러와 인그레스 객체를 생성해야 합니다.
 
-#### 서비스를 LoadBalancer 유형으로 변경
+#### LoadBalancer 서비스 객체로 변경
 
 ![dashboard-01.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/dashboard-01.png)
 
-`LoadBalancer` 유형으로 서비스 객체를 변경하면 클러스터 외부에 로드밸런서(TOAST Load Balancer)가 생성되고, 외부 로드밸런서와 서비스 객체가 연결됩니다. 서비스 객체를 조회했을 때 **EXTERNAL-IP** 필드에 로드밸런서의 IP가 표시됩니다. `LoadBalancer` 유형의 서비스 객체에 대한 설명은 [LoadBalancer 서비스 객체를 이용한 서비스 공개]()를 참조하세요.
+`LoadBalancer` 유형으로 서비스 객체를 변경하면 클러스터 외부에 로드밸런서(TOAST Load Balancer)가 생성되고, 외부 로드밸런서와 서비스 객체가 연결됩니다. 서비스 객체를 조회했을 때 **EXTERNAL-IP** 필드에 로드밸런서의 IP가 표시됩니다. `LoadBalancer` 유형의 서비스 객체에 대한 설명은 [LoadBalancer 서비스]()를 참조하세요.
 
-웹 브라우져에서 `https://{EXTERNAL-IP}`로 접속하면 Kubernetes 대시보드 페이지가 로딩됩니다. 로그인을 위해 필요한 토큰은 [Kubernetes 대시보드 접속을 위한 토큰 획득]()을 참고하세요.
+웹 브라우져에서 `https://{EXTERNAL-IP}`로 접속하면 Kubernetes 대시보드 페이지가 로딩됩니다. 로그인을 위해 필요한 토큰은 [대시보드 엑세스 토큰]()을 참고하세요.
 
 > [참고]
 > 생성된 로드밸런서는 **Network > Load Balancer** 페이지에서 확인할 수 있습니다.
@@ -680,14 +748,14 @@ Events:
 다음과 같이 `kubernetes-dashboard` 서비스 객체의 유형을 `LoadBalancer`로 변경합니다.
 
 ```
-# kubectl -n kube-system patch svc/kubernetes-dashboard -p '{"spec":{"type":"LoadBalancer"}}'
+$ kubectl -n kube-system patch svc/kubernetes-dashboard -p '{"spec":{"type":"LoadBalancer"}}'
 service/kubernetes-dashboard patched
 ```
 
 `kubernetes-dashboard` 서비스 객체가 `LoadBalancer` 유형으로 변경되면 잠시 후 **EXTERNAL-IP** 필드에서 로드밸런서 IP를 확인할 수 있습니다.
 
 ```
-# kubectl get svc -n kube-system
+$ kubectl get svc -n kube-system
 NAME                   TYPE           CLUSTER-IP      EXTERNAL-IP      PORT(S)                  AGE
 ...
 kubernetes-dashboard   LoadBalancer   10.254.95.176   123.123.123.81   443:30963/TCP            2d23h
@@ -700,9 +768,9 @@ kubernetes-dashboard   LoadBalancer   10.254.95.176   123.123.123.81   443:30963
 
 ![dashboard-02.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/dashboard-02.png)
 
-인그레스는 클러스터 내부의 여러 서비스들로 접근하기 위한 라우팅을 제공하는 네트워크 객체입니다. 인그레스 객체의 설정은 인그래스 컨트롤러에 의해 구동됩니다. 인그레스와 인그레스 컨트롤러에 대한 설명은 [인그레스 컨트롤러(Ingress Controller)]()를 참조하세요.
+인그레스는 클러스터 내부의 여러 서비스들로 접근하기 위한 라우팅을 제공하는 네트워크 객체입니다. 인그레스 객체의 설정은 인그래스 컨트롤러에 의해 구동됩니다. 인그레스와 인그레스 컨트롤러에 대한 설명은 [인그레스 컨트롤러(Ingress Controller)](/Container/Kubernetes/ko/user-guide/#ingress-controller)를 참조하세요.
 
-[NGINX Ingress Controller 설치]()를 참조하여 `NGINX Ingress Controller`를 설치하고 `LoadBalancer` 유형의 서비스를 생성합니다. 그리고 다음과 같이 인그레스 객체 생성을 위한 매니페스트를 작성합니다.
+[NGINX Ingress Controller 설치](/Container/Kubernetes/ko/user-guide/#nginx-ingress-controller)를 참조하여 `NGINX Ingress Controller`를 설치하고 `LoadBalancer` 유형의 서비스를 생성합니다. 그리고 다음과 같이 인그레스 객체 생성을 위한 매니페스트를 작성합니다.
 
 ```yaml
 # kubernetes-dashboard-ingress-tls-passthrough.yaml
@@ -731,40 +799,42 @@ spec:
   - secretName: kubernetes-dashboard-certs
 ```
 
-매니페스트를 적용해 인그레스를 생성하고 `ingress-nginx` 서비스 객체의 **EXTERNAL-IP** 필드를 확인합니다. 웹 브라우져에서 `https://{EXTERNAL-IP}`로 접속하면 Kubernetes 대시보드 페이지가 로딩됩니다. 로그인을 위해 필요한 토큰은 [Kubernetes 대시보드 접속을 위한 토큰 획득]()을 참고하세요.
+매니페스트를 적용해 인그레스를 생성하고 `ingress-nginx` 서비스 객체의 **EXTERNAL-IP** 필드를 확인합니다. 웹 브라우져에서 `https://{EXTERNAL-IP}`로 접속하면 Kubernetes 대시보드 페이지가 로딩됩니다. 로그인을 위해 필요한 토큰은 [대시보드 엑세스 토큰]()을 참고하세요.
 
 ```
-# kubectl apply -f kubernetes-dashboard-ingress-tls-passthrough.yaml
+$ kubectl apply -f kubernetes-dashboard-ingress-tls-passthrough.yaml
 ingress.extensions/k8s-dashboard-ingress created
 
-# kubectl get service/ingress-nginx -n ingress-nginx
+$ kubectl get service/ingress-nginx -n ingress-nginx
 NAME            TYPE           CLUSTER-IP       EXTERNAL-IP      PORT(S)                      AGE
 ingress-nginx   LoadBalancer   10.254.211.113   123.123.123.29   80:32680/TCP,443:31631/TCP   19h
 ```
 
-### Kubernetes 대시보드 접속을 위한 토큰 획득
+### 대시보드 엑세스 토큰
 Kubernetes 대시보드에 로그인하려면 토큰이 필요합니다. 토큰은 다음 명령을 통해 얻을 수 있습니다.
 
 ```
 # SECRET_NAME=$(kubectl -n kube-system get secrets | grep "kubernetes-dashboard-token" | cut -f1 -d ' ')
 
-# kubectl describe secret $SECRET_NAME -n kube-system | grep -E '^token' | cut -f2 -d':' | tr -d " "
+$ kubectl describe secret $SECRET_NAME -n kube-system | grep -E '^token' | cut -f2 -d':' | tr -d " "
 eyJhbGc...-QmXA
 ```
 
 출력된 토큰을 브라우져의 토큰 입력창에 입력하면 클러스터 관리자 권한을 부여받은 사용자로 로그인할 수 있습니다.
 
 
-## 퍼시스턴트 볼륨(Persistent Volume)
+## 퍼시스턴트 볼륨
 퍼시스턴트 볼륨(Persistent Volume, PV)는 물리 저장 장치(Volume)를 표현하는 Kubernetes의 자원입니다. 하나의 PV는 하나의 TOAST Block Storage와 연결됩니다. 자세한 내용은 [퍼시스턴트 볼륨](https://kubernetes.io/ko/docs/concepts/storage/persistent-volumes/) 문서를 참조하세요.
 
-PV를 파드에 연결해 사용하려면 퍼시스턴트 볼륨 클레임(Persisten Volume Claims, PVC) 객체가 필요합니다. PVC는 용량, 읽기/쓰기 모드 등 필요한 볼륨의 요구 사항을 정의합니다. 이렇게 사용자는 사용하고 싶은 볼륨의 속성을 정의하고, 시스템은 사용자의 요구 사항에 맞는 볼륨 리소스를 할당하는 방식으로 자원의 사용과 관리를 분리합니다.
+PV를 파드에 연결해 사용하려면 퍼시스턴트 볼륨 클레임(Persisten Volume Claims, PVC) 객체가 필요합니다. PVC는 용량, 읽기/쓰기 모드 등 필요한 볼륨의 요구 사항을 정의합니다.
+
+PV와 PVC를 통해 사용자는 사용하고 싶은 볼륨의 속성을 정의하고, 시스템은 사용자의 요구 사항에 맞는 볼륨 리소스를 할당하는 방식으로 자원의 사용과 관리를 분리합니다.
 
 ### PV/PVC의 생명주기
 PV와 PVC는 4단계의 생명 주기(life cycle)를 따릅니다.
 
 * 프로비저닝(Provisioning)
-사용자가 직접 볼륨을 확보하고 PV를 생성(Static Provisioning)하거나 [스토리지 클래스(Storage Class)](https://kubernetes.io/docs/concepts/storage/storage-classes/)를 사용해 동적으로 생성(Dynamic Provisioning) 할 수 있습니다.
+사용자가 직접 볼륨을 확보하고 PV를 생성(Static Provisioning)하거나 [스토리지 클래스(Storage Class)](https://kubernetes.io/ko/docs/concepts/storage/storage-classes/)를 사용해 동적으로 생성(Dynamic Provisioning) 할 수 있습니다.
 
 * 바인딩(Binding)
 PV와 PVC를 1:1로 바인딩합니다. 동적 프로비저닝으로 PV를 생성했다면 바인딩도 자동으로 수행됩니다.
@@ -782,23 +852,16 @@ PV를 파드에 마운트해 사용합니다.
 | 재사용(Recycle) | PV를 삭제할 때 연결된 볼륨을 삭제하지 않고 재사용할 수 있는 상태로 만듭니다. 이 방법은 사용 중단(deprecated) 되었습니다. |
 
 
-### TOAST Block Storage의 제약 사항
-TOAST Block Storage를 PV로 사용하는 데는 다음과 같은 제약사항이 있습니다.
-
-* 스토리지 접근 모드는 `ReadWriteOnce`만 지원합니다.
-* 스토리지 클래스의 `Provisioner`는 `kubernetes.io/cinder`로 지정해야 합니다.
-
-
 ### 정적 프로비저닝(Static Provisioning)
 
 정적 프로비저닝은 사용자가 직접 블록 스토리지를 준비해야 합니다. TOAST 웹 콘솔의 **Storage > Block Storage** 서비스 페이지에서 **블록 스토리지 생성** 버튼을 클릭해 PV와 연결할 블록 스토리지를 생성합니다. 블록 스토리지 가이드의 [블록 스토리지 생성](/Storage/Block%20Storage/ko/console-guide/#_1)을 참조하세요.
 
-PV를 생성하려면 블록 스토리지의 ID가 필요합니다. 블록 스토리지 ID를 확인하려면 블록 스토리지 목록에서 사용할 블록 스토리지를 선택합니다. 하단 정보 탭의 블록 스토리지 이름 항목에서 확인할 수 있습니다.  
+PV를 생성하려면 블록 스토리지의 ID가 필요합니다. **Storage > Block Storage** 서비스 페이지의 블록 스토리지 목록에서 사용할 블록 스토리지를 선택합니다. 하단 정보 탭의 블록 스토리지 이름 항목에서 ID를 확인할 수 있습니다.  
 
 > [주의]
 > 블록 스토리지와 파드를 구동할 노드 그룹 인스턴스의 가용성 영역이 같아야 합니다. 가용성 영역이 다르면 연결 할 수 없습니다.
 
-스토리지 클래스 매니패스트를 작성합니다.
+스토리지 클래스 매니패스트를 작성합니다. TOAST Block Storage를 사용하려면 **provisioner**를 반드시 `kubernetes.io/cinder`로 설정해야 합니다.
 
 ```yaml
 # storage_class.yaml
@@ -812,15 +875,15 @@ provisioner: kubernetes.io/cinder
 스토리지 클래스를 생성하고 확인 합니다.
 
 ```
-# kubectl apply -f storage_class.yaml
+$ kubectl apply -f storage_class.yaml
 storageclass.storage.k8s.io/sc-default created
 
-# kubectl get sc
+$ kubectl get sc
 NAME         PROVISIONER            AGE
 sc-default   kubernetes.io/cinder   8s
 ```
 
-블록 스토리지와 연결할 PV 매니페스트를 작성합니다. `spec.storageClassName`에는 앞서 생성한 스토리지 클래스 이름을 지정합니다. `spec.accessModes`는 반드시 `ReadWriteOnce`로 설정해야 합니다. `spec.presistentVolumeReclaimPolicy`는 `Delete` 또는 `Retain`으로 설정할 수 있습니다.
+블록 스토리지와 연결할 PV 매니페스트를 작성합니다. **spec.storageClassName**에는 스토리지 클래스 이름을 입력합니다. TOAST Block Storage를 사용하려면 **spec.accessModes**는 반드시 `ReadWriteOnce`로 설정해야 합니다. **spec.presistentVolumeReclaimPolicy**는 `Delete` 또는 `Retain`으로 설정할 수 있습니다.
 
 ```yaml
 # pv-static.yaml
@@ -844,15 +907,15 @@ spec:
 PV를 생성하고 확인 합니다.
 
 ```
-# kubectl apply -f pv-static.yaml
+$ kubectl apply -f pv-static.yaml
 persistentvolume/pv-static-001 created
 
-# kubectl get pv -o wide
+$ kubectl get pv -o wide
 NAME            CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   STORAGECLASS   REASON   AGE   VOLUMEMODE
 pv-static-001   10Gi       RWO            Delete           Available           sc-default              7s    Filesystem
 ```
 
-생성한 PV를 사용하기 위한 PVC 매니페스트를 작성합니다. `spec.volumeName`에는 PV의 이름을 지정해야 합니다. 다른 항목들은 PV 매니페스트의 내용과 동일하게 설정합니다.
+생성한 PV를 사용하기 위한 PVC 매니페스트를 작성합니다. **spec.volumeName**에는 PV의 이름을 지정해야 합니다. 다른 항목들은 PV 매니페스트의 내용과 동일하게 설정합니다.
 
 ```yaml
 # pvc-static.yaml
@@ -874,18 +937,18 @@ spec:
 PVC를 생성하고 확인 합니다.
 
 ```
-# kubectl apply -f pvc-static.yaml
+$ kubectl apply -f pvc-static.yaml
 persistentvolumeclaim/pvc-static created
 
-# kubectl get pvc -o wide
+$ kubectl get pvc -o wide
 NAME         STATUS   VOLUME          CAPACITY   ACCESS MODES   STORAGECLASS   AGE   VOLUMEMODE
 pvc-static   Bound    pv-static-001   10Gi       RWO            sc-default     7s    Filesystem
 ```
 
-PVC를 생성한 다음 PV의 상태를 조회해보면 **CLAIM** 항목에 PVC 이름이 지정되고, **Status** 항목이 `Bound`로 변경된 것을 확인할 수 있습니다.
+PVC를 생성한 다음 PV의 상태를 조회해보면 **CLAIM** 항목에 PVC 이름이 지정되고, **STATUS** 항목이 `Bound`로 변경된 것을 확인할 수 있습니다.
 
 ```
-# kubectl get pv -o wide
+$ kubectl get pv -o wide
 NAME            CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                STORAGECLASS   REASON   AGE   VOLUMEMODE
 pv-static-001   10Gi       RWO            Delete           Bound    default/pvc-static   sc-default              79s   Filesystem
 ```
@@ -893,7 +956,7 @@ pv-static-001   10Gi       RWO            Delete           Bound    default/pvc-
 
 ### 동적 프로비저닝(Dynamic Provisioning)
 
-동적 프로비저닝은 스토리지 클래스에 정의된 속성을 참조하여 자동으로 블록 스토리지를 생성합니다. `parameters.type`에 TOAST Block Storage 유형을 설정할 수 있습니다. 설정하지 않으면 HDD 유형으로 설정됩니다.
+동적 프로비저닝은 스토리지 클래스에 정의된 속성을 참조하여 자동으로 블록 스토리지를 생성합니다. **parameters.type**에 TOAST Block Storage 유형을 설정할 수 있습니다. 설정하지 않으면 HDD 유형으로 설정됩니다.
 
 | 타입 | 설정값 |
 | --- | --- |
@@ -911,7 +974,7 @@ parameters:
   type: General SSD
 ```
 
-동적 프로비저닝은 PV를 생성할 필요가 없습니다. 따라서 PVC 매니페스트에는 `spec.volumeName`를 설정하지 않습니다.
+동적 프로비저닝은 PV를 생성할 필요가 없습니다. 따라서 PVC 매니페스트에는 **spec.volumeName**를 설정하지 않습니다.
 
 ```yaml
 # pvc-dynamic.yaml
@@ -932,10 +995,10 @@ spec:
 PVC를 생성하면 PV가 자동으로 생성됩니다. PV에 연결된 블록 스토리지도 자동으로 생성되며 TOAST 웹 콘솔 **Storage > Block Storage** 서비스 페이지의 블록 스토리지 목록에서 확인할 수 있습니다.
 
 ```
-# kubectl apply -f pvc-dynamic.yaml
+$ kubectl apply -f pvc-dynamic.yaml
 persistentvolumeclaim/pvc-dynamic created
 
-# kubectl get sc,pv,pvc
+$ kubectl get sc,pv,pvc
 NAME                                     PROVISIONER            AGE
 storageclass.storage.k8s.io/sc-default   kubernetes.io/cinder   10m
 
@@ -983,14 +1046,14 @@ spec:
 파드를 생성하고 블록 스토리지가 마운트되어 있는지 확인합니다.
 
 ```
-# kubectl apply -f pod-static-pvc.yaml
+$ kubectl apply -f pod-static-pvc.yaml
 pod/nginx-with-static-pv created
 
-# kubectl get pods
+$ kubectl get pods
 NAME                   READY   STATUS    RESTARTS   AGE
 nginx-with-static-pv   1/1     Running   0          50s
 
-# kubectl exec -ti nginx-with-static-pv -- df -h
+$ kubectl exec -ti nginx-with-static-pv -- df -h
 Filesystem      Size  Used Avail Use% Mounted on
 ...
 /dev/vdc        9.8G   23M  9.7G   1% /usr/share/nginx/html
