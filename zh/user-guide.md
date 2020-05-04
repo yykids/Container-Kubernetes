@@ -219,7 +219,7 @@ spec:
 ```
 
 > [참고]
-> TOAST Container Registry 사용 방법은 [Container Registry 사용 가이드](/Container/Container%20Registry/ko/user-guide) 문서를 참조하세요.
+> TOAST Container Registry 사용 방법은 [Container Registry 사용 가이드](/Container/Container%20Registry/zh/user-guide) 문서를 참조하세요.
 
 ### LoadBalancer 서비스 생성
 Kubernetes의 서비스 객체를 정의하려면 다음과 같은 항목으로 구성된 매니패스트가 필요합니다.
@@ -313,7 +313,7 @@ Commercial support is available at
 
 
 ## 인그레스 컨트롤러
-인그레스 컨트롤러(Ingress Controller)는 인그레스(Ingress) 객체에 정의된 규칙을 참조하여 클러스터 외부에서 내부 서비스로 HTTP와 HTTPS 요청을 라우팅하고 SSL/TSL 종료, 가상 호스팅 등을 제공합니다. 인그레스 컨트롤러와 인그레스에 대한 자세한 내용은 [인그레스 컨트롤러](https://kubernetes.io/ko/docs/concepts/services-networking/ingress-controllers/), [인그레스](https://kubernetes.io/ko/docs/concepts/services-networking/ingress/) 문서를 참조하세요.
+인그레스 컨트롤러(Ingress Controller)는 인그레스(Ingress) 객체에 정의된 규칙을 참조하여 클러스터 외부에서 내부 서비스로 HTTP와 HTTPS 요청을 라우팅하고 SSL/TSL 종료, 가상 호스팅 등을 제공합니다. 인그레스 컨트롤러와 인그레스에 대한 자세한 내용은 [Ingress Controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/), [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/) 문서를 참조하세요.
 
 
 ### NGINX Ingress Controller 설치
@@ -580,7 +580,7 @@ service "tea-svc" deleted
 ![ingress-02.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/ingress-02.png)
 
 #### 서비스와 파드 생성
-[URI 기반 서비스 분기](/Container/Kubernetes/ko/user-guide/#uri)와 동일한 매니패스트를 이용해 서비스와 파드를 생성합니다.
+[URI 기반 서비스 분기](/Container/Kubernetes/zh/user-guide/#uri)와 동일한 매니패스트를 이용해 서비스와 파드를 생성합니다.
 
 #### 인그레스 생성
 호스트 이름에 따라 서비스를 연결하는 인그레스 매니패스트를 작성합니다. `tea.cafe.example.com` 호스트로 들어온 요청은 `tea-svc` 서비스에 연결하고 `coffee.cafe.example.com` 호스트로 들어온 요청은 `coffee-svc` 서비스에 연결합니다.
@@ -672,7 +672,7 @@ $ curl --resolve test.example.com:80:123.123.123.44 http://test.example.com/
 ```
 
 ## Kubernetes 대시보드
-TOAST Kubernetes 서비스는 기본 웹 UI 대시보드(Dashboard)를 제공합니다. Kubernetes 대시보드에 대한 자세한 내용은 [웹 UI (대시보드)](https://kubernetes.io/ko/docs/tasks/access-application-cluster/web-ui-dashboard/) 문서를 참조하세요.
+TOAST Kubernetes 서비스는 기본 웹 UI 대시보드(Dashboard)를 제공합니다. Kubernetes 대시보드에 대한 자세한 내용은 [Web UI (Dashboard)](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/) 문서를 참조하세요.
 
 ### 대시보드 권한 설정
 대시보드를 사용하려면 사용자에게 접근 권한을 부여해야 합니다. 역할 기반 엑세스 제어에 대한 자세한 내용은 [Using RBAC Authorization](https://kubernetes.io/docs/reference/access-authn-authz/rbac/)을 참조하세요.
@@ -737,9 +737,9 @@ Events:
 
 ![dashboard-01.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/dashboard-01.png)
 
-`LoadBalancer` 유형으로 서비스 객체를 변경하면 클러스터 외부에 로드밸런서(TOAST Load Balancer)가 생성되고, 외부 로드밸런서와 서비스 객체가 연결됩니다. 서비스 객체를 조회했을 때 **EXTERNAL-IP** 필드에 로드밸런서의 IP가 표시됩니다. `LoadBalancer` 유형의 서비스 객체에 대한 설명은 [LoadBalancer 서비스](/Container/Kubernetes/ko/user-guide/#loadbalancer)를 참조하세요.
+`LoadBalancer` 유형으로 서비스 객체를 변경하면 클러스터 외부에 로드밸런서(TOAST Load Balancer)가 생성되고, 외부 로드밸런서와 서비스 객체가 연결됩니다. 서비스 객체를 조회했을 때 **EXTERNAL-IP** 필드에 로드밸런서의 IP가 표시됩니다. `LoadBalancer` 유형의 서비스 객체에 대한 설명은 [LoadBalancer 서비스](/Container/Kubernetes/zh/user-guide/#loadbalancer)를 참조하세요.
 
-웹 브라우져에서 `https://{EXTERNAL-IP}`로 접속하면 Kubernetes 대시보드 페이지가 로딩됩니다. 로그인을 위해 필요한 토큰은 [대시보드 엑세스 토큰](/Container/Kubernetes/ko/user-guide/#_24)을 참고하세요.
+웹 브라우져에서 `https://{EXTERNAL-IP}`로 접속하면 Kubernetes 대시보드 페이지가 로딩됩니다. 로그인을 위해 필요한 토큰은 [대시보드 엑세스 토큰](/Container/Kubernetes/zh/user-guide/#_24)을 참고하세요.
 
 > [참고]
 > 생성된 로드밸런서는 **Network > Load Balancer** 페이지에서 확인할 수 있습니다.
@@ -768,9 +768,9 @@ kubernetes-dashboard   LoadBalancer   10.254.95.176   123.123.123.81   443:30963
 
 ![dashboard-02.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/dashboard-02.png)
 
-인그레스는 클러스터 내부의 여러 서비스들로 접근하기 위한 라우팅을 제공하는 네트워크 객체입니다. 인그레스 객체의 설정은 인그래스 컨트롤러에 의해 구동됩니다. 인그레스와 인그레스 컨트롤러에 대한 설명은 [인그레스 컨트롤러](/Container/Kubernetes/ko/user-guide/#_16)를 참조하세요.
+인그레스는 클러스터 내부의 여러 서비스들로 접근하기 위한 라우팅을 제공하는 네트워크 객체입니다. 인그레스 객체의 설정은 인그래스 컨트롤러에 의해 구동됩니다. 인그레스와 인그레스 컨트롤러에 대한 설명은 [인그레스 컨트롤러](/Container/Kubernetes/zh/user-guide/#_16)를 참조하세요.
 
-[NGINX Ingress Controller 설치](/Container/Kubernetes/ko/user-guide/#nginx-ingress-controller)를 참조하여 `NGINX Ingress Controller`를 설치하고 `LoadBalancer` 유형의 서비스를 생성합니다. 그리고 다음과 같이 인그레스 객체 생성을 위한 매니페스트를 작성합니다.
+[NGINX Ingress Controller 설치](/Container/Kubernetes/zh/user-guide/#nginx-ingress-controller)를 참조하여 `NGINX Ingress Controller`를 설치하고 `LoadBalancer` 유형의 서비스를 생성합니다. 그리고 다음과 같이 인그레스 객체 생성을 위한 매니페스트를 작성합니다.
 
 ```yaml
 # kubernetes-dashboard-ingress-tls-passthrough.yaml
@@ -799,7 +799,7 @@ spec:
   - secretName: kubernetes-dashboard-certs
 ```
 
-매니페스트를 적용해 인그레스를 생성하고 `ingress-nginx` 서비스 객체의 **EXTERNAL-IP** 필드를 확인합니다. 웹 브라우져에서 `https://{EXTERNAL-IP}`로 접속하면 Kubernetes 대시보드 페이지가 로딩됩니다. 로그인을 위해 필요한 토큰은 [대시보드 엑세스 토큰](/Container/Kubernetes/ko/user-guide/#_24)을 참고하세요.
+매니페스트를 적용해 인그레스를 생성하고 `ingress-nginx` 서비스 객체의 **EXTERNAL-IP** 필드를 확인합니다. 웹 브라우져에서 `https://{EXTERNAL-IP}`로 접속하면 Kubernetes 대시보드 페이지가 로딩됩니다. 로그인을 위해 필요한 토큰은 [대시보드 엑세스 토큰](/Container/Kubernetes/zh/user-guide/#_24)을 참고하세요.
 
 ```
 $ kubectl apply -f kubernetes-dashboard-ingress-tls-passthrough.yaml
@@ -824,7 +824,7 @@ eyJhbGc...-QmXA
 
 
 ## 퍼시스턴트 볼륨
-퍼시스턴트 볼륨(Persistent Volume, PV)는 물리 저장 장치(Volume)를 표현하는 Kubernetes의 자원입니다. 하나의 PV는 하나의 TOAST Block Storage와 연결됩니다. 자세한 내용은 [퍼시스턴트 볼륨](https://kubernetes.io/ko/docs/concepts/storage/persistent-volumes/) 문서를 참조하세요.
+퍼시스턴트 볼륨(Persistent Volume, PV)는 물리 저장 장치(Volume)를 표현하는 Kubernetes의 자원입니다. 하나의 PV는 하나의 TOAST Block Storage와 연결됩니다. 자세한 내용은 [Persistent Volume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) 문서를 참조하세요.
 
 PV를 파드에 연결해 사용하려면 퍼시스턴트 볼륨 클레임(Persisten Volume Claims, PVC) 객체가 필요합니다. PVC는 용량, 읽기/쓰기 모드 등 필요한 볼륨의 요구 사항을 정의합니다.
 
@@ -834,7 +834,7 @@ PV와 PVC를 통해 사용자는 사용하고 싶은 볼륨의 속성을 정의�
 PV와 PVC는 4단계의 생명 주기(life cycle)를 따릅니다.
 
 * 프로비저닝(Provisioning)
-사용자가 직접 볼륨을 확보하고 PV를 생성(Static Provisioning)하거나 [스토리지 클래스(Storage Class)](https://kubernetes.io/ko/docs/concepts/storage/storage-classes/)를 사용해 동적으로 생성(Dynamic Provisioning) 할 수 있습니다.
+사용자가 직접 볼륨을 확보하고 PV를 생성(Static Provisioning)하거나 [Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/)를 사용해 동적으로 생성(Dynamic Provisioning) 할 수 있습니다.
 
 * 바인딩(Binding)
 PV와 PVC를 1:1로 바인딩합니다. 동적 프로비저닝으로 PV를 생성했다면 바인딩도 자동으로 수행됩니다.
@@ -854,12 +854,12 @@ PV를 파드에 마운트해 사용합니다.
 
 ### 정적 프로비저닝
 
-정적 프로비저닝(Static Provisioning)은 사용자가 직접 블록 스토리지를 준비해야 합니다. TOAST 웹 콘솔의 **Storage > Block Storage** 서비스 페이지에서 **블록 스토리지 생성** 버튼을 클릭해 PV와 연결할 블록 스토리지를 생성합니다. 블록 스토리지 가이드의 [블록 스토리지 생성](/Storage/Block%20Storage/ko/console-guide/#_2)을 참조하세요.
+정적 프로비저닝(Static Provisioning)은 사용자가 직접 블록 스토리지를 준비해야 합니다. TOAST 웹 콘솔의 **Storage > Block Storage** 서비스 페이지에서 **블록 스토리지 생성** 버튼을 클릭해 PV와 연결할 블록 스토리지를 생성합니다. 블록 스토리지 가이드의 [블록 스토리지 생성](/Storage/Block%20Storage/zh/console-guide/#_2)을 참조하세요.
 
 PV를 생성하려면 블록 스토리지의 ID가 필요합니다. **Storage > Block Storage** 서비스 페이지의 블록 스토리지 목록에서 사용할 블록 스토리지를 선택합니다. 하단 정보 탭의 블록 스토리지 이름 항목에서 ID를 확인할 수 있습니다.  
 
 > [주의]
-> 블록 스토리지와 파드를 구동할 노드 그룹 인스턴스의 가용성 영역이 같아야 합니다. 가용성 영역이 다르면 연결 할 수 없습니다. 스토리지 클래스 매니패스트의 **parameters.availability** 항목으로 가용성 영역을 지정할 수 있습니다. 지정 가능한 가용성 영역은 `kr-pub-a`와 `kr-pub-b`가 있습니다. 스토리지 클래스 매니패스트에서 가용성 영역을 지정하지 않으면 사용 가능한 가용성 영역으로 자동 지정합니다.
+> 블록 스토리지와 파드를 구동할 노드 그룹 인스턴스의 가용성 영역이 같아야 합니다. 가용성 영역이 다르면 연결 할 수 없습니다.
 
 스토리지 클래스 매니패스트를 작성합니다. TOAST Block Storage를 사용하려면 **provisioner**를 반드시 `kubernetes.io/cinder`로 설정해야 합니다.
 
