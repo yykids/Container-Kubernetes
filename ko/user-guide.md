@@ -859,7 +859,7 @@ PV를 파드에 마운트해 사용합니다.
 PV를 생성하려면 블록 스토리지의 ID가 필요합니다. **Storage > Block Storage** 서비스 페이지의 블록 스토리지 목록에서 사용할 블록 스토리지를 선택합니다. 하단 정보 탭의 블록 스토리지 이름 항목에서 ID를 확인할 수 있습니다.  
 
 > [주의]
-> 블록 스토리지와 파드를 구동할 노드 그룹 인스턴스의 가용성 영역이 같아야 합니다. 가용성 영역이 다르면 연결 할 수 없습니다. 스토리지 클래스 매니패스트의 **parameters.availability** 항목으로 가용성 영역을 지정할 수 있습니다. 지정 가능한 가용성 영역은 `kr-pub-a`와 `kr-pub-b`가 있습니다. 스토리지 클래스 매니패스트에서 가용성 영역을 지정하지 않으면 사용 가능한 가용성 영역으로 자동 지정합니다.
+> 블록 스토리지와 파드를 구동할 노드 그룹 인스턴스의 가용성 영역이 같아야 합니다. 가용성 영역이 다르면 연결 할 수 없습니다.
 
 스토리지 클래스 매니패스트를 작성합니다. TOAST Block Storage를 사용하려면 **provisioner**를 반드시 `kubernetes.io/cinder`로 설정해야 합니다.
 
@@ -956,12 +956,17 @@ pv-static-001   10Gi       RWO            Delete           Bound    default/pvc-
 
 ### 동적 프로비저닝
 
-동적 프로비저닝(Dynamic Provisioning)은 스토리지 클래스에 정의된 속성을 참조하여 자동으로 블록 스토리지를 생성합니다. **parameters.type**에 TOAST Block Storage 유형을 설정할 수 있습니다. 설정하지 않으면 HDD 유형으로 설정됩니다.
+동적 프로비저닝(Dynamic Provisioning)은 스토리지 클래스에 정의된 속성을 참조하여 자동으로 블록 스토리지를 생성합니다. 스토리지 클래스 매니패스트의 **parameters.type**에 TOAST Block Storage 유형을 지정할 수 있습니다. 지정하지 않으면 HDD 유형으로 설정됩니다.
 
 | 타입 | 설정값 |
 | --- | --- |
 | HDD | General HDD |
 | SSD | General SSD |
+
+블록 스토리지는 노드 그룹과 같은 가용성 영역(Availability Zone)에 만들어야 연결할 수 있습니다. 스토리지 클래스 매니패스트의 **parameters.availability**에 블록 스토리지를 생성할 가용성 영역을 지정할 수 있습니다. 연결할 노드 그룹의 가용성 영역은 노드 그룹 목록에서 확인할 수 있습니다.
+
+> [주의]
+> 스토리지 클래스 매니페스트에 가용성 영역을 지정하지 않으면 임의의 가용성 영역에 블록 스토리지를 만듭니다. 블록 스토리지가 노드 그룹과 다른 가용성 영역에 생성되면 연결하지 못할 수 있으니 반드시 가용성 영역을 지정해야 합니다.
 
 ```yaml
 # storage_class.yaml
@@ -972,6 +977,7 @@ metadata:
 provisioner: kubernetes.io/cinder
 parameters:
   type: General SSD
+  availability: kr-pub-a
 ```
 
 동적 프로비저닝은 PV를 생성할 필요가 없습니다. 따라서 PVC 매니페스트에는 **spec.volumeName**를 설정하지 않습니다.
