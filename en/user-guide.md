@@ -92,9 +92,9 @@ kubectl은 특별한 설치 과정 없이 실행 파일을 다운로드해 바�
 
 | 운영체제 | 다운로드 커맨드 |
 | --- | --- |
-| Linux | curl -LO https://storage.googleapis.com/-release/release/v1.15.7/bin/linux/amd64/kubectl |
-| MacOS | curl -LO https://storage.googleapis.com/-release/release/v1.15.7/bin/darwin/amd64/kubectl |
-| Windows | curl -LO https://storage.googleapis.com/-release/release/v1.15.7/bin/windows/amd64/kubectl.exe |
+| Linux | curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.15.7/bin/linux/amd64/kubectl |
+| MacOS | curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.15.7/bin/darwin/amd64/kubectl |
+| Windows | curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.15.7/bin/windows/amd64/kubectl.exe |
 
 그 외 설치 방법과 옵션 등 자세한 사항은 [Install and Set Up kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) 문서를 참조하세요.
 
