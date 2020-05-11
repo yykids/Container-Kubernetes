@@ -381,6 +381,7 @@ ingress-nginx   LoadBalancer   10.254.2.128   123.123.123.41   80:30820/TCP,443:
 
 ### URI 기반 서비스 분기
 인그레스 컨트롤러는 URI를 기반으로 서비스를 분기할 수 있습니다. 이 예제에서는 아래 그림과 같이 URI를 기반으로 서비스를 분기하도록 설정해 보겠습니다.
+
 * 요청 URI가 `/tea`인 경우 `tea-svc`에 연결된 파드에서 서비스 합니다.
 * 요청 URI가 `/coffee`인 경우 `coffee-svc`에 연결된 파드에서 서비스 합니다.
 
@@ -580,8 +581,9 @@ service "tea-svc" deleted
 
 ### 호스트 기반 서비스 분기
 인그레스 컨트롤러는 호스트 이름을 기반으로 서비스를 분기할 수 있습니다. 이 예제에서는 아래 그림과 같이 호스트 이름을 기반으로 서비스를 분기하도록 설정해 보겠습니다.
-* 요청 호스트 이름이 `tea.cafe.example.com인 경우 `tea-svc`에 연결된 파드에서 서비스 합니다.
-* 요청 호스트 이름이 `coffee.cafe.example.com인 경우 `tea-svc`에 연결된 파드에서 서비스 합니다.
+
+* 요청 호스트 이름이 `tea.cafe.example.com`인 경우 `tea-svc`에 연결된 파드에서 서비스 합니다.
+* 요청 호스트 이름이 `coffee.cafe.example.com`인 경우 `tea-svc`에 연결된 파드에서 서비스 합니다.
 
 ![ingress-02.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/ingress-02.png)
 
