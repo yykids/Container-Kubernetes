@@ -380,6 +380,9 @@ ingress-nginx   LoadBalancer   10.254.2.128   123.123.123.41   80:30820/TCP,443:
 ```
 
 ### URI 기반 서비스 분기
+인그레스 컨트롤러는 URI를 기반으로 서비스를 분기할 수 있습니다. 이 예제에서는 아래 그림과 같이 URI를 기반으로 서비스를 분기하도록 설정해 보겠습니다.
+* 요청 URI가 `/tea`인 경우 `tea-svc`에 연결된 파드에서 서비스 합니다.
+* 요청 URI가 `/coffee`인 경우 `coffee-svc`에 연결된 파드에서 서비스 합니다.
 
 ![ingress-01.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/ingress-01.png)
 
@@ -576,6 +579,9 @@ service "tea-svc" deleted
 ```
 
 ### 호스트 기반 서비스 분기
+인그레스 컨트롤러는 호스트 이름을 기반으로 서비스를 분기할 수 있습니다. 이 예제에서는 아래 그림과 같이 호스트 이름을 기반으로 서비스를 분기하도록 설정해 보겠습니다.
+* 요청 호스트 이름이 `tea.cafe.example.com인 경우 `tea-svc`에 연결된 파드에서 서비스 합니다.
+* 요청 호스트 이름이 `coffee.cafe.example.com인 경우 `tea-svc`에 연결된 파드에서 서비스 합니다.
 
 ![ingress-02.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/ingress-02.png)
 
@@ -735,15 +741,9 @@ Events:
 
 #### LoadBalancer 서비스 객체로 변경
 
-![dashboard-01.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/dashboard-01.png)
-
 `LoadBalancer` 유형으로 서비스 객체를 변경하면 클러스터 외부에 TOAST Load Balancer가 생성되고, 외부 로드 밸런서와 서비스 객체가 연결됩니다. 서비스 객체를 조회했을 때 **EXTERNAL-IP** 필드에 로드 밸런서의 IP가 표시됩니다. `LoadBalancer` 유형의 서비스 객체에 대한 설명은 [LoadBalancer 서비스](/Container/Kubernetes/ja/user-guide/#loadbalancer)를 참고하세요.
 
-웹 브라우저에서 `https://{EXTERNAL-IP}`로 접속하면 Kubernetes 대시보드 페이지가 로딩됩니다. 로그인을 위해 필요한 토큰은 [대시보드 엑세스 토큰](/Container/Kubernetes/ja/user-guide/#_24)을 참고하세요.
-
-> [참고]
-> 생성된 로드 밸런서는 **Network > Load Balancer** 페이지에서 확인할 수 있습니다.
-> 로드 밸런서의 IP는 외부에서 접근할 수 있는 플로팅 IP입니다. **Network > Floating IP** 페이지에서 확인할 수 있습니다.
+![dashboard-01.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/dashboard-01.png)
 
 다음과 같이 `kubernetes-dashboard` 서비스 객체의 유형을 `LoadBalancer`로 변경합니다.
 
@@ -762,13 +762,19 @@ kubernetes-dashboard   LoadBalancer   10.254.95.176   123.123.123.81   443:30963
 ```
 
 > [참고]
+> 생성된 로드 밸런서는 **Network > Load Balancer** 페이지에서 확인할 수 있습니다.
+> 로드 밸런서의 IP는 외부에서 접근할 수 있는 플로팅 IP입니다. **Network > Floating IP** 페이지에서 확인할 수 있습니다.
+
+웹 브라우저에서 `https://{EXTERNAL-IP}`로 접속하면 Kubernetes 대시보드 페이지가 로딩됩니다. 로그인을 위해 필요한 토큰은 [대시보드 엑세스 토큰](/Container/Kubernetes/ja/user-guide/#_24)을 참고하세요.
+
+> [참고]
 > Kubernetes 대시보드는 자동 생성되는 사설 인증서를 사용하기 때문에 웹 브라우저의 종류와 보안 설정에 따라 안전하지 않은 페이지로 표시될 수 있습니다.
 
 #### 인그레스(Ingress)를 이용한 서비스 공개
 
-![dashboard-02.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/dashboard-02.png)
+인그레스는 클러스터 내부의 여러 서비스들로 접근하기 위한 라우팅을 제공하는 네트워크 객체입니다. 인그레스 객체의 설정은 인그래스 컨트롤러로 구동됩니다. `kubernetes-dashboard` 서비스 객체를 인그레스를 통해 공개할 수 있습니다. 인그레스와 인그레스 컨트롤러에 대한 설명은 [인그레스 컨트롤러](/Container/Kubernetes/ja/user-guide/#_16)를 참고하세요.
 
-인그레스는 클러스터 내부의 여러 서비스들로 접근하기 위한 라우팅을 제공하는 네트워크 객체입니다. 인그레스 객체의 설정은 인그래스 컨트롤러로 구동됩니다. 인그레스와 인그레스 컨트롤러에 대한 설명은 [인그레스 컨트롤러](/Container/Kubernetes/ja/user-guide/#_16)를 참고하세요.
+![dashboard-02.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/dashboard-02.png)
 
 [NGINX Ingress Controller 설치](/Container/Kubernetes/ja/user-guide/#nginx-ingress-controller)를 참고해 `NGINX Ingress Controller`를 설치하고 `LoadBalancer` 유형의 서비스를 생성합니다. 그리고 다음과 같이 인그레스 객체 생성을 위한 매니페스트를 작성합니다.
 
@@ -799,7 +805,7 @@ spec:
   - secretName: kubernetes-dashboard-certs
 ```
 
-매니페스트를 적용해 인그레스를 생성하고 `ingress-nginx` 서비스 객체의 **EXTERNAL-IP** 필드를 확인합니다. 웹 브라우저에서 `https://{EXTERNAL-IP}`로 접속하면 Kubernetes 대시보드 페이지가 로딩됩니다. 로그인을 위해 필요한 토큰은 [대시보드 엑세스 토큰](/Container/Kubernetes/ja/user-guide/#_24)을 참고하세요.
+매니페스트를 적용해 인그레스를 생성하고 `ingress-nginx` 서비스 객체의 **EXTERNAL-IP** 필드를 확인합니다.
 
 ```
 $ kubectl apply -f kubernetes-dashboard-ingress-tls-passthrough.yaml
@@ -809,6 +815,8 @@ $ kubectl get service/ingress-nginx -n ingress-nginx
 NAME            TYPE           CLUSTER-IP       EXTERNAL-IP      PORT(S)                      AGE
 ingress-nginx   LoadBalancer   10.254.211.113   123.123.123.29   80:32680/TCP,443:31631/TCP   19h
 ```
+
+웹 브라우저에서 `https://{EXTERNAL-IP}`로 접속하면 Kubernetes 대시보드 페이지가 로딩됩니다. 로그인을 위해 필요한 토큰은 [대시보드 엑세스 토큰](/Container/Kubernetes/ja/user-guide/#_24)을 참고하세요.
 
 ### 대시보드 엑세스 토큰
 Kubernetes 대시보드에 로그인하려면 토큰이 필요합니다. 토큰은 다음 명령으로 얻을 수 있습니다.
