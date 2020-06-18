@@ -676,38 +676,6 @@ $ curl --resolve test.example.com:80:123.123.123.44 http://test.example.com/
 ## Kubernetes 대시보드
 TOAST Kubernetes 서비스는 기본 웹 UI 대시보드(dashboard)를 제공합니다. Kubernetes 대시보드에 대한 자세한 내용은 [웹 UI (대시보드)](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/) 문서를 참고하세요.
 
-### 대시보드 권한 설정
-대시보드를 사용하려면 사용자에게 접근 권한을 부여해야 합니다. 역할 기반 엑세스 제어에 대한 자세한 내용은 [Using RBAC Authorization](https://kubernetes.io/docs/reference/access-authn-authz/rbac/)을 참고하세요.
-
-다음 명령은 사용자에게 모든 권한을 가진 클러스터 관리자 역할을 부여합니다.
-
-```
-$ kubectl create clusterrolebinding kubernetes-dashboard --clusterrole=cluster-admin --serviceaccount=kube-system:kubernetes-dashboard
-clusterrolebinding.rbac.authorization.k8s.io/kubernetes-dashboard created
-
-$ kubectl describe clusterrolebinding kubernetes-dashboard -n kube-system
-Name:         kubernetes-dashboard
-Labels:       <none>
-Annotations:  <none>
-Role:
-  Kind:  ClusterRole
-  Name:  cluster-admin
-Subjects:
-  Kind            Name                  Namespace
-  ----            ----                  ---------
-  ServiceAccount  kubernetes-dashboard  kube-system
-
-$ kubectl describe ClusterRole cluster-admin
-Name:         cluster-admin
-Labels:       kubernetes.io/bootstrapping=rbac-defaults
-Annotations:  rbac.authorization.kubernetes.io/autoupdate: true
-PolicyRule:
-  Resources  Non-Resource URLs  Resource Names  Verbs
-  ---------  -----------------  --------------  -----
-  *.*        []                 []              [*]
-             [*]                []              [*]
-```
-
 ### 대시보드 서비스 공개
 사용자 Kubernetes에는 대시보드를 공개하기 위한 `kubernetes-dashboard` 서비스 객체가 미리 생성되어 있습니다.
 

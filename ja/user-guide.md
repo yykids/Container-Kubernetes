@@ -676,38 +676,6 @@ $ curl --resolve test.example.com:80:123.123.123.44 http://test.example.com/
 ## Kubernetesダッシュボード
 TOAST Kubernetesサービスは、基本Web UIダッシュボード(dashboard)を提供します。Kubernetesダッシュボードの詳細は、[Web UI (ダッシュボード)](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/)文書を参照してください。
 
-### ダッシュボードの権限設定
-ダッシュボードを使用するには、ユーザーにアクセス権限を付与する必要があります。役割基盤アクセス制御の詳細は[Using RBAC Authorization](https://kubernetes.io/docs/reference/access-authn-authz/rbac/)を参照してください。
-
-次のコマンドは、ユーザーにすべての権限を持つクラスター管理者の役割を付与します。
-
-```
-$ kubectl create clusterrolebinding kubernetes-dashboard --clusterrole=cluster-admin --serviceaccount=kube-system:kubernetes-dashboard
-clusterrolebinding.rbac.authorization.k8s.io/kubernetes-dashboard created
-
-$ kubectl describe clusterrolebinding kubernetes-dashboard -n kube-system
-Name:         kubernetes-dashboard
-Labels:       <none>
-Annotations:  <none>
-Role:
-  Kind:  ClusterRole
-  Name:  cluster-admin
-Subjects:
-  Kind            Name                  Namespace
-  ----            ----                  ---------
-  ServiceAccount  kubernetes-dashboard  kube-system
-
-$ kubectl describe ClusterRole cluster-admin
-Name:         cluster-admin
-Labels:       kubernetes.io/bootstrapping=rbac-defaults
-Annotations:  rbac.authorization.kubernetes.io/autoupdate: true
-PolicyRule:
-  Resources  Non-Resource URLs  Resource Names  Verbs
-  ---------  -----------------  --------------  -----
-  *.*        []                 []              [*]
-             [*]                []              [*]
-```
-
 ### ダッシュボードサービス公開
 ユーザーKubernetesにはダッシュボードを公開するための`kubernetes-dashboard`サービスオブジェクトがあらかじめ作成されています。
 
