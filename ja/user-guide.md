@@ -729,7 +729,7 @@ kubernetes-dashboard   LoadBalancer   10.254.95.176   123.123.123.81   443:30963
 > 作成されたロードバランサーは、**Network > Load Balancer**ページで確認できます。
 > ロードバランサーのIPは、外部からアクセスできるFloating IPです。**Network > Floating IP**ページで確認できます。
 
-Webブラウザで`https://{EXTERNAL-IP}`に接続すると、Kubernetesダッシュボードページがローディングされます。ログインするために必要なトークンは[ダッシュボードアクセストークン](/Container/Kubernetes/ja/user-guide/#_24)を参照してください。
+Webブラウザで`https://{EXTERNAL-IP}`に接続すると、Kubernetesダッシュボードページがローディングされます。ログインするために必要なトークンは[ダッシュボードアクセストークン](/Container/Kubernetes/ja/user-guide/#_23)を参照してください。
 
 > [参考]
 > Kubernetesダッシュボードは、自動作成されるプライベート証明書を使用するため、Webブラウザの種類とセキュリティ設定によっては安全ではないページと表示される場合があります。
@@ -780,7 +780,7 @@ NAME            TYPE           CLUSTER-IP       EXTERNAL-IP      PORT(S)        
 ingress-nginx   LoadBalancer   10.254.211.113   123.123.123.29   80:32680/TCP,443:31631/TCP   19h
 ```
 
-Webブラウザで`https://{EXTERNAL-IP}`に接続すると、Kubernetesダッシュボードページがローディングされます。ログインするために必要なトークンは[ダッシュボードアクセストークン](/Container/Kubernetes/ja/user-guide/#_24)を参照してください。
+Webブラウザで`https://{EXTERNAL-IP}`に接続すると、Kubernetesダッシュボードページがローディングされます。ログインするために必要なトークンは[ダッシュボードアクセストークン](/Container/Kubernetes/ja/user-guide/#_23)を参照してください。
 
 ### ダッシュボードアクセストークン
 Kubernetesダッシュボードにログインするにはトークンが必要です。トークンは次のコマンドで取得できます。
