@@ -33,14 +33,14 @@ TOAST Kubernetes 서비스는 클라우드에서 Kubernetes를 올바르고 안�
 
 TOAST Kubernetes 서비스의 주요 기능은 다음과 같습니다. TOAST Kubernetes provides the following features: 
 
-* TOAST에 꼭맞는 Kubernetes 클러스터 생성과 관리
-    * TOAST의 기반 서비스와 연동
-    * 로드 밸런서를 이용한 서비스 공개
-    * 블록 스토리지와 연동한 퍼시스턴트 볼륨(Persistent Volume, PV) 지원
+* TOAST에 꼭맞는 Kubernetes 클러스터 생성과 관리 Creating and Managing Kubernetes just right for TOAST
+    * TOAST의 기반 서비스와 연동 Integrate with TOAST infrastructure services
+    * 로드 밸런서를 이용한 서비스 공개 Open services on load balancer 
+    * 블록 스토리지와 연동한 퍼시스턴트 볼륨(Persistent Volume, PV) 지원 Support persistent volume (PV) by integrating with block storage
 
-* 고가용성을 보장하는 마스터 관리
+* 고가용성을 보장하는 마스터 관리 Managing Master to Ensure High Availability 
 
-* 웹 콘솔을 이용한 쉬운 조작
-    * 클러스터 생성, 삭제, 조회
-    * 노드 그룹 생성, 삭제, 조회
-    * kubectl 설정 지원
+* 웹 콘솔을 이용한 쉬운 조작 Easy Operations on Web Console 
+    * 클러스터 생성, 삭제, 조회 Create, delete, and query clusters
+    * 노드 그룹 생성, 삭제, 조회 Create, delete, and query node groups
+    * kubectl 설정 지원 Support kubectl configuration 
