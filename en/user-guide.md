@@ -1,61 +1,61 @@
-## Container > Kubernetes > 사용 가이드
+## Container > Kubernetes > 사용 가이드 User Guide 
 
-## 클러스터
-클러스터는 사용자의 Kubernetes를 구성하는 인스턴스들의 그룹입니다.
+## 클러스터 Cluster
+클러스터는 사용자의 Kubernetes를 구성하는 인스턴스들의 그룹입니다. A cluster is a group of instances that comprise user's Kubernetes. 
 
-### 클러스터 생성
-Kubernetes 서비스를 사용하려면 먼저 클러스터를 생성해야 합니다. **Container > Kubernetes** 서비스 페이지에서 **클러스터 생성** 버튼을 클릭하면 클러스터 생성 페이지가 나타납니다. 클러스터 생성에 필요한 항목은 다음과 같습니다.
+### 클러스터 생성 Creating Clusters
+Kubernetes 서비스를 사용하려면 먼저 클러스터를 생성해야 합니다. **Container > Kubernetes** 서비스 페이지에서 **클러스터 생성** 버튼을 클릭하면 클러스터 생성 페이지가 나타납니다. 클러스터 생성에 필요한 항목은 다음과 같습니다. To enable Kubernetes, a cluster must be created. Go to **Cotainer > Kubernetes** and click **Create Clusters** and a page of creating clusters opens. Following items are required to create a cluster: 
 
-| 항목 | 설명 |
+| Item | Description 설명 |
 | --- | --- |
-| 클러스터 이름 | Kubernetes 클러스터의 이름, 20자 이내의 영문자와 숫자, '-', '.'로 구성 |
-| 쿠버네티스 버전 | 사용할 Kubernetes 버전 |
-| VPC | 클러스터에 연결할 VPC 네트워크 |
-| 서브넷 | VPC에 정의된 서브넷 중 클러스터를 구성하는 인스턴스에 연결할 서브넷 |
-| 이미지 | 클러스터를 구성하는 인스턴스에 사용할 이미지 |
-| 가용성 영역 | 기본 노드 그룹 인스턴스를 생성할 영역 |
-| 인스턴스 타입 | 기본 노드 그룹 인스턴스 사양 |
-| 노드 수 | 기본 노드 그룹 인스턴스 수 |
-| 키 페어 | 기본 노드 그룹 접근에 사용할 키 페어 |
-| 블록 스토리지 타입 | 기본 노드 그룹 인스턴스의 블록 스토리지 종류 |
-| 블록 스토리지 크기 | 기본 노드 그룹 인스턴스의 블록 스토리지 크기 |
+| Cluster Name클러스터 이름 | Name of a Kubernetes cluster, to be comprised of less than 20 characters, including alphabets, numbers, '-', and '.' 클러스터의 이름, 20자 이내의 영문자와 숫자, '-', '.'로 구성 |
+| Kubernetes Version 쿠버네티스 버전 | Kubernetes version to use 사용할 Kubernetes 버전 |
+| VPC | VPC network to be connected to clusters 클러스터에 연결할 VPC 네트워크 |
+| Subnet 서브넷 | A subnet, among those defined for VPC, to be associated with instances that comprise a cluster VPC에 정의된 서브넷 중 클러스터를 구성하는 인스턴스에 연결할 서브넷 |
+| Image 이미지 | Images for instances comprising a cluster 클러스터를 구성하는 인스턴스에 사용할 이미지 |
+| Availability Area가용성 영역 | Area to create a default node group instance 기본 노드 그룹 인스턴스를 생성할 영역 |
+| Instance Type 인스턴스 타입 | Instance specifications for a default node group기본 노드 그룹 인스턴스 사양 |
+| Node Count 노드 수 | Number of instances for a default node group 기본 노드 그룹 인스턴스 수 |
+| Keypair 키 페어 | Keypair to access default node group 기본 노드 그룹 접근에 사용할 키 페어 |
+| Block Storage Type 블록 스토리지 타입 | Type of block storage for a default node group instance 기본 노드 그룹 인스턴스의 블록 스토리지 종류 |
+| Block Storage Size 블록 스토리지 크기 | Size of block storage for a default node group instance 기본 노드 그룹 인스턴스의 블록 스토리지 크기 |
 
-필요한 정보를 입력하고 **클러스터 생성** 버튼을 클릭하면 클러스터 생성이 시작됩니다. 클러스터 목록에서 상태를 확인할 수 있습니다. 생성하는 데는 약 10분 정도 걸립니다. 클러스터 설정에 따라 더 오래 걸릴 수도 있습니다.
+Enter information as required and click **Create Clusters**, and a cluster begins to be created. You may check status from the list of clusters. It takes about 10 minutes to create; more time may be needed depending on the cluster setting.  버튼을 클릭하면 클러스터 생성이 시작됩니다. 클러스터 목록에서 상태를 확인할 수 있습니다. 생성하는 데는 약 10분 정도 걸립니다. 클러스터 설정에 따라 더 오래 걸릴 수도 있습니다.
 
-> [참고]
-> 클러스터를 생성하면 기본 노드 그룹이 생성됩니다. 기본 노드 그룹이 생성된 이후에는 노드 수를 변경할 수 없습니다. 추가 노드가 필요하면 노드 그룹을 새로 만들어야 합니다.
+> [Caution]
+> With a cluster created, a default node group is created. After a default node group is created, the number of nodes cannot be modified. When you need more nodes, a new node group must be created. 클러스터를 생성하면 기본 노드 그룹이 생성됩니다. 기본 노드 그룹이 생성된 이후에는 노드 수를 변경할 수 없습니다. 추가 노드가 필요하면 노드 그룹을 새로 만들어야 합니다.
 
 
-### 클러스터 조회
-생성한 클러스터는 **Container > Kubernetes** 서비스 페이지에서 확인할 수 있습니다. 클러스터를 선택하면 하단에 클러스터 정보가 나타납니다.
+### 클러스터 조회 Querying Clusters 
+A newly created cluster can be found on 생성한 클러스터는 **Container > Kubernetes** 서비스 페이지에서 확인할 수 있습니다. Select a cluster and the information shows at the bottom. 클러스터를 선택하면 하단에 클러스터 정보가 나타납니다.
 
-| 항목 | 설명 |
+| Item항목 | Description |
 | --- | --- |
-| 클러스터 이름 | Kubernetes 클러스터의 이름과 ID |
-| 노드 수 | 클러스터를 구성하는 모든 노드 인스턴스 수 |
-| Kubernetes 버전 | 사용 중인 Kubernetes 버전 |
-| VPC | 클러스터에 연결된 VPC 네트워크 |
-| 서브넷 | 클러스터를 구성하는 노드 인스턴스에 연결된 서브넷 |
-| API 엔드포인트 | 클러스터에 접근해 조작하기 위한 API 엔드포인트 URI |
-| 설정 파일 | 클러스터에 접근해 조작하기 위해 필요한 설정 파일 다운로드 버튼 |
+| Cluster Name 클러스터 이름 | Name and ID of Kubernetes Cluster 클러스터의 이름과 ID |
+| Node Count 노드 수 | Number of instances of all nodes comprising a cluster 클러스터를 구성하는 모든 노드 인스턴스 수 |
+| Kubernetes 버전 | Kubernetes version in service 사용 중인 Kubernetes 버전 |
+| VPC | VPC network connected to cluster 클러스터에 연결된 VPC 네트워크 |
+| Subnet 서브넷 | Subnet associated to a node instance comprising a cluster 클러스터를 구성하는 노드 인스턴스에 연결된 서브넷 |
+| API Endpoint 엔드포인트 | URI of API endpoint to access cluster for opearation 클러스터에 접근해 조작하기 위한 API 엔드포인트 URI |
+| Configuration File 설정 파일 | Download button of configuration file required to access cluster for operation 클러스터에 접근해 조작하기 위해 필요한 설정 파일 다운로드 버튼 |
 
-### 클러스터 삭제
-삭제할 클러스터를 선택하고 **클러스터 삭제** 버튼을 클릭하면 삭제가 진행됩니다. 삭제하는 데는 약 5분 정도 걸립니다. 클러스터의 상태에 따라 더 오래 걸릴 수도 있습니다.
+### 클러스터 삭제 Delete
+Select a cluster to delete, and click 삭제할 클러스터를 선택하고 **Delete Clusters클러스터 삭제** and it is deleted. It takes about 5 minutes to delete; more time may be needed depending on the cluster status. 버튼을 클릭하면 삭제가 진행됩니다. 삭제하는 데는 약 5분 정도 걸립니다. 클러스터의 상태에 따라 더 오래 걸릴 수도 있습니다.
 
-## 노드 그룹
-노드 그룹은 Kubernetes를 구성하는 워커 노드 인스턴스들의 그룹입니다.
+## 노드 그룹 Node Group
+노드 그룹은 Kubernetes를 구성하는 워커 노드 인스턴스들의 그룹입니다. A node group is comprised of worker node instances that comprise a Kubernetes. 
 
-### 노드 그룹 조회
-클러스터 목록에서 클러스터 이름을 클릭하면 노드 그룹 목록을 확인할 수 있습니다. 노드 그룹을 선택하면 하단에 노드 그룹 정보가 나타납니다.
+### 노드 그룹 조회 Query
+Click a cluster name on the list to find the list of node groups. Select a node group and the information shows at the bottom.  클러스터 목록에서 클러스터 이름을 클릭하면 노드 그룹 목록을 확인할 수 있습니다. 노드 그룹을 선택하면 하단에 노드 그룹 정보가 나타납니다.
 
-* 기본 정보
-**기본 정보** 탭에서는 다음과 정보를 확인할 수 있습니다.
+* 기본 정보 Basic Information
+On the **Basic Information기본 정보** tab, check the following: 탭에서는 다음과 정보를 확인할 수 있습니다.
 
-| 항목 | 설명 |
+| Item항목 |Description 설명 |
 | --- | --- |
-| 노드 그룹 이름 | 노드 그룹 이름과 ID |
-| 클러스터 이름 | 노드 그룹이 속한 클러스터의 이름과 ID |
-| 쿠버네티스 버전 | 사용 중인 Kubernetes 버전 |
+| Name of Node Group 노드 그룹 이름 | Name and ID of a node group 노드 그룹 이름과 ID |
+| Name of Cluster클러스터 이름 | Name and ID of cluster to which a node group is included 노드 그룹이 속한 클러스터의 이름과 ID |
+| Kubernetes Version 쿠버네티스 버전 | Kubernetes version in service 사용 중인 Kubernetes 버전 |
 | 가용성 영역 | 노드 그룹 인스턴스가 생성된 영역 |
 | 인스턴스 타입 | 노드 그룹 인스턴스 사양 |
 | 이미지 타입 | 노드 그룹 인스턴스에 사용한 이미지 종류 |
@@ -66,10 +66,10 @@ Kubernetes 서비스를 사용하려면 먼저 클러스터를 생성해야 합�
 * 노드 목록
 **노드 목록** 탭에서는 노드 그룹을 구성하는 인스턴스의 목록을 확인할 수 있습니다.
 
-### 노드 그룹 생성
+### 노드 그룹 생성 Create
 클러스터를 생성하면 기본 노드 그룹이 생성되지만, 필요에 따라 추가 노드 그룹을 만들 수 있습니다. 기본 노드 그룹의 인스턴스보다 높은 사양의 컨테이너 구동 환경이 필요하거나, 스케일 아웃(scale out, 확장)을 위해 더 많은 워커 노드 인스턴스가 필요한 경우 추가 노드 그룹을 생성해 사용할 수 있습니다. 노드 그룹 목록 페이지에서 **노드 그룹 생성** 버튼을 클릭하면 노드 그룹 생성 페이지가 나타납니다. 노드 그룹 생성에 필요한 항목은 다음과 같습니다.
 
-| 항목 | 설명 |
+| Item항목 | Description설명 |
 | --- | --- |
 | 가용성 영역 | 클러스터를 구성하는 인스턴스를 생성할 영역 |
 | 노드 그룹 이름 | 추가 노드 그룹 이름, 20자 이내의 영문자와 숫자, '-', '.'로 구성 |
@@ -81,16 +81,16 @@ Kubernetes 서비스를 사용하려면 먼저 클러스터를 생성해야 합�
 
 필요한 정보를 입력하고 **노드 그룹 생성** 버튼을 클릭하면 노드 그룹 생성이 시작됩니다. 노드 그룹 목록에서 상태를 확인할 수 있습니다. 노드 그룹 생성하는 데는 약 5분 정도 걸립니다. 노드 그룹 설정에 따라 더 오래 걸릴 수도 있습니다.
 
-### 노드 그룹 삭제
+### 노드 그룹 삭제Delete
 노드 그룹 목록에서 삭제하려는 노드 그룹을 선택하고 **노드 그룹 삭제** 버튼을 클릭하면 삭제가 진행됩니다. 노드 그룹 삭제하는 데는 약 5분 정도 걸립니다. 노드 그룹의 상태에 따라 더 오래 걸릴 수도 있습니다.
 
-## 클러스터 관리
+## 클러스터 관리 Cluster Management
 원격의 호스트에서 클러스터를 조작하고 관리하려면 Kubernetes가 제공하는 명령줄 도구(CLI)인 `kubectl`이 필요합니다.
 
-### kubectl 설치
+### kubectl 설치 Install kubectl
 kubectl은 특별한 설치 과정 없이 실행 파일을 다운로드해 바로 사용할 수 있습니다. 운영체제별 다운로드 경로는 다음과 같습니다.
 
-| 운영체제 | 다운로드 커맨드 |
+| OS 운영체제 | Download Command 다운로드 커맨드 |
 | --- | --- |
 | Linux | curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.15.7/bin/linux/amd64/kubectl |
 | MacOS | curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.15.7/bin/darwin/amd64/kubectl |
@@ -98,14 +98,14 @@ kubectl은 특별한 설치 과정 없이 실행 파일을 다운로드해 바�
 
 그 외 설치 방법과 옵션 등 자세한 사항은 [Install and Set Up kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) 문서를 참고하세요.
 
-#### 권한 변경
+#### 권한 변경 Role Changes
 다운로드한 파일은 기본적으로 실행 권한이 없습니다. 실행 권한을 추가해야 합니다.
 
 ```
 $ chmod +x kubectl
 ```
 
-#### 위치 변경 또는 경로 지정
+#### 위치 변경 또는 경로 지정 Change Location or Specify Path 
 어느 경로에서든 kubectl을 실행할 수 있도록 환경 변수에 지정된 경로로 옮기거나, kubectl이 있는 경로를 환경 변수에 추가합니다.
 
 * 환경 변수에 지정된 경로로 위치 변경
@@ -119,10 +119,10 @@ $ sudo mv kubectl /usr/local/bin/
 $ export PATH=$PATH:$(pwd)
 ```
 
-### 설정
+### 설정 Setting 
 kubectl로 Kubernetes 클러스터에 접근하려면 클러스터 설정 파일(kubeconfig)이 필요합니다. TOAST 웹 콘솔에서 **Container > Kubernetes** 서비스 페이지를 열고 접근할 클러스터를 선택합니다. 하단 **기본 정보** 탭에서 **설정 파일** 항목의 **다운로드** 버튼을 클릭해 설정 파일을 다운로드합니다. 다운로드한 설정 파일은 원하는 위치로 옮겨 kubectl 실행 시 참조할 수 있도록 준비합니다.
 
-> [주의]
+> [Caution]
 > TOAST 웹 콘솔에서 다운로드한 설정 파일은 클러스터 정보와 인증을 위한 토큰 등이 포함되어 있습니다. 설정 파일이 있으면 해당 Kubernetes 클러스터에 접근할 수 있는 권한을 갖게 됩니다. 설정 파일을 절대로 분실하지 않도록 주의하시기 바랍니다.
 
 kubectl은 실행할 때마다 클러스터 설정 파일이 필요합니다. 따라서 매번 `--kubeconfig` 옵션을 이용해 클러스터 설정 파일을 지정해야 합니다. 그러나 환경 변수에 클러스터 설정 파일 경로가 저장되어 있다면 매번 옵션을 지정하지 않아도 됩니다.
@@ -142,8 +142,8 @@ Client Version: version.Info{Major:"1", Minor:"15", GitVersion:"v1.15.7", GitCom
 Server Version: version.Info{Major:"1", Minor:"15", GitVersion:"v1.15.7", GitCommit:"6c143d35bb11d74970e7bc0b6c45b6bfdffc0bd4", GitTreeState:"clean", BuildDate:"2019-12-11T12:34:17Z", GoVersion:"go1.12.12", Compiler:"gc", Platform:"linux/amd64"}
 ```
 
-* Client Version: 실행한 kubectl 파일의 버전 정보
-* Server Version: 클러스터를 구성하고 있는 Kubernetes 버전 정보
+* Client Version: 실행한 kubectl 파일의 버전 정보 Version information of executed kubectl file 
+* Server Version: 클러스터를 구성하고 있는 Kubernetes 버전 정보 Kubernetes version information comprising a cluster 
 
 ## LoadBalancer 서비스
 Kubernetes 애플리케이션의 기본 실행 단위인 파드(pod)는 CNI(Container Network Interface)로 클러스터 네트워크에 연결됩니다. 기본적으로 클러스터 외부에서 파드로는 접근할 수 없습니다. 파드의 서비스를 클러스터 외부에 공개하려면 Kubernetes의 `LoadBalancer` 서비스(Service) 객체(object)를 이용해 외부에 공개할 경로를 만들어야 합니다. LoadBalancer 서비스 객체를 만들면 클러스터 외부에 TOAST Load Balancer가 생성되어 서비스 객체와 연결됩니다.
