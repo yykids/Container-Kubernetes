@@ -4,7 +4,7 @@
 클러스터는 사용자의 Kubernetes를 구성하는 인스턴스들의 그룹입니다. A cluster is a group of instances that comprise user's Kubernetes. 
 
 ### 클러스터 생성 Creating Clusters
-Kubernetes 서비스를 사용하려면 먼저 클러스터를 생성해야 합니다. **Container > Kubernetes** 서비스 페이지에서 **클러스터 생성** 버튼을 클릭하면 클러스터 생성 페이지가 나타납니다. 클러스터 생성에 필요한 항목은 다음과 같습니다. To enable Kubernetes, a cluster must be created. Go to **Cotainer > Kubernetes** and click **Create Clusters** and a page of creating clusters opens. Following items are required to create a cluster: 
+Kubernetes 서비스를 사용하려면 먼저 클러스터를 생성해야 합니다. **Container > Kubernetes** 서비스 페이지에서 **클러스터 생성** 버튼을 클릭하면 클러스터 생성 페이지가 나타납니다. 클러스터 생성에 필요한 항목은 다음과 같습니다. To enable Kubernetes, a cluster must be created. Go to **Container > Kubernetes** and click **Create Clusters** and a page of creating clusters opens. Following items are required to create a cluster: 
 
 | Item | Description 설명 |
 | --- | --- |
@@ -20,7 +20,7 @@ Kubernetes 서비스를 사용하려면 먼저 클러스터를 생성해야 합�
 | Block Storage Type 블록 스토리지 타입 | Type of block storage for a default node group instance 기본 노드 그룹 인스턴스의 블록 스토리지 종류 |
 | Block Storage Size 블록 스토리지 크기 | Size of block storage for a default node group instance 기본 노드 그룹 인스턴스의 블록 스토리지 크기 |
 
-Enter information as required and click **Create Clusters**, and a cluster begins to be created. You may check status from the list of clusters. It takes about 10 minutes to create; more time may be needed depending on the cluster setting.  버튼을 클릭하면 클러스터 생성이 시작됩니다. 클러스터 목록에서 상태를 확인할 수 있습니다. 생성하는 데는 약 10분 정도 걸립니다. 클러스터 설정에 따라 더 오래 걸릴 수도 있습니다.
+Enter information as required and click **Create Clusters**, and a cluster begins to be created. You may check status from the list of clusters. It takes about 10 minutes to create; more time may be required depending on the cluster setting.  버튼을 클릭하면 클러스터 생성이 시작됩니다. 클러스터 목록에서 상태를 확인할 수 있습니다. 생성하는 데는 약 10분 정도 걸립니다. 클러스터 설정에 따라 더 오래 걸릴 수도 있습니다.
 
 > [Caution]
 > With a cluster created, a default node group is created. After a default node group is created, the number of nodes cannot be modified. When you need more nodes, a new node group must be created. 클러스터를 생성하면 기본 노드 그룹이 생성됩니다. 기본 노드 그룹이 생성된 이후에는 노드 수를 변경할 수 없습니다. 추가 노드가 필요하면 노드 그룹을 새로 만들어야 합니다.
@@ -40,7 +40,7 @@ A newly created cluster can be found on 생성한 클러스터는 **Container > 
 | Configuration File 설정 파일 | Download button of configuration file required to access cluster for operation 클러스터에 접근해 조작하기 위해 필요한 설정 파일 다운로드 버튼 |
 
 ### 클러스터 삭제 Delete
-Select a cluster to delete, and click 삭제할 클러스터를 선택하고 **Delete Clusters클러스터 삭제** and it is deleted. It takes about 5 minutes to delete; more time may be needed depending on the cluster status. 버튼을 클릭하면 삭제가 진행됩니다. 삭제하는 데는 약 5분 정도 걸립니다. 클러스터의 상태에 따라 더 오래 걸릴 수도 있습니다.
+Select a cluster to delete, and click 삭제할 클러스터를 선택하고 **Delete Clusters클러스터 삭제** and it is deleted. It takes about 5 minutes to delete; more time may be required depending on the cluster status. 버튼을 클릭하면 삭제가 진행됩니다. 삭제하는 데는 약 5분 정도 걸립니다. 클러스터의 상태에 따라 더 오래 걸릴 수도 있습니다.
 
 ## 노드 그룹 Node Group
 노드 그룹은 Kubernetes를 구성하는 워커 노드 인스턴스들의 그룹입니다. A node group is comprised of worker node instances that comprise a Kubernetes. 
@@ -56,39 +56,39 @@ On the **Basic Information기본 정보** tab, check the following: 탭에서는
 | Name of Node Group 노드 그룹 이름 | Name and ID of a node group 노드 그룹 이름과 ID |
 | Name of Cluster클러스터 이름 | Name and ID of cluster to which a node group is included 노드 그룹이 속한 클러스터의 이름과 ID |
 | Kubernetes Version 쿠버네티스 버전 | Kubernetes version in service 사용 중인 Kubernetes 버전 |
-| 가용성 영역 | 노드 그룹 인스턴스가 생성된 영역 |
-| 인스턴스 타입 | 노드 그룹 인스턴스 사양 |
-| 이미지 타입 | 노드 그룹 인스턴스에 사용한 이미지 종류 |
-| 블록 스토리지 크기 | 노드 그룹 인스턴스의 블록 스토리지 크기 |
-| 생성일 | 노드 그룹이 생성된 시각 |
-| 수정일 | 노드 그룹이 마지막으로 수정된 시각 |
+| Availability Area가용성 영역 | Area in which a node group instance is created 노드 그룹 인스턴스가 생성된 영역 |
+| Instance Type 인스턴스 타입 | Specifications of a node group instance 노드 그룹 인스턴스 사양 |
+| Image Type이미지 타입 | Type of image for a node group instance 노드 그룹 인스턴스에 사용한 이미지 종류 |
+| Size of Block Storage블록 스토리지 크기 | Size of block storage for a node group instance 노드 그룹 인스턴스의 블록 스토리지 크기 |
+| Created Date 생성일 | Time when node group was created 노드 그룹이 생성된 시각 |
+| Modified Date수정일 | Last time when node group was modified 노드 그룹이 마지막으로 수정된 시각 |
 
-* 노드 목록
-**노드 목록** 탭에서는 노드 그룹을 구성하는 인스턴스의 목록을 확인할 수 있습니다.
+* 노드 목록 List of Nodes 
+Find the list of instances comprising a node group from the **List of Nodes노드 목록** tab. 탭에서는 노드 그룹을 구성하는 인스턴스의 목록을 확인할 수 있습니다.
 
-### 노드 그룹 생성 Create
-클러스터를 생성하면 기본 노드 그룹이 생성되지만, 필요에 따라 추가 노드 그룹을 만들 수 있습니다. 기본 노드 그룹의 인스턴스보다 높은 사양의 컨테이너 구동 환경이 필요하거나, 스케일 아웃(scale out, 확장)을 위해 더 많은 워커 노드 인스턴스가 필요한 경우 추가 노드 그룹을 생성해 사용할 수 있습니다. 노드 그룹 목록 페이지에서 **노드 그룹 생성** 버튼을 클릭하면 노드 그룹 생성 페이지가 나타납니다. 노드 그룹 생성에 필요한 항목은 다음과 같습니다.
+### 노드 그룹 생성 Create Node Groups 
+When a cluster is created, a default node group is created, but more node groups may be created depending on the needs. If higher specifications are required to run a container, or more worker node instances are required to scale out, node groups may be additionally created. Click **Create Node Groups** from the page of node group list, and the page of creating a node group shows up. Following items are required to create a node group:  클러스터를 생성하면 기본 노드 그룹이 생성되지만, 필요에 따라 추가 노드 그룹을 만들 수 있습니다. 기본 노드 그룹의 인스턴스보다 높은 사양의 컨테이너 구동 환경이 필요하거나, 스케일 아웃(scale out, 확장)을 위해 더 많은 워커 노드 인스턴스가 필요한 경우 추가 노드 그룹을 생성해 사용할 수 있습니다. 노드 그룹 목록 페이지에서 **노드 그룹 생성** 버튼을 클릭하면 노드 그룹 생성 페이지가 나타납니다. 노드 그룹 생성에 필요한 항목은 다음과 같습니다.
 
 | Item항목 | Description설명 |
 | --- | --- |
-| 가용성 영역 | 클러스터를 구성하는 인스턴스를 생성할 영역 |
-| 노드 그룹 이름 | 추가 노드 그룹 이름, 20자 이내의 영문자와 숫자, '-', '.'로 구성 |
-| 인스턴스 타입 | 추가 노드 그룹 인스턴스 사양 |
-| 노드 수 | 추가 노드 그룹 인스턴스 수 |
-| 키 페어 | 추가 노드 그룹 접근에 사용할 키 페어 |
-| 블록 스토리지 타입 | 추가 노드 그룹 인스턴스의 블록 스토리지 종류 |
-| 블록 스토리지 크기 | 추가 노드 그룹 인스턴스의 블록 스토리지 크기 |
+| Availability Area 가용성 영역 | Area to create instances comprising a cluster 클러스터를 구성하는 인스턴스를 생성할 영역 |
+| Name of Node Group 노드 그룹 이름 | Name of additional node group, comprised of alphabets, numbers, '-', and '.'로 구성 |
+| Type of Instance 인스턴스 타입 | Specificiations of an instance for additional node group 추가 노드 그룹 인스턴스 사양 |
+| Number of Nodes 노드 수 | Number of instances for additional node group 추가 노드 그룹 인스턴스 수 |
+| Keypair 키 페어 | Keypair to access additional node group 추가 노드 그룹 접근에 사용할 키 페어 |
+| Type of Block Storage 블록 스토리지 타입 | Type of block storage of instance for additional node group 추가 노드 그룹 인스턴스의 블록 스토리지 종류 |
+| Size of Block Storage 스토리지 크기 | Size of block storage of instance for additional node group 추가 노드 그룹 인스턴스의 블록 스토리지 크기 |
 
-필요한 정보를 입력하고 **노드 그룹 생성** 버튼을 클릭하면 노드 그룹 생성이 시작됩니다. 노드 그룹 목록에서 상태를 확인할 수 있습니다. 노드 그룹 생성하는 데는 약 5분 정도 걸립니다. 노드 그룹 설정에 따라 더 오래 걸릴 수도 있습니다.
+필요한 정보를 입력하고 **노드 그룹 생성** 버튼을 클릭하면 노드 그룹 생성이 시작됩니다. 노드 그룹 목록에서 상태를 확인할 수 있습니다. 노드 그룹 생성하는 데는 약 5분 정도 걸립니다. 노드 그룹 설정에 따라 더 오래 걸릴 수도 있습니다. Enter information as required and click **Create Node Groups**, and a node group begins to be created. You may check status from the list of node groups. It takes about 5 minutes to create; more time may be required depending on the node group setting.  
 
 ### 노드 그룹 삭제Delete
-노드 그룹 목록에서 삭제하려는 노드 그룹을 선택하고 **노드 그룹 삭제** 버튼을 클릭하면 삭제가 진행됩니다. 노드 그룹 삭제하는 데는 약 5분 정도 걸립니다. 노드 그룹의 상태에 따라 더 오래 걸릴 수도 있습니다.
+노드 그룹 목록에서 삭제하려는 노드 그룹을 선택하고 **노드 그룹 삭제** 버튼을 클릭하면 삭제가 진행됩니다. 노드 그룹 삭제하는 데는 약 5분 정도 걸립니다. 노드 그룹의 상태에 따라 더 오래 걸릴 수도 있습니다. Select a node group to delete from the list of node groups, and click **Delete Node Groups** and it is deleted. It takes about 5 minutes to delete a node group; more time may be required depending on the node group status. 
 
 ## 클러스터 관리 Cluster Management
-원격의 호스트에서 클러스터를 조작하고 관리하려면 Kubernetes가 제공하는 명령줄 도구(CLI)인 `kubectl`이 필요합니다.
+원격의 호스트에서 클러스터를 조작하고 관리하려면 Kubernetes가 제공하는 명령줄 도구(CLI)인 `kubectl`이 필요합니다. To operate and manage clusters from a remote host, 'kubectl', which is the command line tool (CLI) as provided by Kubernetes, is required.
 
 ### kubectl 설치 Install kubectl
-kubectl은 특별한 설치 과정 없이 실행 파일을 다운로드해 바로 사용할 수 있습니다. 운영체제별 다운로드 경로는 다음과 같습니다.
+kubectl은 특별한 설치 과정 없이 실행 파일을 다운로드해 바로 사용할 수 있습니다. 운영체제별 다운로드 경로는 다음과 같습니다. For kubectl, execution files can be downloaded and enabled, with no need of special installation procedure. Each operating system provides the following download path: 
 
 | OS 운영체제 | Download Command 다운로드 커맨드 |
 | --- | --- |
@@ -99,7 +99,7 @@ kubectl은 특별한 설치 과정 없이 실행 파일을 다운로드해 바�
 그 외 설치 방법과 옵션 등 자세한 사항은 [Install and Set Up kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) 문서를 참고하세요.
 
 #### 권한 변경 Role Changes
-다운로드한 파일은 기본적으로 실행 권한이 없습니다. 실행 권한을 추가해야 합니다.
+다운로드한 파일은 기본적으로 실행 권한이 없습니다. 실행 권한을 추가해야 합니다. Downloade files 
 
 ```
 $ chmod +x kubectl
