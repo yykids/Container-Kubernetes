@@ -39,13 +39,13 @@ A newly created cluster can be found on 생성한 클러스터는 **Container > 
 | API Endpoint 엔드포인트 | URI of API endpoint to access cluster for opearation 클러스터에 접근해 조작하기 위한 API 엔드포인트 URI |
 | Configuration File 설정 파일 | Download button of configuration file required to access cluster for operation 클러스터에 접근해 조작하기 위해 필요한 설정 파일 다운로드 버튼 |
 
-### 클러스터 삭제 Delete
+### 클러스터 삭제 Deleting Clusters 
 Select a cluster to delete, and click 삭제할 클러스터를 선택하고 **Delete Clusters클러스터 삭제** and it is deleted. It takes about 5 minutes to delete; more time may be required depending on the cluster status. 버튼을 클릭하면 삭제가 진행됩니다. 삭제하는 데는 약 5분 정도 걸립니다. 클러스터의 상태에 따라 더 오래 걸릴 수도 있습니다.
 
 ## 노드 그룹 Node Group
 노드 그룹은 Kubernetes를 구성하는 워커 노드 인스턴스들의 그룹입니다. A node group is comprised of worker node instances that comprise a Kubernetes. 
 
-### 노드 그룹 조회 Query
+### 노드 그룹 조회 Querying Node Groups 
 Click a cluster name on the list to find the list of node groups. Select a node group and the information shows at the bottom.  클러스터 목록에서 클러스터 이름을 클릭하면 노드 그룹 목록을 확인할 수 있습니다. 노드 그룹을 선택하면 하단에 노드 그룹 정보가 나타납니다.
 
 * 기본 정보 Basic Information
@@ -66,7 +66,7 @@ On the **Basic Information기본 정보** tab, check the following: 탭에서는
 * 노드 목록 List of Nodes 
 Find the list of instances comprising a node group from the **List of Nodes노드 목록** tab. 탭에서는 노드 그룹을 구성하는 인스턴스의 목록을 확인할 수 있습니다.
 
-### 노드 그룹 생성 Create Node Groups 
+### 노드 그룹 생성 Creating Node Groups 
 When a cluster is created, a default node group is created, but more node groups may be created depending on the needs. If higher specifications are required to run a container, or more worker node instances are required to scale out, node groups may be additionally created. Click **Create Node Groups** from the page of node group list, and the page of creating a node group shows up. Following items are required to create a node group:  클러스터를 생성하면 기본 노드 그룹이 생성되지만, 필요에 따라 추가 노드 그룹을 만들 수 있습니다. 기본 노드 그룹의 인스턴스보다 높은 사양의 컨테이너 구동 환경이 필요하거나, 스케일 아웃(scale out, 확장)을 위해 더 많은 워커 노드 인스턴스가 필요한 경우 추가 노드 그룹을 생성해 사용할 수 있습니다. 노드 그룹 목록 페이지에서 **노드 그룹 생성** 버튼을 클릭하면 노드 그룹 생성 페이지가 나타납니다. 노드 그룹 생성에 필요한 항목은 다음과 같습니다.
 
 | Item항목 | Description설명 |
@@ -81,13 +81,13 @@ When a cluster is created, a default node group is created, but more node groups
 
 필요한 정보를 입력하고 **노드 그룹 생성** 버튼을 클릭하면 노드 그룹 생성이 시작됩니다. 노드 그룹 목록에서 상태를 확인할 수 있습니다. 노드 그룹 생성하는 데는 약 5분 정도 걸립니다. 노드 그룹 설정에 따라 더 오래 걸릴 수도 있습니다. Enter information as required and click **Create Node Groups**, and a node group begins to be created. You may check status from the list of node groups. It takes about 5 minutes to create; more time may be required depending on the node group setting.  
 
-### 노드 그룹 삭제Delete
+### 노드 그룹 삭제Deleting Node Groups 
 노드 그룹 목록에서 삭제하려는 노드 그룹을 선택하고 **노드 그룹 삭제** 버튼을 클릭하면 삭제가 진행됩니다. 노드 그룹 삭제하는 데는 약 5분 정도 걸립니다. 노드 그룹의 상태에 따라 더 오래 걸릴 수도 있습니다. Select a node group to delete from the list of node groups, and click **Delete Node Groups** and it is deleted. It takes about 5 minutes to delete a node group; more time may be required depending on the node group status. 
 
 ## 클러스터 관리 Cluster Management
 원격의 호스트에서 클러스터를 조작하고 관리하려면 Kubernetes가 제공하는 명령줄 도구(CLI)인 `kubectl`이 필요합니다. To operate and manage clusters from a remote host, 'kubectl', which is the command line tool (CLI) as provided by Kubernetes, is required.
 
-### kubectl 설치 Install kubectl
+### kubectl 설치 Installing kubectl
 kubectl은 특별한 설치 과정 없이 실행 파일을 다운로드해 바로 사용할 수 있습니다. 운영체제별 다운로드 경로는 다음과 같습니다. For kubectl, execution files can be downloaded and enabled, with no need of special installation procedure. Each operating system provides the following download path: 
 
 | OS 운영체제 | Download Command 다운로드 커맨드 |
@@ -316,7 +316,7 @@ Commercial support is available at
 인그레스 컨트롤러(ingress controller)는 인그레스(Ingress) 객체에 정의된 규칙을 참조하여 클러스터 외부에서 내부 서비스로 HTTP와 HTTPS 요청을 라우팅하고 SSL/TSL 종료, 가상 호스팅 등을 제공합니다. 인그레스 컨트롤러와 인그레스에 대한 자세한 내용은 [인그레스 컨트롤러](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/), [인그레스](https://kubernetes.io/docs/concepts/services-networking/ingress/) 문서를 참고하세요.
 
 
-### NGINX Ingress Controller 설치 Installation 
+### NGINX Ingress Controller 설치 Installing NGINX Ingress Controller 
 NGINX Ingress Controller is one of the most frequently used ingress controllers. For more details, see 는 많이 사용되는 인그레스 컨트롤러 중 하나입니다. 자세한 내용은 [NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/)와 [NGINX Ingress Controller for Kubernetes](https://docs.nginx.com/nginx-ingress-controller/overview/) 문서를 참고하세요.
 
 NGINX Ingress Controller provides pre-defined manifest files to readily create resources in need. With this manifest, resources can be easily created when required. 는 필요한 자원을 바로 생성할 수 있도록 미리 정의한 매니페스트 파일을 제공합니다. 이 매니페스트를 이용하면 쉽게 필요한 자원을 생성할 수 있습니다.
@@ -336,7 +336,7 @@ deployment.apps/nginx-ingress-controller created
 limitrange/ingress-nginx created
 ```
 
-### LoadBalancer 서비스 생성
+### LoadBalancer 서비스 생성 Creating LoadBalancer 
 인그레스 컨트롤러 역시 파드로 생성되기 때문에 외부에 공개하기 위해서는 LoadBalancer 서비스 또는 NodePort 서비스를 만들어야 합니다. 다음과 같이 HTTP와 HTTPS를 처리할 수 있는 LoadBalancer 서비스 매니페스트를 정의합니다.
 
 ```yaml
@@ -384,7 +384,7 @@ ingress-nginx   LoadBalancer   10.254.2.128   123.123.123.41   80:30820/TCP,443:
 
 ![ingress-01.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/ingress-01.png)
 
-#### 서비스와 파드 생성
+#### 서비스와 파드 생성 Create Service and Pods 
 다음과 같이 서비스와 파드를 생성하기 위한 매니페스트를 작성합니다. `tea-svc` 서비스에는 `tea` 파드를 연결하고, `coffee-svc` 서비스에는 `coffee` 파드를 연결합니다.
 
 ```yaml
@@ -483,7 +483,7 @@ pod/tea-7df475c6-gtlx5        1/1     Running   0          18s
 pod/tea-7df475c6-lxqsx        1/1     Running   0          18s
 ```
 
-#### 인그레스(Ingress) 생성
+#### 인그레스(Ingress) 생성 Create Ingress
 요청 경로에 따라 서비스를 연결하는 인그레스 매니페스트를 작성합니다. 엔드포인트가 `/tea`인 요청은 `tea-svc` 서비스에 연결하고 `/coffee`인 요청은 `coffee-svc` 서비스에 연결합니다.
 
 ```yaml
@@ -517,7 +517,7 @@ NAME               HOSTS   ADDRESS          PORTS   AGE
 cafe-ingress-uri   *       123.123.123.44   80      88s
 ```
 
-#### HTTP 요청 전송
+#### HTTP 요청 전송 Send HTTP Requests 
 외부 호스트에서 ingress의 **ADDRESS** 필드에 설정된 IP 주소로 HTTP 요청을 전송해 인그레스가 올바르게 설정되었는지 확인합니다.
 
 엔드포인트 `/coffee`에 대한 요청은 `coffee-svc` 서비스에 전달되어 `coffee` 파드가 응답합니다. 응답의 **Server name** 항목을 보면 `coffee` 파드들이 라운드-로빈 방식으로 번갈아 응답하는 것을 확인할 수 있습니다.
@@ -562,7 +562,7 @@ $ curl http://123.123.123.44/
 </html>
 ```
 
-#### 리소스 삭제
+#### 리소스 삭제 Delete Resources
 테스트에 사용한 자원들은 생성할 때 사용한 매니페스트를 이용해 삭제할 수 있습니다.
 
 ```
@@ -581,10 +581,10 @@ service "tea-svc" deleted
 
 ![ingress-02.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/ingress-02.png)
 
-#### 서비스와 파드 생성
+#### 서비스와 파드 생성 Create Service and Pods 
 [URI 기반 서비스 분기](/Container/Kubernetes/en/user-guide/#uri)와 동일한 매니페스트를 이용해 서비스와 파드를 생성합니다.
 
-#### 인그레스 생성
+#### 인그레스 생성 Create Ingress 
 호스트 이름에 따라 서비스를 연결하는 인그레스 매니페스트를 작성합니다. `tea.cafe.example.com` 호스트로 들어온 요청은 `tea-svc` 서비스에 연결하고 `coffee.cafe.example.com` 호스트로 들어온 요청은 `coffee-svc` 서비스에 연결합니다.
 
 ```yaml
@@ -673,10 +673,10 @@ $ curl --resolve test.example.com:80:123.123.123.44 http://test.example.com/
 </html>
 ```
 
-## Kubernetes 대시보드
+## Kubernetes 대시보드 Dashboard 
 TOAST Kubernetes 서비스는 기본 웹 UI 대시보드(dashboard)를 제공합니다. Kubernetes 대시보드에 대한 자세한 내용은 [웹 UI (대시보드)](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/) 문서를 참고하세요.
 
-### 대시보드 서비스 공개
+### 대시보드 서비스 공개 
 사용자 Kubernetes에는 대시보드를 공개하기 위한 `kubernetes-dashboard` 서비스 객체가 미리 생성되어 있습니다.
 
 ```
