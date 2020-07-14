@@ -99,7 +99,7 @@ kubectl은 특별한 설치 과정 없이 실행 파일을 다운로드해 바�
 For more details on installation and optional items, see 그 외 설치 방법과 옵션 등 자세한 사항은 [Install and Set Up kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) 문서를 참고하세요.
 
 #### 권한 변경 Role Changes
-다운로드한 파일은 기본적으로 실행 권한이 없습니다. 실행 권한을 추가해야 합니다. Downloade files 
+By default, downloaded files are not allowed to execute. Role must be added. 다운로드한 파일은 기본적으로 실행 권한이 없습니다. 실행 권한을 추가해야 합니다. Downloade files 
 
 ```
 $ chmod +x kubectl
@@ -131,10 +131,10 @@ kubectl은 실행할 때마다 클러스터 설정 파일이 필요합니다. �
 $ export KUBECONFIG={클러스터 설정 파일 경로}
 ```
 
-클러스터 설정 파일 경로를 환경 변수에 저장하고 싶지 않다면 kubectl의 기본 설정 파일인 `$HOME/.kube/config`로 복사해 사용할 수도 있습니다. 그러나 클러스터를 여러 개 운영한다면 환경 변숫값을 변경하는 방법이 편리합니다.
+클러스터 설정 파일 경로를 환경 변수에 저장하고 싶지 않다면 kubectl의 기본 설정 파일인 `$HOME/.kube/config`로 복사해 사용할 수도 있습니다. 그러나 클러스터를 여러 개 운영한다면 환경 변숫값을 변경하는 방법이 편리합니다. You may copy cluster setting file path to `$HOME/.kube/config`, which is the default setting file of kubectl, if you don't want to save it to an environment variable. However, when there are many clusters, it is easier to change environment variables. 
 
-### 연결 확인
-`kubectl version` 명령어로 정상 설정되었는지 확인합니다. 문제가 없다면 `Server Version`이 출력됩니다.
+### 연결 확인 Check Connection 
+See if it is well set by the `kubectl version` command. If there's no problem, 명령어로 정상 설정되었는지 확인합니다. 문제가 없다면 `Server Version`이 is printed.  출력됩니다.
 
 ```
 $ kubectl version
@@ -146,9 +146,9 @@ Server Version: version.Info{Major:"1", Minor:"15", GitVersion:"v1.15.7", GitCom
 * Server Version: 클러스터를 구성하고 있는 Kubernetes 버전 정보 Kubernetes version information comprising a cluster 
 
 ## LoadBalancer 서비스
-Kubernetes 애플리케이션의 기본 실행 단위인 파드(pod)는 CNI(Container Network Interface)로 클러스터 네트워크에 연결됩니다. 기본적으로 클러스터 외부에서 파드로는 접근할 수 없습니다. 파드의 서비스를 클러스터 외부에 공개하려면 Kubernetes의 `LoadBalancer` 서비스(Service) 객체(object)를 이용해 외부에 공개할 경로를 만들어야 합니다. LoadBalancer 서비스 객체를 만들면 클러스터 외부에 TOAST Load Balancer가 생성되어 서비스 객체와 연결됩니다.
+Kubernetes 애플리케이션의 기본 실행 단위인 파드(pod)는 CNI(Container Network Interface)로 클러스터 네트워크에 연결됩니다. 기본적으로 클러스터 외부에서 파드로는 접근할 수 없습니다. 파드의 서비스를 클러스터 외부에 공개하려면 Kubernetes의 `LoadBalancer` 서비스(Service) 객체(object)를 이용해 외부에 공개할 경로를 만들어야 합니다. LoadBalancer 서비스 객체를 만들면 클러스터 외부에 TOAST Load Balancer가 생성되어 서비스 객체와 연결됩니다. Pod is a basic executio unit of a Kubernetes application and it is connected to a cluster network via CNI (Container Network Interface). Basically, access to pod is unavailble from cluster externals. To open up pod services outside of a cluster, a path to be made public must be create by using Kubernetes' `LoadBalancer` 서비스(Service) 객체(object). 
 
-### 웹 서버 파드 생성
+### 웹 서버 파드 생성 Creating Web Server Pods 
 다음과 같이 2개의 nginx 파드를 실행하는 디플로이먼트(deployment) 객체 매니페스트 파일을 작성하고 객체를 생성합니다.
 
 ```yaml
