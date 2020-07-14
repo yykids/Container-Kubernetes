@@ -54,7 +54,7 @@ On the **Basic Information기본 정보** tab, check the following: 탭에서는
 | Item항목 |Description 설명 |
 | --- | --- |
 | Name of Node Group 노드 그룹 이름 | Name and ID of a node group 노드 그룹 이름과 ID |
-| Name of Cluster클러스터 이름 | Name and ID of cluster to which a node group is included 노드 그룹이 속한 클러스터의 이름과 ID |
+| Name of Cluster클러스터 이름 | Name and ID of a cluster to which a node group is included 노드 그룹이 속한 클러스터의 이름과 ID |
 | Kubernetes Version 쿠버네티스 버전 | Kubernetes version in service 사용 중인 Kubernetes 버전 |
 | Availability Area가용성 영역 | Area in which a node group instance is created 노드 그룹 인스턴스가 생성된 영역 |
 | Instance Type 인스턴스 타입 | Specifications of a node group instance 노드 그룹 인스턴스 사양 |
