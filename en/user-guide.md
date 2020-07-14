@@ -99,39 +99,39 @@ kubectl은 특별한 설치 과정 없이 실행 파일을 다운로드해 바�
 For more details on installation and optional items, see 그 외 설치 방법과 옵션 등 자세한 사항은 [Install and Set Up kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) 문서를 참고하세요.
 
 #### 권한 변경 Role Changes
-By default, downloaded files are not allowed to execute. Role must be added. 다운로드한 파일은 기본적으로 실행 권한이 없습니다. 실행 권한을 추가해야 합니다. Downloade files 
+By default, downloaded files are not allowed to execute. The execution role must be added. 다운로드한 파일은 기본적으로 실행 권한이 없습니다. 실행 권한을 추가해야 합니다.
 
 ```
 $ chmod +x kubectl
 ```
 
 #### 위치 변경 또는 경로 지정 Change Location or Specify Path 
-어느 경로에서든 kubectl을 실행할 수 있도록 환경 변수에 지정된 경로로 옮기거나, kubectl이 있는 경로를 환경 변수에 추가합니다.
+Change location to the path specified for an environment variable so as to execute kubectl on any path, or add the path including kubectl to an environment variable.  어느 경로에서든 kubectl을 실행할 수 있도록 환경 변수에 지정된 경로로 옮기거나, kubectl이 있는 경로를 환경 변수에 추가합니다.
 
-* 환경 변수에 지정된 경로로 위치 변경
+* 환경 변수에 지정된 경로로 위치 변경 Change Loation to Path Specified for Environment Variable 
 ```
 $ sudo mv kubectl /usr/local/bin/
 ```
 
-* 환경 변수에 경로 추가
+* 환경 변수에 경로 추가 Add Path to Environment Variable 
 ```
 // kubectl이 있는 경로에서 실행
 $ export PATH=$PATH:$(pwd)
 ```
 
-### 설정 Setting 
-kubectl로 Kubernetes 클러스터에 접근하려면 클러스터 설정 파일(kubeconfig)이 필요합니다. TOAST 웹 콘솔에서 **Container > Kubernetes** 서비스 페이지를 열고 접근할 클러스터를 선택합니다. 하단 **기본 정보** 탭에서 **설정 파일** 항목의 **다운로드** 버튼을 클릭해 설정 파일을 다운로드합니다. 다운로드한 설정 파일은 원하는 위치로 옮겨 kubectl 실행 시 참조할 수 있도록 준비합니다.
+### 설정 Configuration 
+kubectl로 Kubernetes 클러스터에 접근하려면 클러스터 설정 파일(kubeconfig)이 필요합니다. TOAST 웹 콘솔에서 **Container > Kubernetes** 서비스 페이지를 열고 접근할 클러스터를 선택합니다. 하단 **기본 정보** 탭에서 **설정 파일** 항목의 **다운로드** 버튼을 클릭해 설정 파일을 다운로드합니다. 다운로드한 설정 파일은 원하는 위치로 옮겨 kubectl 실행 시 참조할 수 있도록 준비합니다. To access Kubernetes cluster with kubectl, cluster configuration file (kubeconfig) is required. On TOAST web console, open **Container > Kubernetes** and select a cluster to access. From **Basic Information**, click **Download** of **Configuration Files** to download a configuration file. Changed the downloaded configuration file to a location of choice to serve as reference for kubectl execution. 
 
 > [Caution]
-> TOAST 웹 콘솔에서 다운로드한 설정 파일은 클러스터 정보와 인증을 위한 토큰 등이 포함되어 있습니다. 설정 파일이 있으면 해당 Kubernetes 클러스터에 접근할 수 있는 권한을 갖게 됩니다. 설정 파일을 절대로 분실하지 않도록 주의하시기 바랍니다.
+> TOAST 웹 콘솔에서 다운로드한 설정 파일은 클러스터 정보와 인증을 위한 토큰 등이 포함되어 있습니다. 설정 파일이 있으면 해당 Kubernetes 클러스터에 접근할 수 있는 권한을 갖게 됩니다. 설정 파일을 절대로 분실하지 않도록 주의하시기 바랍니다. A configuration file downloaded from TOAST web console includes cluster information and token for authentication. With the file, you're authorized to access corresponding Kubernetes clusters. Take cautions for not losing configuration files.   
 
-kubectl은 실행할 때마다 클러스터 설정 파일이 필요합니다. 따라서 매번 `--kubeconfig` 옵션을 이용해 클러스터 설정 파일을 지정해야 합니다. 그러나 환경 변수에 클러스터 설정 파일 경로가 저장되어 있다면 매번 옵션을 지정하지 않아도 됩니다.
+kubectl은 실행할 때마다 클러스터 설정 파일이 필요합니다. 따라서 매번 `--kubeconfig` 옵션을 이용해 클러스터 설정 파일을 지정해야 합니다. 그러나 환경 변수에 클러스터 설정 파일 경로가 저장되어 있다면 매번 옵션을 지정하지 않아도 됩니다. kubectl requires a cluster configuration file every time it is executed, so a cluster configuration file must be specified by using the `--kubeconfig` option. However, 
 
 ```
-$ export KUBECONFIG={클러스터 설정 파일 경로}
+$ export KUBECONFIG={Path of cluster configuration file클러스터 설정 파일 경로}
 ```
 
-클러스터 설정 파일 경로를 환경 변수에 저장하고 싶지 않다면 kubectl의 기본 설정 파일인 `$HOME/.kube/config`로 복사해 사용할 수도 있습니다. 그러나 클러스터를 여러 개 운영한다면 환경 변숫값을 변경하는 방법이 편리합니다. You may copy cluster setting file path to `$HOME/.kube/config`, which is the default setting file of kubectl, if you don't want to save it to an environment variable. However, when there are many clusters, it is easier to change environment variables. 
+클러스터 설정 파일 경로를 환경 변수에 저장하고 싶지 않다면 kubectl의 기본 설정 파일인 `$HOME/.kube/config`로 복사해 사용할 수도 있습니다. 그러나 클러스터를 여러 개 운영한다면 환경 변숫값을 변경하는 방법이 편리합니다. You may copy cluster configuration file path to `$HOME/.kube/config`, which is the default configuration file of kubectl, if you don't want to save it to an environment variable. However, when there are many clusters, it is easier to change environment variables. 
 
 ### 연결 확인 Check Connection 
 See if it is well set by the `kubectl version` command. If there's no problem, 명령어로 정상 설정되었는지 확인합니다. 문제가 없다면 `Server Version`이 is printed.  출력됩니다.
@@ -149,7 +149,7 @@ Server Version: version.Info{Major:"1", Minor:"15", GitVersion:"v1.15.7", GitCom
 Kubernetes 애플리케이션의 기본 실행 단위인 파드(pod)는 CNI(Container Network Interface)로 클러스터 네트워크에 연결됩니다. 기본적으로 클러스터 외부에서 파드로는 접근할 수 없습니다. 파드의 서비스를 클러스터 외부에 공개하려면 Kubernetes의 `LoadBalancer` 서비스(Service) 객체(object)를 이용해 외부에 공개할 경로를 만들어야 합니다. LoadBalancer 서비스 객체를 만들면 클러스터 외부에 TOAST Load Balancer가 생성되어 서비스 객체와 연결됩니다. Pod is a basic executio unit of a Kubernetes application and it is connected to a cluster network via CNI (Container Network Interface). Basically, access to pod is unavailble from cluster externals. To open up pod services outside of a cluster, a path to be made public must be create by using Kubernetes' `LoadBalancer` 서비스(Service) 객체(object). 
 
 ### 웹 서버 파드 생성 Creating Web Server Pods 
-다음과 같이 2개의 nginx 파드를 실행하는 디플로이먼트(deployment) 객체 매니페스트 파일을 작성하고 객체를 생성합니다.
+다음과 같이 2개의 nginx 파드를 실행하는 디플로이먼트(deployment) 객체 매니페스트 파일을 작성하고 객체를 생성합니다. Write deployment object manifest file to execute the following two nginx pods and create an object. 
 
 ```yaml
 # nginx.yaml
@@ -176,7 +176,7 @@ spec:
         - containerPort: 80
 ```
 
-디플로이먼트 객체를 생성하면 매니페스트에 정의한 파드가 자동으로 생성됩니다.
+디플로이먼트 객체를 생성하면 매니페스트에 정의한 파드가 자동으로 생성됩니다. With a deployment object created, pods defined at manifest are automatically created. 
 
 ```
 $ kubectl apply -f nginx.yaml
@@ -188,10 +188,10 @@ nginx-deployment-7fd6966748-pvrzs   1/1     Running   0          4m13s
 nginx-deployment-7fd6966748-wv7rd   1/1     Running   0          4m13s
 ```
 
-만약 TOAST Container Registry에 저장한 이미지를 사용하고 싶다면 먼저 사용자 레지스트리에 로그인하기 위한 시크릿(secret)을 만들어야 합니다.
+만약 TOAST Container Registry에 저장한 이미지를 사용하고 싶다면 먼저 사용자 레지스트리에 로그인하기 위한 시크릿(secret)을 만들어야 합니다. To use images saved at TOAST Container Registry, first create a secret to login user registry. 
 
 ```
-$ kubectl create secret docker-registry registry-credential --docker-server={사용자 레지스트리 주소} --docker-username={Toast 계정 email 주소} --docker-password={서비스 Appkey 또는 통합 Appkey}
+$ kubectl create secret docker-registry registry-credential --docker-server={user registry address} --docker-username={email address for Toast account} --docker-password={service or integrated Appkey}
 secret/registry-credential created
 
 $ kubectl get secrets
@@ -199,7 +199,7 @@ NAME                  TYPE                             DATA   AGE
 registry-credential   kubernetes.io/dockerconfigjson   1      30m
 ```
 
-디플로이먼트 매니페스트 파일에 시크릿 정보를 추가하고, 이미지 이름을 변경하면 사용자 레지스트리에 저장된 이미지를 이용해 파드를 만들 수 있습니다.
+디플로이먼트 매니페스트 파일에 시크릿 정보를 추가하고, 이미지 이름을 변경하면 사용자 레지스트리에 저장된 이미지를 이용해 파드를 만들 수 있습니다. By adding secret information to the deployment manifest file and changing the name of image, pods can be created by using images saved at user registry. 
 
 ```yaml
 # nginx.yaml
@@ -211,31 +211,31 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: {사용자 레지스트리 주소}/nginx:1.14.2
+        image: {user registry address}/nginx:1.14.2
         ...
       imagePullSecrets:
       - name: regcred
 
 ```
 
-> [참고]
-> TOAST Container Registry 사용 방법은 [Container Registry 사용 가이드](/Container/Container%20Registry/en/user-guide) 문서를 참고하세요.
+> [Note]
+> Regarding how to use TOAST Container Registry, see 사용 방법은 [User Guide for Container Registry](/Container/Container%20Registry/en/user-guide) 문서를 참고하세요.
 
-### LoadBalancer 서비스 생성
-Kubernetes의 서비스 객체를 정의하려면 다음과 같은 항목으로 구성된 매니페스트가 필요합니다.
+### Creating LoadBalancer 서비스 생성
+To define a service object of Kubernetes, a manifest comprised of the following items is required: 의 서비스 객체를 정의하려면 다음과 같은 항목으로 구성된 매니페스트가 필요합니다.
 
-| 항목 | 설명 |
+| Item | Description |
 | --- | --- |
-| metadata.name | 서비스 객체의 이름 |
-| spec.selector | 서비스 객체와 연결할 파드 이름 |
+| metadata.name | Name of service object 서비스 객체의 이름 |
+| spec.selector | Name of pod to be associated with service object 서비스 객체와 연결할 파드 이름 |
 | spec.ports | 외부 로드 밸런서에서 들어오는 트래픽을 파드에 전달할 인터페이스 설정 |
-| spec.ports.name | 인터페이스 이름 |
-| spec.ports.protocol | 인터페이스에서 사용할 프로토콜(예: TCP) |
-| spec.ports.port | 서비스 객체 외부에 공개할 포트 번호 |
-| spec.ports.targetPort | 서비스 객체와 연결할 파드의 포트 번호 |
-| spec.type | 서비스 객체 유형 |
+| spec.ports.name | Name of interface 인터페이스 이름 |
+| spec.ports.protocol | Protocol for an interface 인터페이스에서 사용할 프로토콜(e.g: TCP) |
+| spec.ports.port | Port number to go public out of service object 서비스 객체 외부에 공개할 포트 번호 |
+| spec.ports.targetPort | Port number of a pod to be associated with service object 서비스 객체와 연결할 파드의 포트 번호 |
+| spec.type | Type of service object 서비스 객체 유형 |
 
-다음과 같이 서비스 매니페스트를 작성합니다. 이 LoadBalancer 서비스 객체는 **spec.selector**에 정의된 이름에 따라 `app: nginx` 레이블이 붙은 파드와 연결됩니다. 그리고 **spec.ports**에 정의된 대로 TCP/8080 포트로 들어온 트래픽을 파드의 TCP/80 포트로 전달합니다.
+Service manifest is written like below. 다음과 같이 서비스 매니페스트를 작성합니다. The LoadBalancer service object is associated with a pod labelled as `app: nginx`, following the defined name at **spec.selector**. 서비스 객체는 **spec.selector**에 정의된 이름에 따라 `app: nginx` 레이블이 붙은 파드와 연결됩니다. 그리고 **spec.ports**에 정의된 대로 TCP/8080 포트로 들어온 트래픽을 파드의 TCP/80 포트로 전달합니다. And as **spec.ports** defines, traffic inflow via TCP/8080 is delivered to the TCP/80 port of the pod.  
 
 ```yaml
 # service.yaml
@@ -274,13 +274,13 @@ NAME         TYPE           CLUSTER-IP      EXTERNAL-IP      PORT(S)          AG
 nginx-svc    LoadBalancer   10.254.134.18   123.123.123.30   8080:30013/TCP   3m13s
 ```
 
-> [참고]
-> 생성된 로드 밸런서는 **Network > Load Balancer** 페이지에서 확인할 수 있습니다.
-> 로드 밸런서의 IP는 외부에서 접근할 수 있는 플로팅 IP입니다. **Network > Floating IP** 페이지에서 확인할 수 있습니다.
+> [Note]
+> To find a load balancer that is created, visit 생성된 로드 밸런서는 **Network > Load Balancer** 페이지에서 확인할 수 있습니다.
+> Load balancer IP is a floating IP allowing external access. Check out from 로드 밸런서의 IP는 외부에서 접근할 수 있는 플로팅 IP입니다. **Network > Floating IP** 페이지에서 확인할 수 있습니다.
 
 
-### 인터넷을 통한 서비스 테스트
-로드 밸런서에 부착한 플로팅 IP로 HTTP 요청을 보내 Kubernetes 클러스터의 웹 서버 파드가 응답하는지 확인합니다. 서비스 객체의 TCP/8080 포트를 파드의 TCP/80 포트와 연결하도록 설정했기 때문에 TCP/8080 포트로 요청을 보내야 합니다. 외부 로드 밸런서와 서비스 객체, 파드가 잘 연결되었다면 웹 서버는 nginx 기본 페이지를 응답합니다.
+### 인터넷을 통한 서비스 테스트 Testing Service on Internet 
+로드 밸런서에 부착한 플로팅 IP로 HTTP 요청을 보내 Kubernetes 클러스터의 웹 서버 파드가 응답하는지 확인합니다. 서비스 객체의 TCP/8080 포트를 파드의 TCP/80 포트와 연결하도록 설정했기 때문에 TCP/8080 포트로 요청을 보내야 합니다. 외부 로드 밸런서와 서비스 객체, 파드가 잘 연결되었다면 웹 서버는 nginx 기본 페이지를 응답합니다. Send an HTTP request via floating IP associated with load balancer to see if the web server pod of a Kubernetes cluster responds. Since the TcP/8080 port of a service object is attached to TCP/80 port of a pod, request must be sent to the TCP/8080 port. If external load balancer, service object, and pod are well associated, the web server shall respond to nginx default page. 
 
 ```
 $ curl http://123.123.123.30:8080
@@ -312,14 +312,14 @@ Commercial support is available at
 ```
 
 
-## 인그레스 컨트롤러
+## 인그레스 컨트롤러 Ingress Controller 
 인그레스 컨트롤러(ingress controller)는 인그레스(Ingress) 객체에 정의된 규칙을 참조하여 클러스터 외부에서 내부 서비스로 HTTP와 HTTPS 요청을 라우팅하고 SSL/TSL 종료, 가상 호스팅 등을 제공합니다. 인그레스 컨트롤러와 인그레스에 대한 자세한 내용은 [인그레스 컨트롤러](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/), [인그레스](https://kubernetes.io/docs/concepts/services-networking/ingress/) 문서를 참고하세요.
 
 
-### NGINX Ingress Controller 설치
-NGINX Ingress Controller는 많이 사용되는 인그레스 컨트롤러 중 하나입니다. 자세한 내용은 [NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/)와 [NGINX Ingress Controller for Kubernetes](https://docs.nginx.com/nginx-ingress-controller/overview/) 문서를 참고하세요.
+### NGINX Ingress Controller 설치 Installation 
+NGINX Ingress Controller is one of the most frequently used ingress controllers. For more details, see 는 많이 사용되는 인그레스 컨트롤러 중 하나입니다. 자세한 내용은 [NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/)와 [NGINX Ingress Controller for Kubernetes](https://docs.nginx.com/nginx-ingress-controller/overview/) 문서를 참고하세요.
 
-NGINX Ingress Controller는 필요한 자원을 바로 생성할 수 있도록 미리 정의한 매니페스트 파일을 제공합니다. 이 매니페스트를 이용하면 쉽게 필요한 자원을 생성할 수 있습니다.
+NGINX Ingress Controller provides pre-defined manifest files to readily create resources in need. With this manifest, resources can be easily created when required. 는 필요한 자원을 바로 생성할 수 있도록 미리 정의한 매니페스트 파일을 제공합니다. 이 매니페스트를 이용하면 쉽게 필요한 자원을 생성할 수 있습니다.
 
 ```
 $ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/mandatory.yaml
@@ -709,14 +709,14 @@ Events:
 
 ![dashboard-01.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/dashboard-01.png)
 
-다음과 같이 `kubernetes-dashboard` 서비스 객체의 유형을 `LoadBalancer`로 변경합니다.
+다음과 같이 `kubernetes-dashboard` 서비스 객체의 유형을 `LoadBalancer`로 변경합니다. Change the type of the `kubernetes-dashboard` service object to `LoadBalancer`, like below:  
 
 ```
 $ kubectl -n kube-system patch svc/kubernetes-dashboard -p '{"spec":{"type":"LoadBalancer"}}'
 service/kubernetes-dashboard patched
 ```
 
-`kubernetes-dashboard` 서비스 객체가 `LoadBalancer` 유형으로 변경되면 잠시 후 **EXTERNAL-IP** 필드에서 로드 밸런서 IP를 확인할 수 있습니다.
+`kubernetes-dashboard` 서비스 객체가 `LoadBalancer` 유형으로 변경되면 잠시 후 **EXTERNAL-IP** 필드에서 로드 밸런서 IP를 확인할 수 있습니다. After the service object `kubernetes-dashboard` is changed to the `LoadBalancer` type, you can check load balancer IP from the **EXTERNAL-IP**  field.  
 
 ```
 $ kubectl get svc -n kube-system
@@ -782,7 +782,7 @@ ingress-nginx   LoadBalancer   10.254.211.113   123.123.123.29   80:32680/TCP,44
 
 웹 브라우저에서 `https://{EXTERNAL-IP}`로 접속하면 Kubernetes 대시보드 페이지가 로딩됩니다. 로그인을 위해 필요한 토큰은 [대시보드 엑세스 토큰](/Container/Kubernetes/en/user-guide/#_23)을 참고하세요.
 
-### 대시보드 엑세스 토큰
+### 대시보드 엑세스 토큰 Dashboard Access Token 
 Kubernetes 대시보드에 로그인하려면 토큰이 필요합니다. 토큰은 다음 명령으로 얻을 수 있습니다.
 
 ```
@@ -795,7 +795,7 @@ eyJhbGc...-QmXA
 출력된 토큰을 브라우저의 토큰 입력 창에 입력하면 클러스터 관리자 권한을 부여받은 사용자로 로그인할 수 있습니다.
 
 
-## 퍼시스턴트 볼륨
+## 퍼시스턴트 볼륨 Persistent Volume 
 퍼시스턴트 볼륨(Persistent Volume, PV)는 물리 저장 장치(volume)를 표현하는 Kubernetes의 자원입니다. 하나의 PV는 하나의 TOAST Block Storage와 연결됩니다. 자세한 내용은 [퍼시스턴트 볼륨](https://kubernetes.io/docs/concepts/storage/persistent-volumes/) 문서를 참고하세요.
 
 PV를 파드에 연결해 사용하려면 퍼시스턴트 볼륨 클레임(Persistent Volume Claims, PVC) 객체가 필요합니다. PVC는 용량, 읽기/쓰기 모드 등 필요한 볼륨의 요구 사항을 정의합니다.
@@ -824,7 +824,7 @@ PV를 파드에 마운트해 사용합니다.
 | 재사용(Recycle) | PV를 삭제할 때 연결된 볼륨을 삭제하지 않고 재사용할 수 있는 상태로 만듭니다. 이 방법은 사용 중단(deprecated) 되었습니다. |
 
 
-### 정적 프로비저닝
+### 정적 프로비저닝 Static Provisioning 
 
 정적 프로비저닝(static provisioning)은 사용자가 직접 블록 스토리지를 준비해야 합니다. TOAST 웹 콘솔의 **Storage > Block Storage** 서비스 페이지에서 **블록 스토리지 생성** 버튼을 클릭해 PV와 연결할 블록 스토리지를 생성합니다. 블록 스토리지 가이드의 [블록 스토리지 생성](/Storage/Block%20Storage/en/console-guide/#_2)을 참고하세요.
 
@@ -926,7 +926,7 @@ pv-static-001   10Gi       RWO            Delete           Bound    default/pvc-
 ```
 
 
-### 동적 프로비저닝
+### 동적 프로비저닝 Dynamic Provisioning 
 
 동적 프로비저닝(dynamic provisioning)은 스토리지 클래스에 정의된 속성을 참조하여 자동으로 블록 스토리지를 생성합니다. 스토리지 클래스 매니페스트의 **parameters.type**에 TOAST Block Storage 유형을 지정할 수 있습니다. 지정하지 않으면 HDD 유형으로 설정됩니다.
 
