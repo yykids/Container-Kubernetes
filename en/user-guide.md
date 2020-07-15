@@ -228,7 +228,7 @@ To define a service object of Kubernetes, a manifest comprised of the following 
 | --- | --- |
 | metadata.name | Name of service object 서비스 객체의 이름 |
 | spec.selector | Name of pod to be associated with service object 서비스 객체와 연결할 파드 이름 |
-| spec.ports | 외부 로드 밸런서에서 들어오는 트래픽을 파드에 전달할 인터페이스 설정 |
+| spec.ports | Interface setting to deliver incoming traffic from external load balancer to a pod 외부 로드 밸런서에서 들어오는 트래픽을 파드에 전달할 인터페이스 설정 |
 | spec.ports.name | Name of interface 인터페이스 이름 |
 | spec.ports.protocol | Protocol for an interface 인터페이스에서 사용할 프로토콜(e.g: TCP) |
 | spec.ports.port | Port number to go public out of service object 서비스 객체 외부에 공개할 포트 번호 |
@@ -255,7 +255,7 @@ spec:
   type: LoadBalancer
 ```
 
-LoadBalancer 서비스 객체를 생성하면 클러스터 외부에 로드 밸런서를 만들고 연결하기까지 약간의 시간이 필요합니다. 외부 로드 밸런서와 연결되기 전에는 **EXTERNAL-IP** 항목이 `<pending>`으로 표시됩니다.
+LoadBalancer 서비스 객체를 생성하면 클러스터 외부에 로드 밸런서를 만들고 연결하기까지 약간의 시간이 필요합니다. 외부 로드 밸런서와 연결되기 전에는 **EXTERNAL-IP** 항목이 `<pending>`으로 표시됩니다. When the LoadBalancer service object is created, it takes some time to create and associate a load balancer externally. Before associated with external load balancer, **EXTERNAL-IP** shows `<pending>`. 
 
 ```
 $ kubectl apply -f service.yaml
@@ -266,7 +266,7 @@ NAME         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
 nginx-svc    LoadBalancer   10.254.134.18   <pending>     8080:30013/TCP   11s
 ```
 
-외부 로드 밸런서와 연결되면 **EXTERNAL-IP** 항목에 IP가 표시됩니다. 이 IP는 외부 로드 밸런서의 플로팅 IP입니다.
+When it is associated with external load balancer, 외부 로드 밸런서와 연결되면 **EXTERNAL-IP** shows IP, which refers to floating IP of external load balancer. 항목에 IP가 표시됩니다. 이 IP는 외부 로드 밸런서의 플로팅 IP입니다.
 
 ```
 $ kubectl get service
@@ -313,7 +313,7 @@ Commercial support is available at
 
 
 ## 인그레스 컨트롤러 Ingress Controller 
-인그레스 컨트롤러(ingress controller)는 인그레스(Ingress) 객체에 정의된 규칙을 참조하여 클러스터 외부에서 내부 서비스로 HTTP와 HTTPS 요청을 라우팅하고 SSL/TSL 종료, 가상 호스팅 등을 제공합니다. 인그레스 컨트롤러와 인그레스에 대한 자세한 내용은 [인그레스 컨트롤러](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/), [인그레스](https://kubernetes.io/docs/concepts/services-networking/ingress/) 문서를 참고하세요.
+Ingress Controller routes HTTP and HTTPS requests from cluster externals to internal services, in reference of the rules that are defined at ingress object so as to provide SSL/TSL closure and virtual hosting. For more details on Ingress Controller and Ingress, see 인그레스 컨트롤러(ingress controller)는 인그레스(Ingress) 객체에 정의된 규칙을 참조하여 클러스터 외부에서 내부 서비스로 HTTP와 HTTPS 요청을 라우팅하고 SSL/TSL 종료, 가상 호스팅 등을 제공합니다. 인그레스 컨트롤러와 인그레스에 대한 자세한 내용은 [Ingress Controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/), [인그레스](https://kubernetes.io/docs/concepts/services-networking/ingress/) 문서를 참고하세요.
 
 
 ### NGINX Ingress Controller 설치 Installing NGINX Ingress Controller 
@@ -337,7 +337,7 @@ limitrange/ingress-nginx created
 ```
 
 ### LoadBalancer 서비스 생성 Creating LoadBalancer 
-인그레스 컨트롤러 역시 파드로 생성되기 때문에 외부에 공개하기 위해서는 LoadBalancer 서비스 또는 NodePort 서비스를 만들어야 합니다. 다음과 같이 HTTP와 HTTPS를 처리할 수 있는 LoadBalancer 서비스 매니페스트를 정의합니다.
+인그레스 컨트롤러 역시 파드로 생성되기 때문에 외부에 공개하기 위해서는 LoadBalancer 서비스 또는 NodePort 서비스를 만들어야 합니다. 다음과 같이 HTTP와 HTTPS를 처리할 수 있는 LoadBalancer 서비스 매니페스트를 정의합니다. Since ingress controller is created as a pod, LoadBalancer or NodePort must be created to be made public. The LoadBalancer service manifest is defined to process HTTP and HTTPS like below: 
 
 ```yaml
 # ingress-nginx-lb.yaml
@@ -368,7 +368,7 @@ spec:
     app.kubernetes.io/part-of: ingress-nginx
 ```
 
-서비스 객체를 생성하고 외부 로드 밸런서가 연결되어 있는지 확인합니다. **EXTERNAL-IP** 필드에는 플로팅 IP 주소가 설정되어 있어야 합니다.
+After service object is created, check if it is associated with an external load balancer. The 서비스 객체를 생성하고 외부 로드 밸런서가 연결되어 있는지 확인합니다. **EXTERNAL-IP** field must include floating IP address setting. 필드에는 플로팅 IP 주소가 설정되어 있어야 합니다.
 
 ```
 $ kubectl apply -f ingress-nginx-lb.yaml
@@ -385,7 +385,7 @@ ingress-nginx   LoadBalancer   10.254.2.128   123.123.123.41   80:30820/TCP,443:
 ![ingress-01.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/ingress-01.png)
 
 #### 서비스와 파드 생성 Create Service and Pods 
-다음과 같이 서비스와 파드를 생성하기 위한 매니페스트를 작성합니다. `tea-svc` 서비스에는 `tea` 파드를 연결하고, `coffee-svc` 서비스에는 `coffee` 파드를 연결합니다.
+Manifest is created to create services and pods like below:다음과 같이 서비스와 파드를 생성하기 위한 매니페스트를 작성합니다. Associate the `tea-svc` 서비스에는 `tea` pod to `tea-svc`, and 파드를 연결하고, `coffee-svc` 서비스에는 the `coffee` pod for `coffee-svc`. 파드를 연결합니다.
 
 ```yaml
 # cafe.yaml
@@ -457,7 +457,7 @@ spec:
     app: tea
 ```
 
-매니페스트를 적용하고 디플로이먼트, 서비스, 파드가 생성되었는지 확인합니다. 파드는 **Running** 상태여야 합니다.
+Apply manifest, and see if deployment, service, and pod is created. The pod must be **Running**. 매니페스트를 적용하고 디플로이먼트, 서비스, 파드가 생성되었는지 확인합니다. 파드는 **Running** 상태여야 합니다.
 
 ```
 $ kubectl apply -f cafe.yaml
