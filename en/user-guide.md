@@ -379,7 +379,7 @@ NAME            TYPE           CLUSTER-IP     EXTERNAL-IP      PORT(S)          
 ingress-nginx   LoadBalancer   10.254.2.128   123.123.123.41   80:30820/TCP,443:30269/TCP   39s
 ```
 
-### URI 기반 서비스 분기
+### URI 기반 서비스 분기 Diverg
 인그레스 컨트롤러는 URI를 기반으로 서비스를 분기할 수 있습니다. 아래 그림은 URI를 기반으로 서비스를 분기하는 간단한 예제의 구조를 나타냅니다.
 
 ![ingress-01.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/ingress-01.png)
@@ -484,7 +484,7 @@ pod/tea-7df475c6-lxqsx        1/1     Running   0          18s
 ```
 
 #### 인그레스(Ingress) 생성 Create Ingress
-요청 경로에 따라 서비스를 연결하는 인그레스 매니페스트를 작성합니다. 엔드포인트가 `/tea`인 요청은 `tea-svc` 서비스에 연결하고 `/coffee`인 요청은 `coffee-svc` 서비스에 연결합니다.
+According to the request path, ingress manifest is created for service connection. A request with `/tea` as endpoint is connected to the `tea-svc` service, while `/coffee` is connected to the the `coffee-svc` service. 요청 경로에 따라 서비스를 연결하는 인그레스 매니페스트를 작성합니다. 엔드포인트가 `/tea`인 요청은 `tea-svc` 서비스에 연결하고 `/coffee`인 요청은 `coffee-svc` 서비스에 연결합니다.
 
 ```yaml
 # cafe-ingress-uri.yaml
@@ -506,7 +506,7 @@ spec:
           servicePort: 80
 ```
 
-인그레스를 생성하고 잠시 후 확인했을 때 **ADDRESS** 필드에 IP가 설정되어 있어야 합니다.
+인그레스를 생성하고 잠시 후 확인했을 때 **ADDRESS** 필드에 IP가 설정되어 있어야 합니다. In a while after ingress is created, IP must be configured at the **ADDRESS** field.  
 
 ```
 $ kubectl apply -f cafe-ingress-uri.yaml
@@ -518,9 +518,9 @@ cafe-ingress-uri   *       123.123.123.44   80      88s
 ```
 
 #### HTTP 요청 전송 Send HTTP Requests 
-외부 호스트에서 ingress의 **ADDRESS** 필드에 설정된 IP 주소로 HTTP 요청을 전송해 인그레스가 올바르게 설정되었는지 확인합니다.
+Send HTTP request to the IP address set for **ADDRESS** of ingress for an external host, to check if the ingress has been properly set. 외부 호스트에서 ingress의 **ADDRESS** 필드에 설정된 IP 주소로 HTTP 요청을 전송해 인그레스가 올바르게 설정되었는지 확인합니다.
 
-엔드포인트 `/coffee`에 대한 요청은 `coffee-svc` 서비스에 전달되어 `coffee` 파드가 응답합니다. 응답의 **Server name** 항목을 보면 `coffee` 파드들이 라운드-로빈 방식으로 번갈아 응답하는 것을 확인할 수 있습니다.
+Request for 엔드포인트 `/coffee` as endpoint is sent to the 에 대한 요청은 `coffee-svc` service so as the 서비스에 전달되어 `coffee` pod can respond. From the  파드가 응답합니다. 응답의 **Server name**, you can see that  항목을 보면 `coffee` pods take turns to respond in the round-robin technique. 파드들이 라운드-로빈 방식으로 번갈아 응답하는 것을 확인할 수 있습니다.
 
 ```
 $ curl http://123.123.123.44/coffee
@@ -538,7 +538,7 @@ URI: /coffee
 Request ID: e78427e68a1cd61ec633b9328359874e
 ```
 
-마찬가지로 엔드포인트 `/tea`에 대한 요청은 `tea-svc` 서비스에  전달되어 `tea` 파드가 응답합니다.
+Likewise, request for `/tea` as endpoint is delivered to the `tea-svc` service so as the `tea` can respond.   마찬가지로 엔드포인트 `/tea`에 대한 요청은 `tea-svc` 서비스에  전달되어 `tea` 파드가 응답합니다.
 
 ```
 $ curl http://123.123.123.44/tea
@@ -549,7 +549,7 @@ URI: /tea
 Request ID: 59303a5a5baa60802b463b1856c8ce8d
 ```
 
-정의되지 않은 URI로 요청을 보내면 인그레스 컨트롤러가 `404 Not Found`를 응답합니다.
+When a request is sent to undefined URI, the ingress controller sends `404 Not Found` as response.  정의되지 않은 URI로 요청을 보내면 인그레스 컨트롤러가 `404 Not Found`를 응답합니다.
 
 ```
 $ curl http://123.123.123.44/
@@ -563,7 +563,7 @@ $ curl http://123.123.123.44/
 ```
 
 #### 리소스 삭제 Delete Resources
-테스트에 사용한 자원들은 생성할 때 사용한 매니페스트를 이용해 삭제할 수 있습니다.
+Resources for testing can be deleted with used manifest.  테스트에 사용한 자원들은 생성할 때 사용한 매니페스트를 이용해 삭제할 수 있습니다.
 
 ```
 $ kubectl delete -f cafe-ingress-uri.yaml
@@ -577,15 +577,15 @@ service "tea-svc" deleted
 ```
 
 ### 호스트 기반 서비스 분기
-인그레스 컨트롤러는 호스트 이름을 기반으로 서비스를 분기할 수 있습니다. 아래 그림은 호스트 이름을 기반으로 서비스를 분기하는 간단한 예제의 구조를 나타냅니다.
+Ingress controller can diverge services based on the host name. Below figure shows the structure of a simple example of diverging services based on the host name. 인그레스 컨트롤러는 호스트 이름을 기반으로 서비스를 분기할 수 있습니다. 아래 그림은 호스트 이름을 기반으로 서비스를 분기하는 간단한 예제의 구조를 나타냅니다.
 
 ![ingress-02.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/ingress-02.png)
 
 #### 서비스와 파드 생성 Create Service and Pods 
-[URI 기반 서비스 분기](/Container/Kubernetes/en/user-guide/#uri)와 동일한 매니페스트를 이용해 서비스와 파드를 생성합니다.
+[URI 기반 서비스 분기](/Container/Kubernetes/en/user-guide/#uri)와 동일한 매니페스트를 이용해 서비스와 파드를 생성합니다. Create services and pods by using the same manifest as [URI 기반 서비스 분기](/Container/Kubernetes/en/user-guide/#uri). 
 
 #### 인그레스 생성 Create Ingress 
-호스트 이름에 따라 서비스를 연결하는 인그레스 매니페스트를 작성합니다. `tea.cafe.example.com` 호스트로 들어온 요청은 `tea-svc` 서비스에 연결하고 `coffee.cafe.example.com` 호스트로 들어온 요청은 `coffee-svc` 서비스에 연결합니다.
+호스트 이름에 따라 서비스를 연결하는 인그레스 매니페스트를 작성합니다. `tea.cafe.example.com` 호스트로 들어온 요청은 `tea-svc` 서비스에 연결하고 `coffee.cafe.example.com` 호스트로 들어온 요청은 `coffee-svc` 서비스에 연결합니다. Write the ingress manifest connecting services based on the host name. Incoming request via the `tea.cafe.example.com` host is connected to the `tea-svc` service, while request via the `coffee.cafe.example.com` host is connected to the `coffee-svc` service.      
 
 ```yaml
 # cafe-ingress-host.yaml
@@ -611,7 +611,7 @@ spec:
           servicePort: 80
 ```
 
-인그레스를 생성하고 잠시 후 확인했을 때 **ADDRESS** 필드에 IP가 설정되어 있어야 합니다.
+인그레스를 생성하고 잠시 후 확인했을 때 **ADDRESS** 필드에 IP가 설정되어 있어야 합니다. In a while after ingress is created, IP must be configured at the **ADDRESS** field. 
 
 ```
 $ kubectl apply -f cafe-ingress-host.yaml
@@ -622,14 +622,14 @@ NAME                HOSTS                                          ADDRESS      
 cafe-ingress-host   tea.cafe.example.com,coffee.cafe.example.com   123.123.123.44   80      4m29s
 ```
 
-#### HTTP Request 전송
+#### HTTP Request 전송 
 외부 호스트에서 인그레스의 ADDRESS에 설정된 IP로 HTTP 요청을 전송합니다. 다만 호스트 이름을 이용해 서비스를 분기하도록 인그레스를 구성했기 때문에 호스트 이름을 이용해 요청을 전송해야 합니다.
 
-> [참고]
-> 임의의 호스트 이름을 사용하여 테스트하려면 curl의 --resolve 옵션을 사용합니다. --resolve 옵션은 `{호스트 이름}:{포트 번호}:{IP}` 형식으로 입력합니다. 이는 {호스트 이름}으로 보내는 {포트번호}에 대한 요청을 {IP}로 해석(resolve)하라는 의미입니다.
-> `/etc/host` 파일을 열어 `{IP} {호스트 이름}` 형식으로 추가할 수도 있습니다.
+> [Note 참고]
+> 임의의 호스트 이름을 사용하여 테스트하려면 curl의 --resolve 옵션을 사용합니다. --resolve 옵션은 `{호스트 이름}:{포트 번호}:{IP}` 형식으로 입력합니다. 이는 {호스트 이름}으로 보내는 {포트번호}에 대한 요청을 {IP}로 해석(resolve)하라는 의미입니다. To test with a random host name, use the --resolve option of curl: enter the --resolve option in the `{Host Name}:{Port Number}:{IP}`format. This means to resolve a request for {Port Number} to be sent to {Host Name} as {IP}. 
+> `/etc/host` 파일을 열어 `{IP} {호스트 이름}` 형식으로 추가할 수도 있습니다. You may open up the `/etc/host` file and add `{IP} {Host Name}`. 
 
-호스트 `coffee.cafe.example.com`로 요청을 전송하면 `coffee-svc` 서비스에 전달되어 `coffee` 파드가 응답합니다.
+호스트 `coffee.cafe.example.com`로 요청을 전송하면 `coffee-svc` 서비스에 전달되어 `coffee` 파드가 응답합니다. When a request is sent to the `coffee.cafe.example.com` host, it is delivered to`coffee-svc` so that the `coffee` pod can respond.
 
 ```
 $ curl --resolve coffee.cafe.example.com:80:123.123.123.44 http://coffee.cafe.example.com/
@@ -640,7 +640,7 @@ URI: /
 Request ID: 29fd8a244b9f0a5ff5f35d1dc35edccf
 ```
 
-호스트 `tea.cafe.example.com`로 요청을 전송하면 `tea-svc` 서비스에 전달되어 `tea` 파드가 응답합니다.
+When a request is sent to the 호스트 `tea.cafe.example.com` host, it is delivered to `tea-svc` so that the 서비스에 전달되어 `tea` pod can respond. 파드가 응답합니다.
 
 ```
 $ curl --resolve tea.cafe.example.com:80:123.123.123.44 http://tea.cafe.example.com/
@@ -651,7 +651,7 @@ URI: /
 Request ID: fe61c1589d3ab8ef4ca4507245251ef3
 ```
 
-알려지지 않은 호스트로 요청을 보내면 인그레스 컨트롤러가 `404 Not Found`를 응답합니다.
+When it is requested to an unknown host, the ingress controller sends `404 Not Found` as response.  알려지지 않은 호스트로 요청을 보내면 인그레스 컨트롤러가 `404 Not Found`를 응답합니다.
 
 ```
 $ curl http://123.123.123.44
@@ -674,7 +674,7 @@ $ curl --resolve test.example.com:80:123.123.123.44 http://test.example.com/
 ```
 
 ## Kubernetes 대시보드 Dashboard 
-TOAST Kubernetes 서비스는 기본 웹 UI 대시보드(dashboard)를 제공합니다. Kubernetes 대시보드에 대한 자세한 내용은 [웹 UI (대시보드)](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/) 문서를 참고하세요.
+TOAST Kubernetes 서비스는 기본 웹 UI 대시보드(dashboard)를 제공합니다. Kubernetes 대시보드에 대한 자세한 내용은 [웹 UI (대시보드)](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/) 문서를 참고하세요. TOAST Kubernetes provides default web UI dashboard. For more details on Kubernetes Dashboard, see documents at [Web UI (Dashboard)](https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/). 
 
 ### 대시보드 서비스 공개 
 사용자 Kubernetes에는 대시보드를 공개하기 위한 `kubernetes-dashboard` 서비스 객체가 미리 생성되어 있습니다.
