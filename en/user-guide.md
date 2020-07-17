@@ -9,40 +9,40 @@ To enable Kubernetes, a cluster must be created. Go to **Container > Kubernetes*
 | Item | Description |
 | --- | --- |
 | Cluster Name | Name of a Kubernetes cluster, to be comprised of less than 20 characters, including alphabets, numbers, '-', and '.'|
-| Kubernetes Version | Kubernetes version to use 사용할 Kubernetes 버전 |
+| Kubernetes Version | Kubernetes version to use |
 | VPC | VPC network to be attached to clusters |
-| Subnet | A subnet, among those defined for VPC, to be associated with instances that comprise a cluster VPC |
-| Image | Images for instances comprising a cluster 클러스터를 구성하는 인스턴스에 사용할 이미지 |
-| Availability Area | Area to create a default node group instance 기본 노드 그룹 인스턴스를 생성할 영역 |
-| Instance Type | Instance specifications for a default node group기본 노드 그룹 인스턴스 사양 |
-| Node Count | Number of instances for a default node group 기본 노드 그룹 인스턴스 수 |
-| Keypair | Keypair to access default node group 기본 노드 그룹 접근에 사용할 키 페어 |
-| Block Storage Type | Type of block storage for a default node group instance 기본 노드 그룹 인스턴스의 블록 스토리지 종류 |
-| Block Storage Size | Size of block storage for a default node group instance 기본 노드 그룹 인스턴스의 블록 스토리지 크기 |
+| Subnet | subnet, among those defined for VPC, to be associated with instances that comprise a cluster VPC |
+| Image | Images for instances comprising a cluster |
+| Availability Area | Area to create a default node group instance |
+| Instance Type | Instance specifications for a default node group |
+| Node Count | Number of instances for a default node group |
+| Keypair | Keypair to access default node group |
+| Block Storage Type | Type of block storage for a default node group instance |
+| Block Storage Size | Size of block storage for a default node group instance |
 
-Enter information as required and click **Create Clusters**, and a cluster begins to be created. You may check status from the list of clusters. It takes about 10 minutes to create; more time may be required depending on the cluster setting.  버튼을 클릭하면 클러스터 생성이 시작됩니다. 클러스터 목록에서 상태를 확인할 수 있습니다. 생성하는 데는 약 10분 정도 걸립니다. 클러스터 설정에 따라 더 오래 걸릴 수도 있습니다.
+Enter information as required and click **Create Clusters**, and a cluster begins to be created. You may check status from the list of clusters. It takes about 10 minutes to create; more time may be required depending on the cluster setting.  
 
 > [Caution]
-> With a cluster created, a default node group is created. After a default node group is created, the number of nodes cannot be modified. When you need more nodes, a new node group must be created. 클러스터를 생성하면 기본 노드 그룹이 생성됩니다. 기본 노드 그룹이 생성된 이후에는 노드 수를 변경할 수 없습니다. 추가 노드가 필요하면 노드 그룹을 새로 만들어야 합니다.
+> With a cluster created, a default node group is created. After a default node group is created, the number of nodes cannot be modified. When you need more nodes, a new node group must be created. 
 
 
-### 클러스터 조회 Querying Clusters 
-A newly created cluster can be found on **Container > Kubernetes**. Select a cluster and the information shows at the bottom. 클러스터를 선택하면 하단에 클러스터 정보가 나타납니다.
+### Querying Clusters 
+A newly created cluster can be found on **Container > Kubernetes**. Select a cluster and the information shows at the bottom. 
 
 | Item | Description |
 | --- | --- |
-| Cluster Name 클러스터 이름 | Name and ID of Kubernetes Cluster 클러스터의 이름과 ID |
-| Node Count 노드 수 | Number of instances of all nodes comprising a cluster 클러스터를 구성하는 모든 노드 인스턴스 수 |
-| Kubernetes 버전 | Kubernetes version in service 사용 중인 Kubernetes 버전 |
-| VPC | VPC network connected to cluster 클러스터에 연결된 VPC 네트워크 |
-| Subnet 서브넷 | Subnet associated to a node instance comprising a cluster 클러스터를 구성하는 노드 인스턴스에 연결된 서브넷 |
-| API Endpoint 엔드포인트 | URI of API endpoint to access cluster for opearation 클러스터에 접근해 조작하기 위한 API 엔드포인트 URI |
-| Configuration File 설정 파일 | Download button of configuration file required to access cluster for operation 클러스터에 접근해 조작하기 위해 필요한 설정 파일 다운로드 버튼 |
+| Cluster Name | Name and ID of Kubernetes Cluster |
+| Node Count | Number of instances of all nodes comprising a cluster |
+| Kubernetes Veresion | Kubernetes version in service |
+| VPC | VPC network attached to cluster |
+| Subnet | Subnet associated to a node instance comprising a cluster |
+| API Endpoint | URI of API endpoint to access cluster for opearation |
+| Configuration File | Download button of configuration file required to access cluster for operation |
 
-### 클러스터 삭제 Deleting Clusters 
-Select a cluster to delete, and click 삭제할 클러스터를 선택하고 **Delete Clusters클러스터 삭제** and it is deleted. It takes about 5 minutes to delete; more time may be required depending on the cluster status. 버튼을 클릭하면 삭제가 진행됩니다. 삭제하는 데는 약 5분 정도 걸립니다. 클러스터의 상태에 따라 더 오래 걸릴 수도 있습니다.
+### Deleting Clusters 
+Select a cluster to delete, and click **Delete Clusters** and it is deleted. It takes about 5 minutes to delete; more time may be required depending on the cluster status. 
 
-## 노드 그룹 Node Group
+## Node Group
 노드 그룹은 Kubernetes를 구성하는 워커 노드 인스턴스들의 그룹입니다. A node group is comprised of worker node instances that comprise a Kubernetes. 
 
 ### 노드 그룹 조회 Querying Node Groups 
