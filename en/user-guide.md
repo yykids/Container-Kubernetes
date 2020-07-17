@@ -1,24 +1,24 @@
-## Container > Kubernetes > 사용 가이드 User Guide 
+## Container > Kubernetes > User Guide 
 
-## 클러스터 Cluster
-클러스터는 사용자의 Kubernetes를 구성하는 인스턴스들의 그룹입니다. A cluster is a group of instances that comprise user's Kubernetes. 
+## Cluster
+Cluster refers to a group of instances that comprise user's Kubernetes. 
 
-### 클러스터 생성 Creating Clusters
-Kubernetes 서비스를 사용하려면 먼저 클러스터를 생성해야 합니다. **Container > Kubernetes** 서비스 페이지에서 **클러스터 생성** 버튼을 클릭하면 클러스터 생성 페이지가 나타납니다. 클러스터 생성에 필요한 항목은 다음과 같습니다. To enable Kubernetes, a cluster must be created. Go to **Container > Kubernetes** and click **Create Clusters** and a page of creating clusters opens. Following items are required to create a cluster: 
+### Creating Clusters
+To enable Kubernetes, a cluster must be created. Go to **Container > Kubernetes** and click **Create Clusters** and a page of creating clusters opens. Following items are required to create a cluster: 
 
-| Item | Description 설명 |
+| Item | Description |
 | --- | --- |
-| Cluster Name클러스터 이름 | Name of a Kubernetes cluster, to be comprised of less than 20 characters, including alphabets, numbers, '-', and '.' 클러스터의 이름, 20자 이내의 영문자와 숫자, '-', '.'로 구성 |
-| Kubernetes Version 쿠버네티스 버전 | Kubernetes version to use 사용할 Kubernetes 버전 |
-| VPC | VPC network to be connected to clusters 클러스터에 연결할 VPC 네트워크 |
-| Subnet 서브넷 | A subnet, among those defined for VPC, to be associated with instances that comprise a cluster VPC에 정의된 서브넷 중 클러스터를 구성하는 인스턴스에 연결할 서브넷 |
-| Image 이미지 | Images for instances comprising a cluster 클러스터를 구성하는 인스턴스에 사용할 이미지 |
-| Availability Area가용성 영역 | Area to create a default node group instance 기본 노드 그룹 인스턴스를 생성할 영역 |
-| Instance Type 인스턴스 타입 | Instance specifications for a default node group기본 노드 그룹 인스턴스 사양 |
-| Node Count 노드 수 | Number of instances for a default node group 기본 노드 그룹 인스턴스 수 |
-| Keypair 키 페어 | Keypair to access default node group 기본 노드 그룹 접근에 사용할 키 페어 |
-| Block Storage Type 블록 스토리지 타입 | Type of block storage for a default node group instance 기본 노드 그룹 인스턴스의 블록 스토리지 종류 |
-| Block Storage Size 블록 스토리지 크기 | Size of block storage for a default node group instance 기본 노드 그룹 인스턴스의 블록 스토리지 크기 |
+| Cluster Name | Name of a Kubernetes cluster, to be comprised of less than 20 characters, including alphabets, numbers, '-', and '.'|
+| Kubernetes Version | Kubernetes version to use 사용할 Kubernetes 버전 |
+| VPC | VPC network to be attached to clusters |
+| Subnet | A subnet, among those defined for VPC, to be associated with instances that comprise a cluster VPC |
+| Image | Images for instances comprising a cluster 클러스터를 구성하는 인스턴스에 사용할 이미지 |
+| Availability Area | Area to create a default node group instance 기본 노드 그룹 인스턴스를 생성할 영역 |
+| Instance Type | Instance specifications for a default node group기본 노드 그룹 인스턴스 사양 |
+| Node Count | Number of instances for a default node group 기본 노드 그룹 인스턴스 수 |
+| Keypair | Keypair to access default node group 기본 노드 그룹 접근에 사용할 키 페어 |
+| Block Storage Type | Type of block storage for a default node group instance 기본 노드 그룹 인스턴스의 블록 스토리지 종류 |
+| Block Storage Size | Size of block storage for a default node group instance 기본 노드 그룹 인스턴스의 블록 스토리지 크기 |
 
 Enter information as required and click **Create Clusters**, and a cluster begins to be created. You may check status from the list of clusters. It takes about 10 minutes to create; more time may be required depending on the cluster setting.  버튼을 클릭하면 클러스터 생성이 시작됩니다. 클러스터 목록에서 상태를 확인할 수 있습니다. 생성하는 데는 약 10분 정도 걸립니다. 클러스터 설정에 따라 더 오래 걸릴 수도 있습니다.
 
@@ -27,9 +27,9 @@ Enter information as required and click **Create Clusters**, and a cluster begin
 
 
 ### 클러스터 조회 Querying Clusters 
-A newly created cluster can be found on 생성한 클러스터는 **Container > Kubernetes** 서비스 페이지에서 확인할 수 있습니다. Select a cluster and the information shows at the bottom. 클러스터를 선택하면 하단에 클러스터 정보가 나타납니다.
+A newly created cluster can be found on **Container > Kubernetes**. Select a cluster and the information shows at the bottom. 클러스터를 선택하면 하단에 클러스터 정보가 나타납니다.
 
-| Item항목 | Description |
+| Item | Description |
 | --- | --- |
 | Cluster Name 클러스터 이름 | Name and ID of Kubernetes Cluster 클러스터의 이름과 ID |
 | Node Count 노드 수 | Number of instances of all nodes comprising a cluster 클러스터를 구성하는 모든 노드 인스턴스 수 |
@@ -49,9 +49,9 @@ Select a cluster to delete, and click 삭제할 클러스터를 선택하고 **D
 Click a cluster name on the list to find the list of node groups. Select a node group and the information shows at the bottom.  클러스터 목록에서 클러스터 이름을 클릭하면 노드 그룹 목록을 확인할 수 있습니다. 노드 그룹을 선택하면 하단에 노드 그룹 정보가 나타납니다.
 
 * 기본 정보 Basic Information
-On the **Basic Information기본 정보** tab, check the following: 탭에서는 다음과 정보를 확인할 수 있습니다.
+On the **Basic Information** tab, check the following: 탭에서는 다음과 정보를 확인할 수 있습니다.
 
-| Item항목 |Description 설명 |
+| Item |Description |
 | --- | --- |
 | Name of Node Group 노드 그룹 이름 | Name and ID of a node group 노드 그룹 이름과 ID |
 | Name of Cluster클러스터 이름 | Name and ID of a cluster to which a node group is included 노드 그룹이 속한 클러스터의 이름과 ID |
@@ -133,7 +133,7 @@ $ export KUBECONFIG={Path of cluster configuration file클러스터 설정 파�
 
 클러스터 설정 파일 경로를 환경 변수에 저장하고 싶지 않다면 kubectl의 기본 설정 파일인 `$HOME/.kube/config`로 복사해 사용할 수도 있습니다. 그러나 클러스터를 여러 개 운영한다면 환경 변숫값을 변경하는 방법이 편리합니다. You may copy cluster configuration file path to `$HOME/.kube/config`, which is the default configuration file of kubectl, if you don't want to save it to an environment variable. However, when there are many clusters, it is easier to change environment variables. 
 
-### 연결 확인 Check Connection 
+### 연결 확인 Confirming Connection 
 See if it is well set by the `kubectl version` command. If there's no problem, 명령어로 정상 설정되었는지 확인합니다. 문제가 없다면 `Server Version`이 is printed.  출력됩니다.
 
 ```
@@ -379,12 +379,12 @@ NAME            TYPE           CLUSTER-IP     EXTERNAL-IP      PORT(S)          
 ingress-nginx   LoadBalancer   10.254.2.128   123.123.123.41   80:30820/TCP,443:30269/TCP   39s
 ```
 
-### URI 기반 서비스 분기 Diverg
-인그레스 컨트롤러는 URI를 기반으로 서비스를 분기할 수 있습니다. 아래 그림은 URI를 기반으로 서비스를 분기하는 간단한 예제의 구조를 나타냅니다.
+### URI 기반 서비스 분기 Diverging Service on URI 
+인그레스 컨트롤러는 URI를 기반으로 서비스를 분기할 수 있습니다. 아래 그림은 URI를 기반으로 서비스를 분기하는 간단한 예제의 구조를 나타냅니다. Ingress controller can diverge services based on URI. Below figure shows the structure of a simple example of service divergence based on URI. 
 
 ![ingress-01.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/ingress-01.png)
 
-#### 서비스와 파드 생성 Create Service and Pods 
+#### 서비스와 파드 생성 Create Services and Pods 
 Manifest is created to create services and pods like below:다음과 같이 서비스와 파드를 생성하기 위한 매니페스트를 작성합니다. Associate the `tea-svc` 서비스에는 `tea` pod to `tea-svc`, and 파드를 연결하고, `coffee-svc` 서비스에는 the `coffee` pod for `coffee-svc`. 파드를 연결합니다.
 
 ```yaml
@@ -576,12 +576,12 @@ deployment.apps "tea" deleted
 service "tea-svc" deleted
 ```
 
-### 호스트 기반 서비스 분기
+### 호스트 기반 서비스 분기 Diverge Services on Host 
 Ingress controller can diverge services based on the host name. Below figure shows the structure of a simple example of service divergence based on the host name. 인그레스 컨트롤러는 호스트 이름을 기반으로 서비스를 분기할 수 있습니다. 아래 그림은 호스트 이름을 기반으로 서비스를 분기하는 간단한 예제의 구조를 나타냅니다.
 
 ![ingress-02.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/ingress-02.png)
 
-#### 서비스와 파드 생성 Create Service and Pods 
+#### 서비스와 파드 생성 Create Services and Pods 
 [URI 기반 서비스 분기](/Container/Kubernetes/en/user-guide/#uri)와 동일한 매니페스트를 이용해 서비스와 파드를 생성합니다. Create services and pods by using the same manifest as [URI 기반 서비스 분기](/Container/Kubernetes/en/user-guide/#uri). 
 
 #### 인그레스 생성 Create Ingress 
@@ -622,7 +622,7 @@ NAME                HOSTS                                          ADDRESS      
 cafe-ingress-host   tea.cafe.example.com,coffee.cafe.example.com   123.123.123.44   80      4m29s
 ```
 
-#### HTTP Request 전송 
+#### Send HTTP Request 전송 
 외부 호스트에서 인그레스의 ADDRESS에 설정된 IP로 HTTP 요청을 전송합니다. 다만 호스트 이름을 이용해 서비스를 분기하도록 인그레스를 구성했기 때문에 호스트 이름을 이용해 요청을 전송해야 합니다. HTTP request is sent from external host to IP configured at the ADDRESS of the ingress controller. Nevertheless, such request must be sent by using host name, since service divergence is based on the host name by configuration.
 
 > [Note 참고]
@@ -640,7 +640,7 @@ URI: /
 Request ID: 29fd8a244b9f0a5ff5f35d1dc35edccf
 ```
 
-When a request is sent to the 호스트 `tea.cafe.example.com` host, it is delivered to `tea-svc` so that the 서비스에 전달되어 `tea` pod can respond. 파드가 응답합니다.
+When a request is sent to the `tea.cafe.example.com` host, it is delivered to `tea-svc` so that the `tea` pod can respond. 
 
 ```
 $ curl --resolve tea.cafe.example.com:80:123.123.123.44 http://tea.cafe.example.com/
@@ -703,7 +703,7 @@ Events:
 
 그러나 `kubernetes-dashboard` 서비스 객체는 ClusterIP 유형이기 때문에 아직 클러스터 외부에 공개되어 있지 않습니다. 대시보드를 외부 공개하려면 서비스 객체를 LoadBalancer 유형으로 변경하거나 인그레스 컨트롤러와 인그레스 객체를 생성해야 합니다. However, the `kubernetes-dashboard` object belongs to ClusterIP type and is not open out of the cluster. To open up dashboard externally, the service object type must be changed into LoadBalancer, or ingress controller and ingress object must be created.  
 
-#### LoadBalancer 서비스 객체로 변경 Changing into LoadBalancer 
+#### LoadBalancer 서비스 객체로 변경 Change into LoadBalancer 
 
 `LoadBalancer` 유형으로 서비스 객체를 변경하면 클러스터 외부에 TOAST Load Balancer가 생성되고, 로드 밸런서와 서비스 객체와 연결됩니다. 로드 밸런서와 연결된 서비스 객체를 조회하면 **EXTERNAL-IP** 필드에 로드 밸런서의 IP가 표시됩니다. `LoadBalancer` 유형의 서비스 객체에 대한 설명은 [LoadBalancer 서비스](/Container/Kubernetes/en/user-guide/#loadbalancer)를 참고하세요. 아래 그림은 `LoadBalancer` 유형의 서비스를 이용해 대시보드를 외부에 공개하는 구조를 나타냅니다. Once the type of service object is changed into `LoadBalancer`, TOAST Load Balancer is created out of the cluster, which is associated with load balancer and service object. By querying service object associated with the load balanacer, IP of the load balancer shows at **EXTERNAL-IP**
 
@@ -734,7 +734,7 @@ kubernetes-dashboard   LoadBalancer   10.254.95.176   123.123.123.81   443:30963
 > [Note]
 > Since Kubernetes dashboard is based on a private certificate that is automatically created, the page may be displayed as unsafe, depending on the web browser or security setting.  대시보드는 자동 생성되는 사설 인증서를 사용하기 때문에 웹 브라우저의 종류와 보안 설정에 따라 안전하지 않은 페이지로 표시될 수 있습니다.
 
-#### 인그레스(Ingress)를 이용한 서비스 공개 Service Opening on Ingress 
+#### 인그레스(Ingress)를 이용한 서비스 공개 Open Services with Ingress 
 
 인그레스는 클러스터 내부의 여러 서비스들로 접근하기 위한 라우팅을 제공하는 네트워크 객체입니다. 인그레스 객체의 설정은 인그래스 컨트롤러로 구동됩니다. `kubernetes-dashboard` 서비스 객체를 인그레스를 통해 공개할 수 있습니다. 인그레스와 인그레스 컨트롤러에 대한 설명은 [인그레스 컨트롤러](/Container/Kubernetes/en/user-guide/#_16)를 참고하세요. 아래 그림은 인그레스를 통해 대시보드를 외부에 공개하는 구조를 나타냅니다.Ingress refers to the network object providing routing to access many services within a cluster. The setting of an ingress object runs by ingress controller. The `kubernetes-dashboard` service object can go public through ingress. See [Ingress Controller](/Container/Kubernetes/en/user-guide/#_16) regarding description on ingress and ingress controller. Below figure shows the structure of making dashboard public through ingress.
 ![dashboard-02.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/dashboard-02.png)
@@ -829,8 +829,8 @@ PV를 파드에 마운트해 사용합니다.
 
 PV를 생성하려면 블록 스토리지의 ID가 필요합니다. **Storage > Block Storage** 서비스 페이지의 블록 스토리지 목록에서 사용할 블록 스토리지를 선택합니다. 하단 **정보** 탭의 블록 스토리지 이름 항목에서 ID를 확인할 수 있습니다.
 
-> [주의]
-> 블록 스토리지와 파드를 구동할 노드 그룹 인스턴스의 가용성 영역이 같아야 합니다. 가용성 영역이 다르면 연결할 수 없습니다.
+> [Caution]
+> 블록 스토리지와 파드를 구동할 노드 그룹 인스턴스의 가용성 영역이 같아야 합니다. 가용성 영역이 다르면 연결할 수 없습니다. 
 
 스토리지 클래스 매니페스트를 작성합니다. TOAST Block Storage를 사용하려면 **provisioner**를 반드시 `kubernetes.io/cinder`로 설정해야 합니다.
 
