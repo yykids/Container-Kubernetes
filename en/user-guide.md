@@ -705,7 +705,7 @@ However, the `kubernetes-dashboard` object belongs to ClusterIP type and is not 
 
 #### Change into LoadBalancer 
 
-Once the type of service object is changed into `LoadBalancer`, TOAST Load Balancer is created out of the cluster, which is associated with load balancer and service object. By querying service object associated with the load balanacer, IP of the load balancer shows at **EXTERNAL-IP**. See [LoadBalancer 서비스](/Container/Kubernetes/en/user-guide/#loadbalancer) for the description of service objects of the `LoadBalancer` type.  
+Once the type of service object is changed into `LoadBalancer`, TOAST Load Balancer is created out of the cluster, which is associated with load balancer and service object. By querying service object associated with the load balanacer, IP of the load balancer shows at **EXTERNAL-IP**. See [LoadBalancer Service](/Container/Kubernetes/en/user-guide/#loadbalancer) for the description of service objects of the `LoadBalancer` type.  
 
 ![dashboard-01.png](http://static.toastoven.net/prod_infrastructure/container/kubernetes/dashboard-01.png)
 
