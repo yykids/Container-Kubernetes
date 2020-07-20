@@ -98,14 +98,14 @@ For kubectl, execution files can be downloaded and enabled, with no need of spec
 
 For more details on installation and optional items, see documents of [Install and Set Up kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
 
-#### Role Changes
+#### Change Roles
 By default, downloaded files are not allowed to execute. The execution role must be added. 
 
 ```
 $ chmod +x kubectl
 ```
 
-#### 위치 변경 또는 경로 지정 Change Location or Specify Paths 
+#### Change Location or Specify Paths 
 Change location to the path specified for an environment variable so as to execute kubectl on any path, or add the path including kubectl to an environment variable.  
 
 * Change Loation to Path Specified for Environment Variable 
@@ -313,11 +313,11 @@ Commercial support is available at
 
 
 ## Ingress Controller 
-Ingress Controller routes HTTP and HTTPS requests from cluster externals to internal services, in reference of the rules that are defined at ingress object so as to provide SSL/TSL closure and virtual hosting. For more details on Ingress Controller and Ingress, see [Ingress Controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/), [인그레스](https://kubernetes.io/docs/concepts/services-networking/ingress/).
+Ingress Controller routes HTTP and HTTPS requests from cluster externals to internal services, in reference of the rules that are defined at ingress object so as to provide SSL/TSL closure and virtual hosting. For more details on Ingress Controller and Ingress, see [Ingress Controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/), [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/).
 
 
 ### Installing NGINX Ingress Controller 
-NGINX Ingress Controller is one of the most frequently used ingress controllers. For more details, see [NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/)와 [NGINX Ingress Controller for Kubernetes](https://docs.nginx.com/nginx-ingress-controller/overview/).
+NGINX Ingress Controller is one of the most frequently used ingress controllers. For more details, see [NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/) and [NGINX Ingress Controller for Kubernetes](https://docs.nginx.com/nginx-ingress-controller/overview/).
 
 NGINX Ingress Controller provides pre-defined manifest files to readily create resources in need. With this manifest, resources can be easily created when required. 
 
@@ -520,7 +520,7 @@ cafe-ingress-uri   *       123.123.123.44   80      88s
 #### Send HTTP Requests 
 Send HTTP request to the IP address set for **ADDRESS** of ingress for an external host, to check if the ingress has been properly set. 
 
-Request for `/coffee` as endpoint is sent to the `coffee-svc` service so as the `coffee` pod can respond. From the **Server name**, you can see that `coffee` pods take turns to respond in the round-robin technique. 
+Request for `/coffee` as endpoint is sent to the `coffee-svc` service so as the `coffee` pod can respond. From the **Server Name**, you can see that `coffee` pods take turns to respond in the round-robin technique. 
 
 ```
 $ curl http://123.123.123.44/coffee
@@ -799,40 +799,40 @@ Persistent Volume or PV is a Kubernetes resource representing physical storage v
 
 Persistent Volume Claims, or PVC is required to attach PV to pods. PVC defines necessary volume requirements, including volume and read/write modes. 
 
-PV와 PVC로 사용자는 사용하고 싶은 볼륨의 속성을 정의하고, 시스템은 사용자의 요구 사항에 맞는 볼륨 리소스를 할당하는 방식으로 자원의 사용과 관리를 분리합니다. PV and PVC users 
+With PV and PVC, user can define the attributes of a volume of choice, while the system seperates the use of resources from management by assigning volume resources for each user requirement.  
 
 ### Life Cycle of PV/PVC 
-PV와 PVC는 4단계의 생명 주기(life cycle)를 따릅니다.
+PV and PVC support the four-phase life cycle. 
 
-* 프로비저닝(provisioning)
-사용자가 직접 볼륨을 확보하고 PV를 생성(static provisioning)하거나 [스토리지 클래스](https://kubernetes.io/docs/concepts/storage/storage-classes/)를 사용해 동적으로 생성(dynamic provisioning)할 수 있습니다.
+* Provisioning
+User can secure volume on his own to provision PV (static provisioning), or apply [Storage Class](https://kubernetes.io/docs/concepts/storage/storage-classes/) to dynamically provision PV (dynamic provisioning). 
 
-* 바인딩(binding)
-PV와 PVC를 1:1로 바인딩합니다. 동적 프로비저닝으로 PV를 생성했다면 바인딩도 자동으로 수행됩니다.
+* Binding
+Bind PV to PVC 1:1. With dynamic provisioning, binding is also automatically executed along with PV provisioning. 
 
-* 사용(using)
-PV를 파드에 마운트해 사용합니다.
+* Using
+Mount PV to a pod to make it enabled.  
 
-* 반환(reclaiming)
-사용을 마친 볼륨을 회수합니다. 회수 방법은 삭제(Delete), 보존(Retain), 재사용(Recycle)이 있습니다.
+* Reclaiming
+Volume is reclaimed after it is used up, in three methods: Delete, Retain, or Recycle. 
 
 | Method | Description |
 | --- | --- |
-| 삭제(Delete) | PV를 삭제할 때 연결된 볼륨을 함께 삭제합니다. |
-| 보존(Retain) | PV를 삭제할 때 연결된 볼륨을 삭제하지 않습니다. 볼륨은 사용자가 직접 삭제하거나 재사용 할 수 있습니다. |
-| 재사용(Recycle) | PV를 삭제할 때 연결된 볼륨을 삭제하지 않고 재사용할 수 있는 상태로 만듭니다. 이 방법은 사용 중단(deprecated) 되었습니다. |
+| Delete | PV is deleted along with its attached volumes. |
+| Retain | PV is deleted but its attached volumes are not: volumes can be deleted or reused by user. |
+| Recycle | PV is deleted and its attached volumes are made to be reused without being deleted. This method has been deprecated. |
 
 
-### 정적 프로비저닝 Static Provisioning 
+### Static Provisioning 
 
-정적 프로비저닝(static provisioning)은 사용자가 직접 블록 스토리지를 준비해야 합니다. TOAST 웹 콘솔의 **Storage > Block Storage** 서비스 페이지에서 **블록 스토리지 생성** 버튼을 클릭해 PV와 연결할 블록 스토리지를 생성합니다. 블록 스토리지 가이드의 [블록 스토리지 생성](/Storage/Block%20Storage/en/console-guide/#_2)을 참고하세요.
+To enable static provisioning, user must have the block storage prepared. Go to **Storage > Block Storage** on TOAST web console, and click **Create Block Storages** to create block storages to be attached to PV. See Block Stroage Guide for [Creating Block Storages](/Storage/Block%20Storage/en/console-guide/#_2).  
 
-PV를 생성하려면 블록 스토리지의 ID가 필요합니다. **Storage > Block Storage** 서비스 페이지의 블록 스토리지 목록에서 사용할 블록 스토리지를 선택합니다. 하단 **정보** 탭의 블록 스토리지 이름 항목에서 ID를 확인할 수 있습니다.
+To provision PV, ID of a block storage is required. Select a block storage from the list of block storages on **Storage > Block Storage**. Check ID on the **Information** tab at the bottom of the block storage name. 
 
 > [Caution]
-> 블록 스토리지와 파드를 구동할 노드 그룹 인스턴스의 가용성 영역이 같아야 합니다. 가용성 영역이 다르면 연결할 수 없습니다. 
+> Block storage must be on the same availability area with the node group instance to run pods; otherwise, attachement is unavailable. 
 
-스토리지 클래스 매니페스트를 작성합니다. TOAST Block Storage를 사용하려면 **provisioner**를 반드시 `kubernetes.io/cinder`로 설정해야 합니다.
+Create manifest for storage class. To enable TOAST Block Storage, **provisioner** must be configured with `kubernetes.io/cinder`. 
 
 ```yaml
 # storage_class.yaml
@@ -843,7 +843,7 @@ metadata:
 provisioner: kubernetes.io/cinder
 ```
 
-스토리지 클래스를 생성하고 확인합니다.
+Create storage class and confirm.  
 
 ```
 $ kubectl apply -f storage_class.yaml
@@ -854,7 +854,7 @@ NAME         PROVISIONER            AGE
 sc-default   kubernetes.io/cinder   8s
 ```
 
-블록 스토리지와 연결할 PV 매니페스트를 작성합니다. **spec.storageClassName**에는 스토리지 클래스 이름을 입력합니다. TOAST Block Storage를 사용하려면 **spec.accessModes**는 반드시 `ReadWriteOnce`로 설정해야 합니다. **spec.presistentVolumeReclaimPolicy**는 `Delete` 또는 `Retain`으로 설정할 수 있습니다.
+Write PV manifest to be attached to block storage. Enter storage class name for **spec.storageClassName**. To enable TOAST Block Storage, **spec.accessModes** must be configured with 'ReadWriteOnce'. Choose 'Delete' or 'Retain' for **spec.presistentVolumeReclaimPolicy**.
 
 ```yaml
 # pv-static.yaml
@@ -875,7 +875,7 @@ spec:
     volumeID: "e6f95191-d58b-40c3-a191-9984ce7532e5"
 ```
 
-PV를 생성하고 확인합니다.
+Create PV and confirm. 
 
 ```
 $ kubectl apply -f pv-static.yaml
@@ -886,7 +886,7 @@ NAME            CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM   S
 pv-static-001   10Gi       RWO            Delete           Available           sc-default              7s    Filesystem
 ```
 
-생성한 PV를 사용하기 위한 PVC 매니페스트를 작성합니다. **spec.volumeName**에는 PV의 이름을 지정해야 합니다. 다른 항목들은 PV 매니페스트의 내용과 동일하게 설정합니다.
+Write PVC manifest to use created PV. PV name must be specified for **spec.volumeName**.  Set other items same as pv manifest. 
 
 ```yaml
 # pvc-static.yaml
@@ -905,7 +905,7 @@ spec:
   storageClassName: sc-default
 ```
 
-PVC를 생성하고 확인합니다.
+Create PVC and confirm. 
 
 ```
 $ kubectl apply -f pvc-static.yaml
@@ -916,7 +916,7 @@ NAME         STATUS   VOLUME          CAPACITY   ACCESS MODES   STORAGECLASS   A
 pvc-static   Bound    pv-static-001   10Gi       RWO            sc-default     7s    Filesystem
 ```
 
-PVC를 생성한 다음 PV의 상태를 조회해보면 **CLAIM** 항목에 PVC 이름이 지정되고, **STATUS** 항목이 `Bound`로 변경된 것을 확인할 수 있습니다.
+After PVC is created, query PV status, and you can find PVC name specified for **CLAIM** and **STATUS** changed into 'Bound'. 
 
 ```
 $ kubectl get pv -o wide
@@ -925,19 +925,19 @@ pv-static-001   10Gi       RWO            Delete           Bound    default/pvc-
 ```
 
 
-### 동적 프로비저닝 Dynamic Provisioning 
+### Dynamic Provisioning 
 
-동적 프로비저닝(dynamic provisioning)은 스토리지 클래스에 정의된 속성을 참조하여 자동으로 블록 스토리지를 생성합니다. 스토리지 클래스 매니페스트의 **parameters.type**에 TOAST Block Storage 유형을 지정할 수 있습니다. 지정하지 않으면 HDD 유형으로 설정됩니다.
+With Dynamic Provisioning, block storage is automatically created in reference of attributes defined at storage class. You may speify the type of TOAST Block Storages for **parameters.type** of the storage class manifest. If not specified, it is configured with HDD type.  
 
-| 타입 | 설정값 |
+| Type | Configured Value |
 | --- | --- |
 | HDD | General HDD |
 | SSD | General SSD |
 
-블록 스토리지는 노드 그룹과 같은 가용성 영역(availability zone)에 만들어야 연결할 수 있습니다. 스토리지 클래스 매니페스트의 **parameters.availability**에 블록 스토리지를 생성할 가용성 영역을 지정할 수 있습니다. 연결할 노드 그룹의 가용성 영역은 노드 그룹 목록에서 확인할 수 있습니다.
+Block storage must be on the same availability area of the node group to be allowed for attachment. You may specify the availability area to create a block storage for **parameters.availability** of the storage class manifest. Check the availability area of a node group to be attached from the list of node groups.  
 
-> [Caution 주의]
-> 스토리지 클래스 매니페스트에 가용성 영역을 지정하지 않으면 임의의 가용성 영역에 블록 스토리지를 만듭니다. 블록 스토리지가 노드 그룹과 다른 가용성 영역에 생성되면 연결하지 못할 수 있으니 반드시 가용성 영역을 지정해야 합니다.
+> [Caution]
+> Without availability area specified for the storage class manifest, a block storage is created at a random availability area. It is a must to specify availability area, becuase, if a block storage is located at a different availability area from its node group, it may not be properly attached.  
 
 ```yaml
 # storage_class.yaml
@@ -951,7 +951,7 @@ parameters:
   availability: kr-pub-a
 ```
 
-동적 프로비저닝은 PV를 생성할 필요가 없습니다. 따라서 PVC 매니페스트에는 **spec.volumeName**를 설정하지 않습니다.
+There is no need to create PV for dynamic provisioning; therefore, pvc manifest does not require the setting of **spec.volumeName**. 
 
 ```yaml
 # pvc-dynamic.yaml
@@ -969,7 +969,7 @@ spec:
   storageClassName: sc-ssd
 ```
 
-PVC를 생성하면 PV가 자동으로 생성됩니다. PV에 연결된 블록 스토리지도 자동으로 생성되며 TOAST 웹 콘솔 **Storage > Block Storage** 서비스 페이지의 블록 스토리지 목록에서 확인할 수 있습니다.
+With PVC provisioning, PV is automatically created. At the same time, block storage attached to the PV is also automatically created, and you can check it from the list of block storages on the **Storage > Block Storage** page of TOAST web console. 
 
 ```
 $ kubectl apply -f pvc-dynamic.yaml
@@ -986,15 +986,15 @@ NAME                                STATUS   VOLUME                             
 persistentvolumeclaim/pvc-dynamic   Bound    pvc-c63da3f9-dfcb-4cae-a9a9-67137994febc   10Gi       RWO            sc-default     17s
 ```
 
-> [Caution 주의]
-> 동적 프로비저닝으로 생성된 블록 스토리지는 웹 콘솔에서 삭제할 수 없습니다. 또한 클러스터를 삭제할 때 자동으로 삭제되지 않습니다. 따라서 클러스터를 삭제하기 전에 PVC를 모두 삭제해야 합니다. PVC를 삭제하지 않고 클러스터를 삭제하면 과금이 될 수 있습니다. 동적 프로비저닝을 생성된 PVC의 reclaimPolicy는 기본적으로 `Delete`로 설정되기 때문에 PVC만 삭제해도 PV와 블록 스토리지가 삭제됩니다.
+> [Caution]
+> A block storage created by dynamic provisioning cannot be deleted from the web console. It is not automatically deleted along with a cluster being deleted. Therefore, before a cluster is deleted, PVC must be deleted first; otherwise, you may be charged for pvc usage. The reclaimPolicy of PVC created by dynamic provisioning is configured with 'Delete' by default, by which deleting PVC only causes the deletion of PV and block storage as well.  
 
 
-### 파드에 PVC 마운트 Mounting PVC to Pods 
+### Mounting PVC to Pods 
 
-파드에 PVC를 마운트하려면 파드 매니페스트에 마운트 정보를 정의해야 합니다. `spec.volumes.persistenVolumeClame.claimName`에 사용할 PVC 이름을 입력합니다. 그리고 `spec.containers.volumeMounts.mountPath`에 마운트할 경로를 입력합니다.
+To mount PVC to a pod, mount information must be defined at the pod manifest. Enter pvc name to use for `spec.volumes.persistenVolumeClame.claimName`; enter paths to mount for `spec.containers.volumeMounts.mountPath`.
 
-아래 예제는 정적 프로비저닝으로 생성한 PVC를 파드의 `/usr/share/nginx/html`에 마운트합니다.
+In the example as blow, pvc created with dynamic provisioning is mounted to `/usr/share/nginx/html` of the pod. 
 
 ```yaml
 # pod-pvc.yaml
@@ -1020,7 +1020,7 @@ spec:
         claimName: pvc-static
 ```
 
-파드를 생성하고 블록 스토리지가 마운트되어 있는지 확인합니다.
+Create a pod and see if block storage is mounted. 
 
 ```
 $ kubectl apply -f pod-static-pvc.yaml
@@ -1037,4 +1037,4 @@ Filesystem      Size  Used Avail Use% Mounted on
 ...
 ```
 
-TOAST 웹 콘솔 **Storage > Block Storage** 서비스 페이지에서도 블록 스토리지의 연결 정보를 확인할 수 있습니다.
+You can also check block storage attachement from **Storage > Block Storage** on TOAST web console. 
