@@ -93,6 +93,126 @@ Kubernetes 서비스를 사용하려면 먼저 클러스터를 생성해야 합�
 * [안전한 노드 drain](https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/)
 * [수동 노드 관리](https://kubernetes.io/docs/concepts/architecture/nodes/#manual-node-administration)
 
+### GPU 노드 그룹 사용 
+Kubernetes를 통한 GPU 기반 워크로드 실행이 필요한 경우, GPU 인스턴스로 구성된 노드 그룹을 생성할 수 있습니다.
+클러스터 혹은 노드 그룹 생성 과정에서 인스턴스 타입 선택 시, 'g2' 계열을 선택하면 GPU 노드 그룹을 만들 수 있습니다.
+
+ㅛㅛ> [참고]
+> TOAST GPU 인스턴스에서 제공되는 GPU는 NVIDIA 계열입니다. ([사용 가능한 GPU 제원 확인하기](Compute/GPU%20Instance/ko/overview))
+> NVIDIA GPU 이용을 위해 kubernetes에 필요한 nvidia-device-plugin은 GPU 노드 그룹 생성 시 자동으로 설치됩니다.
+
+생성된 GPU 노드에 대한 기본적인 설정 상태 확인 및 간단한 동작 테스트는 다음과 같은 방법을 이용하면 됩니다.
+
+#### 노드 수준의 상태 확인
+GPU 노드에 접속 후, `nvidia-smi` 명령을 실행하여 아래와 비슷한 결과가 나오는 것을 확인합니다.
+아래와 같은 내용이 출력되는 경우 GPU driver가 정상적으로 동작함을 의미합니다.
+
+```
+$ nvidia-smi
+Mon Jul 27 14:38:07 2020
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 418.152.00   Driver Version: 418.152.00   CUDA Version: 10.1     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|===============================+======================+======================|
+|   0  Tesla T4            Off  | 00000000:00:05.0 Off |                    0 |
+| N/A   30C    P8     9W /  70W |      0MiB / 15079MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+
++-----------------------------------------------------------------------------+
+| Processes:                                                       GPU Memory |
+|  GPU       PID   Type   Process name                             Usage      |
+|=============================================================================|
+|  No running processes found                                                 |
++-----------------------------------------------------------------------------+ 
+```
+
+#### Kubernetes 수준의 상태 확인
+`kubectl` 명령을 통해 클러스터 수준에서 사용 가능한 GPU 리소스 정보를 확인합니다.
+아래는 각 노드에서 사용 가능한 GPU 코어의 개수를 출력하도록 하는 명령 및 수행 결과입니다.
+
+```
+$ kubectl get nodes -A -o custom-columns='NAME:.metadata.name,GPU Allocatable:.status.allocatable.nvidia\.com/gpu,GPU Capacity:.status.capacity.nvidia\.com/gpu'
+NAME                                       GPU Allocatable   GPU Capacity
+my-cluster-default-w-vdqxpwisjjsk-node-1   1                 1
+```
+
+#### GPU 테스트를 위한 샘플 워크로드 실행
+kubernetes 클러스터에 속한 GPU 노드들은 cpu와 memory 이외에 `nvidia.com/gpu`와 같은 이름의 리소스를 제공합니다.
+따라서, GPU를 사용하고 싶은 경우에는 `nvidia.com/gpu` 리소스를 할당 받도록 아래의 샘플 파일처럼 명시하면 됩니다.
+
+* resnet.yaml
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: resnet-gpu-pod
+spec:
+  imagePullSecrets:
+    - name: nvcr.dgxkey
+  containers:
+    - name: resnet
+      image: nvcr.io/nvidia/tensorflow:18.07-py3
+      command: ["mpiexec"]
+      args: ["--allow-run-as-root", "--bind-to", "socket", "-np", "1", "python", "/opt/tensorflow/nvidia-examples/cnn/resnet.py", "--layers=50", "--precision=fp16", "--batch_size=64", "--num_iter=90"]
+      resources:
+        limits:
+          nvidia.com/gpu: 1
+``` 
+
+상기 파일을 실행시키면 아래와 같은 결과를 확인할 수 있습니다.
+
+```
+$ kubectl create -f resnet.yaml
+pod/resnet-gpu-pod created
+
+$ kubectl get pods resnet-gpu-pod
+NAME             READY   STATUS    RESTARTS   AGE
+resnet-gpu-pod   0/1     Running   0          17s 
+
+$ kubectl logs resnet-gpu-pod -n default -f
+PY 3.5.2 (default, Nov 23 2017, 16:37:01)
+[GCC 5.4.0 20160609]
+TF 1.8.0
+Script arguments:
+  --layers 50
+  --display_every 10
+  --iter_unit epoch
+  --batch_size 64
+  --num_iter 100
+  --precision fp16
+Training
+WARNING:tensorflow:Using temporary folder as model directory: /tmp/tmpjw90ypze
+2020-07-31 00:57:23.020712: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:898] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2020-07-31 00:57:23.023190: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1356] Found device 0 with properties:
+name: Tesla T4 major: 7 minor: 5 memoryClockRate(GHz): 1.59
+pciBusID: 0000:00:05.0
+totalMemory: 14.73GiB freeMemory: 14.62GiB
+2020-07-31 00:57:23.023226: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1435] Adding visible gpu devices: 0
+2020-07-31 00:57:23.846680: I tensorflow/core/common_runtime/gpu/gpu_device.cc:923] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-07-31 00:57:23.846743: I tensorflow/core/common_runtime/gpu/gpu_device.cc:929]      0
+2020-07-31 00:57:23.846753: I tensorflow/core/common_runtime/gpu/gpu_device.cc:942] 0:   N
+2020-07-31 00:57:23.847023: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1053] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 14151 MB memory) -> physical GPU (device: 0, name: Tesla T4, pci bus id: 0000:00:05.0, compute capability: 7.5)
+  Step Epoch Img/sec   Loss  LR
+     1   1.0     3.1  7.936  8.907 2.00000
+    10  10.0    68.3  1.989  2.961 1.65620
+    20  20.0   214.0  0.002  0.978 1.31220
+    30  30.0   213.8  0.008  0.979 1.00820
+    40  40.0   210.8  0.095  1.063 0.74420
+    50  50.0   211.9  0.261  1.231 0.52020
+    60  60.0   211.6  0.104  1.078 0.33620
+    70  70.0   211.3  0.340  1.317 0.19220
+    80  80.0   206.7  0.168  1.148 0.08820
+    90  90.0   210.4  0.092  1.073 0.02420
+   100 100.0   210.4  0.001  0.982 0.00020
+```
+
+> [참고]
+> Kubernetes에서 실행되는 다양한 워크로드들 중에서 GPU가 필요치 않는 것들은 GPU 노드에 할당되지 않기를 원하는 경우 아래의 문서를 참고하세요.
+> [Taint 및 Toleration 개요](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)
+
+
 ## 클러스터 관리
 원격의 호스트에서 클러스터를 조작하고 관리하려면 Kubernetes가 제공하는 명령줄 도구(CLI)인 `kubectl`이 필요합니다.
 
