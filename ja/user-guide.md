@@ -84,6 +84,125 @@ Kubernetesサービスを使用するには、まずクラスターを作成す�
 ### ノードグループ削除
 ノードグループリストから削除するノードグループを選択し、**ノードグループ削除**ボタンを押すと、削除が行われます。ノードグループの削除には約5分かかります。ノードグループの状態によっては、さらに時間がかかる場合もあります。
 
+### GPUノードグループ使用 
+KubernetesでGPU基盤ワークロードの実行が必要な場合、 GPUインスタンスで構成されたノードグループを作成できます。
+クラスターまたはノードグループ作成プロセスでインスタンスタイプを選択する時、 `g2`タイプを選択するとGPUノードグループを作成できます。
+
+> [参考]
+> TOAST GPUインスタンスで提供されるGPUはNVIDIA系です。 ([使用可能なGPUの仕様を確認](Compute/GPU%20Instance/ko/overview))
+> NVIDIA GPUを利用するために必要なKubernetesのnvidia-device-pluginは、GPUノードグループの作成時に自動的にインストールされます。
+
+作成されたGPUノードの基本的な設定のヘルスチェックおよび簡単な動作テストは次のような方法を利用できます。
+
+#### ノード水準のヘルスチェック
+GPUノードに接続した後、`nvidia-smi`コマンドを実行します。
+次のような内容が出力されればGPU driverが正常に動作しているということです。
+
+```
+$ nvidia-smi
+Mon Jul 27 14:38:07 2020
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 418.152.00   Driver Version: 418.152.00   CUDA Version: 10.1     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|===============================+======================+======================|
+|   0  Tesla T4            Off  | 00000000:00:05.0 Off |                    0 |
+| N/A   30C    P8     9W /  70W |      0MiB / 15079MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+
++-----------------------------------------------------------------------------+
+| Processes:                                                       GPU Memory |
+|  GPU       PID   Type   Process name                             Usage      |
+|=============================================================================|
+|  No running processes found                                                 |
++-----------------------------------------------------------------------------+ 
+```
+
+#### Kubernetes水準のヘルスチェック
+`kubectl`コマンドを使用してクラスター水準で使用可能なGPUリソース情報を確認します。
+以下は各ノードで使用可能なGPUコアの個数を出力するコマンドおよび実行結果です。
+
+```
+$ kubectl get nodes -A -o custom-columns='NAME:.metadata.name,GPU Allocatable:.status.allocatable.nvidia\.com/gpu,GPU Capacity:.status.capacity.nvidia\.com/gpu'
+NAME                                       GPU Allocatable   GPU Capacity
+my-cluster-default-w-vdqxpwisjjsk-node-1   1                 1
+```
+
+#### GPUテストのためのサンプルワークロード実行
+Kubernetesクラスターに属すGPUノードはCPUとメモリの他に`nvidia.com/gpu`という名前のリソースを提供します。
+GPUを使用したい場合は`nvidia.com/gpu`リソースを割り当てられるように、下記のサンプルファイルのように入力してください。
+
+* resnet.yaml
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: resnet-gpu-pod
+spec:
+  imagePullSecrets:
+    - name: nvcr.dgxkey
+  containers:
+    - name: resnet
+      image: nvcr.io/nvidia/tensorflow:18.07-py3
+      command: ["mpiexec"]
+      args: ["--allow-run-as-root", "--bind-to", "socket", "-np", "1", "python", "/opt/tensorflow/nvidia-examples/cnn/resnet.py", "--layers=50", "--precision=fp16", "--batch_size=64", "--num_iter=90"]
+      resources:
+        limits:
+          nvidia.com/gpu: 1
+``` 
+
+上記のファイルを実行すると次のような結果を確認できます。
+
+```
+$ kubectl create -f resnet.yaml
+pod/resnet-gpu-pod created
+
+$ kubectl get pods resnet-gpu-pod
+NAME             READY   STATUS    RESTARTS   AGE
+resnet-gpu-pod   0/1     Running   0          17s 
+
+$ kubectl logs resnet-gpu-pod -n default -f
+PY 3.5.2 (default, Nov 23 2017, 16:37:01)
+[GCC 5.4.0 20160609]
+TF 1.8.0
+Script arguments:
+  --layers 50
+  --display_every 10
+  --iter_unit epoch
+  --batch_size 64
+  --num_iter 100
+  --precision fp16
+Training
+WARNING:tensorflow:Using temporary folder as model directory: /tmp/tmpjw90ypze
+2020-07-31 00:57:23.020712: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:898] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2020-07-31 00:57:23.023190: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1356] Found device 0 with properties:
+name: Tesla T4 major: 7 minor: 5 memoryClockRate(GHz): 1.59
+pciBusID: 0000:00:05.0
+totalMemory: 14.73GiB freeMemory: 14.62GiB
+2020-07-31 00:57:23.023226: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1435] Adding visible gpu devices: 0
+2020-07-31 00:57:23.846680: I tensorflow/core/common_runtime/gpu/gpu_device.cc:923] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-07-31 00:57:23.846743: I tensorflow/core/common_runtime/gpu/gpu_device.cc:929]      0
+2020-07-31 00:57:23.846753: I tensorflow/core/common_runtime/gpu/gpu_device.cc:942] 0:   N
+2020-07-31 00:57:23.847023: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1053] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 14151 MB memory) -> physical GPU (device: 0, name: Tesla T4, pci bus id: 0000:00:05.0, compute capability: 7.5)
+  Step Epoch Img/sec   Loss  LR
+     1   1.0     3.1  7.936  8.907 2.00000
+    10  10.0    68.3  1.989  2.961 1.65620
+    20  20.0   214.0  0.002  0.978 1.31220
+    30  30.0   213.8  0.008  0.979 1.00820
+    40  40.0   210.8  0.095  1.063 0.74420
+    50  50.0   211.9  0.261  1.231 0.52020
+    60  60.0   211.6  0.104  1.078 0.33620
+    70  70.0   211.3  0.340  1.317 0.19220
+    80  80.0   206.7  0.168  1.148 0.08820
+    90  90.0   210.4  0.092  1.073 0.02420
+   100 100.0   210.4  0.001  0.982 0.00020
+```
+
+> [参考]
+> GPUが必要ないワークロードがGPUノードに割り当てられることを防ぎたい場合は[TaintおよびTolerationの概要](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)を参照してください。
+
+
 ## クラスター管理
 遠隔のホストからクラスターを操作し、管理するには、Kubernetesが提供するコマンドラインツール(CLI)、`kubectl`が必要です。
 
@@ -820,7 +939,7 @@ PVをPodにマウントして使用します。
 | 方法 | 説明 |
 | --- | --- |
 | 削除(Delete) | PVを削除する時、接続されたボリュームを一緒に削除します。|
-| 保存(Retain) | PVを削除する時、接続されたボリュームを削除しません。ボリュームはユーザーが直接削除したり、再使用できます。|
+| 保存(Retain) | PVを削除する時、接続されたボリュームを削除しません。ボリュームはユーザーが直接削除または、再使用できます。|
 | 再使用(Recycle) | PVを削除する時、接続されたボリュームを削除せず、再使用できる状態にします。この方法は使用を中断(deprecated)しています。|
 
 
