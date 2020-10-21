@@ -95,17 +95,17 @@ Kubernetes 서비스를 사용하려면 먼저 클러스터를 생성해야 합�
 
 ### GPU 노드 그룹 사용 
 Kubernetes를 통한 GPU 기반 워크로드 실행이 필요한 경우, GPU 인스턴스로 구성된 노드 그룹을 생성할 수 있습니다.
-클러스터 혹은 노드 그룹 생성 과정에서 인스턴스 타입 선택 시, `g2` 계열을 선택하면 GPU 노드 그룹을 만들 수 있습니다.
+클러스터 혹은 노드 그룹 생성 과정에서 인스턴스 타입 선택 시, `g2` 타입을 선택하면 GPU 노드 그룹을 만들 수 있습니다.
 
 > [참고]
 > TOAST GPU 인스턴스에서 제공되는 GPU는 NVIDIA 계열입니다. ([사용 가능한 GPU 제원 확인하기](Compute/GPU%20Instance/ko/overview))
-> NVIDIA GPU 이용을 위해 kubernetes에 필요한 nvidia-device-plugin은 GPU 노드 그룹 생성 시 자동으로 설치됩니다.
+> NVIDIA GPU 이용을 위해 Kubernetes에 필요한 nvidia-device-plugin은 GPU 노드 그룹 생성 시 자동으로 설치됩니다.
 
 생성된 GPU 노드에 대한 기본적인 설정 상태 확인 및 간단한 동작 테스트는 다음과 같은 방법을 이용하면 됩니다.
 
 #### 노드 수준의 상태 확인
-GPU 노드에 접속 후, `nvidia-smi` 명령을 실행하여 아래와 비슷한 결과가 나오는 것을 확인합니다.
-아래와 같은 내용이 출력되는 경우 GPU driver가 정상적으로 동작함을 의미합니다.
+GPU 노드에 접속한 후, `nvidia-smi` 명령을 실행합니다.
+다음과 같은 내용이 출력되면 GPU driver가 정상적으로 동작하는 것입니다.
 
 ```
 $ nvidia-smi
@@ -129,7 +129,7 @@ Mon Jul 27 14:38:07 2020
 ```
 
 #### Kubernetes 수준의 상태 확인
-`kubectl` 명령을 통해 클러스터 수준에서 사용 가능한 GPU 리소스 정보를 확인합니다.
+`kubectl` 명령을 사용해 클러스터 수준에서 사용 가능한 GPU 리소스 정보를 확인합니다.
 아래는 각 노드에서 사용 가능한 GPU 코어의 개수를 출력하도록 하는 명령 및 수행 결과입니다.
 
 ```
@@ -139,8 +139,8 @@ my-cluster-default-w-vdqxpwisjjsk-node-1   1                 1
 ```
 
 #### GPU 테스트를 위한 샘플 워크로드 실행
-kubernetes 클러스터에 속한 GPU 노드들은 cpu와 memory 이외에 `nvidia.com/gpu`와 같은 이름의 리소스를 제공합니다.
-따라서, GPU를 사용하고 싶은 경우에는 `nvidia.com/gpu` 리소스를 할당 받도록 아래의 샘플 파일처럼 명시하면 됩니다.
+Kubernetes 클러스터에 속한 GPU 노드들은 CPU와 메모리 이외에 `nvidia.com/gpu`와 같은 이름의 리소스를 제공합니다.
+GPU를 사용하고 싶다면 `nvidia.com/gpu` 리소스를 할당받도록 아래의 샘플 파일처럼 입력하면 됩니다.
 
 * resnet.yaml
 ```
@@ -161,7 +161,7 @@ spec:
           nvidia.com/gpu: 1
 ``` 
 
-상기 파일을 실행시키면 아래와 같은 결과를 확인할 수 있습니다.
+위 파일을 실행하면 다음과 같은 결과를 확인할 수 있습니다.
 
 ```
 $ kubectl create -f resnet.yaml
