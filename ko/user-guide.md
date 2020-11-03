@@ -366,7 +366,7 @@ autoscaler-test-default-w-ohw5ab5wpzug-node-2   Ready    <none>   78s   v1.17.6
 `Pending` 상태였던 파드가 노드 증설 이후 정상 스케쥴링된 것을 확인할 수 있습니다.
 
 ```
-# kubectl --kubeconfig ~/Downloads/autoscaler-test_kubeconfig.yaml get pods -o wide
+# kubectl get pods -o wide
 NAME                               READY   STATUS    RESTARTS   AGE     IP            NODE                                            NOMINATED NODE   READINESS GATES
 nginx-deployment-756fd4cdf-5gftm   1/1     Running   0          4m29s   10.100.8.13   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
 nginx-deployment-756fd4cdf-64gtv   1/1     Running   0          4m29s   10.100.22.5   autoscaler-test-default-w-ohw5ab5wpzug-node-1   <none>           <none>
@@ -438,6 +438,59 @@ LAST SEEN   TYPE     REASON      OBJECT                                         
 13m         Normal   ScaleDown   node/autoscaler-test-default-w-ohw5ab5wpzug-node-1   node removed by cluster autoscaler
 13m         Normal   ScaleDown   node/autoscaler-test-default-w-ohw5ab5wpzug-node-2   node removed by cluster autoscaler
 ```
+
+노드 그룹 별 오토 스케일러의 상태 정보는 `configmap/cluster-autoscaler-status`를 통해 확인할 수 있습니다. 이 컨피그맵(configmap)은 노드 그룹 별로 서로 다른 네임스페이스에 생성됩니다. 오토 스케일러가 생성하는 노드 그룹 별 네임스페이스의 이름 규칙은 다음과 같습니다.
+
+* 형식: `nhn-ng-{노드그룹명}`
+* `{노드그룹명}`에는 노드 그룹의 이름이 들어갑니다.
+* 기본 노드 그룹의 노드 그룹 이름은 `default-worker` 입니다.
+
+예를 들어, 기본 노드 그룹에 대한 오토 스케일러의 상태 정보는 아래와 같이 조회할 수 있습니다. 이 정보를 통해 얻을 수 있는 정보는 [여기](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/FAQ.md)를 참조하세요.
+
+```
+# kubectl get configmap/cluster-autoscaler-status -n nhn-ng-default-worker -o yaml
+apiVersion: v1
+data:
+  status: |+
+    Cluster-autoscaler status at 2020-11-03 12:39:12.190150095 +0000 UTC:
+    Cluster-wide:
+      Health:      Healthy (ready=1 unready=0 notStarted=0 longNotStarted=0 registered=1 longUnregistered=0)
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+      ScaleUp:     NoActivity (ready=1 registered=1)
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+      ScaleDown:   NoCandidates (candidates=0)
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+
+    NodeGroups:
+      Name:        default-worker-f9a9ee5e
+      Health:      Healthy (ready=1 unready=0 notStarted=0 longNotStarted=0 registered=1 longUnregistered=0 cloudProviderTarget=1 (minSize=1, maxSize=5))
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+      ScaleUp:     NoActivity (ready=1 cloudProviderTarget=1)
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+      ScaleDown:   NoCandidates (candidates=0)
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+
+kind: ConfigMap
+metadata:
+  annotations:
+    cluster-autoscaler.kubernetes.io/last-updated: 2020-11-03 12:39:12.190150095 +0000
+      UTC
+  creationTimestamp: "2020-11-03T12:38:28Z"
+  name: cluster-autoscaler-status
+  namespace: nhn-ng-default-worker
+  resourceVersion: "1610"
+  selfLink: /api/v1/namespaces/nhn-ng-default-worker/configmaps/cluster-autoscaler-status
+  uid: e72bd1a2-a56f-41b4-92ee-d11600386558
+```
+
+> [참고]
+> 상태 정보의 내용 중 `Cluster-wide` 섹션의 내용은 `NodeGroups` 섹션의 내용과 같은 정보 입니다.
 
 ## 클러스터 관리
 원격의 호스트에서 클러스터를 조작하고 관리하려면 Kubernetes가 제공하는 명령줄 도구(CLI)인 `kubectl`이 필요합니다.
