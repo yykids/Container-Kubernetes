@@ -217,8 +217,8 @@ totalMemory: 14.73GiB freeMemory: 14.62GiB
 > [참고]
 > GPU가 필요없는 워크로드가 GPU 노드에 할당되는 것을 막고 싶다면 [Taint 및 Toleration 개요](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)를 참고하세요.
 
-### 오토 스케일러 기능
-오토 스케일러 기능은 노드 그룹의 가용 리소스가 부족해 파드(pod)를 스케쥴링할 수 없거나 노드의 사용률이 일정 수준 이하로 유지되는 경우 노드의 수를 자동으로 조정하는 기능입니다. 이 기능은 노드 그룹 별로 설정할 수 있고, 서로 독립적으로 동작합니다. 이 기능은 쿠버네티스 프로젝트의 공식 지원 기능인 `cluster-autoscaler` 기능을 기반으로 합니다. 자세한 사항은 [여기](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler)를 참고하세요.
+### 오토 스케일러
+오토 스케일러는 노드 그룹의 가용 리소스가 부족해 파드(pod)를 스케쥴링할 수 없거나 노드의 사용률이 일정 수준 이하로 유지되는 경우 노드의 수를 자동으로 조정하는 기능입니다. 이 기능은 노드 그룹 별로 설정할 수 있고, 서로 독립적으로 동작합니다. 이 기능은 쿠버네티스 프로젝트의 공식 지원 기능인 `cluster-autoscaler` 기능을 기반으로 합니다. 자세한 사항은 [여기](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler)를 참고하세요.
 
 > [참고]
 > 쿠버네티스 서비스에 적용된 `cluster-autoscaler`의 버전은 `1.19.0` 입니다.
@@ -230,6 +230,15 @@ totalMemory: 14.73GiB freeMemory: 14.62GiB
 | --- | --- |
 | 증설 | 노드의 수를 증가시키는 것을 말합니다 |
 | 감축 | 노드의 수를 감소시키는 것을 말합니다 |
+
+> [주의]
+> 워커 노드가 인터넷 연결이 불가능한 환경에서 동작하고 있다면 오토 스케일러 컨테이너 이미지를 워커 노드에 직접 설치해야 합니다. 이 작업이 필요한 대상은 다음과 같습니다.
+> 
+> * 판교 리전: 2020년 11월 24일 이전에 생성한 노드 그룹
+> * 평촌 리전: 2020년 11월 19일 이전에 생성한 노드 그룹
+> 
+> 오토 스케일러의 컨테이너 이미지의 경로는 다음과 같습니다.
+> * `k8s.gcr.io/autoscaling/cluster-autoscaler:v1.19.0`
 
 #### 오토 스케일러 설정
 오토 스케일러 기능은 노드 그룹 별로 설정하고 동작합니다. 오토 스케일러 기능은 아래 경로로 설정할 수 있습니다.
