@@ -238,6 +238,7 @@ totalMemory: 14.73GiB freeMemory: 14.62GiB
 > * 평촌 리전: 2020년 11월 19일 이전에 생성한 노드 그룹
 > 
 > 오토 스케일러의 컨테이너 이미지의 경로는 다음과 같습니다.
+>
 > * `k8s.gcr.io/autoscaling/cluster-autoscaler:v1.19.0`
 
 #### 오토 스케일러 설정
@@ -274,18 +275,18 @@ totalMemory: 14.73GiB freeMemory: 14.62GiB
 
 특정 노드에 아래 조건을 만족하는 파드가 하나라도 존재한다면 해당 노드는 노드 감축 후보에서 제외됩니다.
 
-* `PodDisruptionBudget`으로 제약 받는 파드
-* `kube-system` 네임스페이스의 파드
-* `deployment`, `replicaset` 등의 제어 오브젝트에 의해 시작되지 않은 파드
+* "PodDisruptionBudget"으로 제약 받는 파드
+* "kube-system" 네임스페이스의 파드
+* "deployment", "replicaset" 등의 제어 오브젝트에 의해 시작되지 않은 파드
 * 로컬 스토리지를 사용하는 파드
-* `node selector` 등의 제약으로 인해 다른 노드로 이동이 불가능한 파드
+* "node selector" 등의 제약으로 인해 다른 노드로 이동이 불가능한 파드
 
-좀 더 자세한 증설 및 감축 조건은 [여기](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/FAQ.md)를 참조하세요.
+좀 더 자세한 증설 및 감축 조건은 [Cluster Autoscaler FAQ](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/FAQ.md)를 참고하세요.
 
 #### 동작 예시
 오토 스케일러의 동작을 예시를 통해 알아봅니다.
 
-1. 오토 스케일러 활성화
+##### 1. 오토 스케일러 활성화
 
 대상 클러스터의 기본 노드 그룹의 오토 스케일러 기능을 활성화 합니다. 이 예시에서는 기본 노드 그룹의 노드 수를 1로 생성하였고, 오토 스케일러 설정 항목은 아래와 같이 설정했습니다.
 
@@ -298,7 +299,8 @@ totalMemory: 14.73GiB freeMemory: 14.62GiB
 | 임계 영역 유지 시간| 3 |
 | 증설 후 지연 시간 | 5 |
 
-2. 파드 배포
+##### 2. 파드 배포
+
 아래의 매니페스트로 파드를 배포합니다.
 
 > [주의]
@@ -353,7 +355,8 @@ nginx-deployment-756fd4cdf-wrj8b   1/1     Running   0          34s
 nginx-deployment-756fd4cdf-x7ns5   0/1     Pending   0          34s
 ```
 
-3. 노드 증설 확인
+##### 3. 노드 증설 확인
+
 아래는 증설 전의 노드 목록입니다.
 
 ```
@@ -405,7 +408,8 @@ LAST SEEN   TYPE     REASON             OBJECT                                 M
 ```
 
 
-4. 파드 삭제 후 노드 감축 확인
+##### 4. 파드 삭제 후 노드 감축 확인
+
 배포되어 있는 디플로이먼트(deployment)를 삭제하면 배포되어 있던 파드가 삭제됩니다.
 
 ```
@@ -450,9 +454,9 @@ LAST SEEN   TYPE     REASON      OBJECT                                         
 
 노드 그룹별 오토 스케일러의 상태 정보는 `configmap/cluster-autoscaler-status`를 통해 확인할 수 있습니다. 이 컨피그맵(configmap)은 노드 그룹별로 서로 다른 네임스페이스에 생성됩니다. 오토 스케일러가 생성하는 노드 그룹별 네임스페이스의 이름 규칙은 다음과 같습니다.
 
-* 형식: `nhn-ng-{노드그룹명}`
-* `{노드그룹명}`에는 노드 그룹의 이름이 들어갑니다.
-* 기본 노드 그룹의 노드 그룹 이름은 `default-worker`입니다.
+* 형식: nhn-ng-{노드그룹명}
+* {노드그룹명}에는 노드 그룹의 이름이 들어갑니다.
+* 기본 노드 그룹의 노드 그룹 이름은 "default-worker" 입니다.
 
 기본 노드 그룹에 대한 오토 스케일러의 상태 정보를 확인하는 방법은 다음과 같습니다. 보다 자세한 정보는 [Cluster Autoscaler FAQ](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/FAQ.md)를 참고하세요.
 
