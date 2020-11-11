@@ -218,10 +218,10 @@ totalMemory: 14.73GiB freeMemory: 14.62GiB
 > GPU가 필요없는 워크로드가 GPU 노드에 할당되는 것을 막고 싶다면 [Taint 및 Toleration 개요](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)를 참고하세요.
 
 ### 오토 스케일러
-오토 스케일러는 노드 그룹의 가용 리소스가 부족해 파드(pod)를 스케쥴링할 수 없거나 노드의 사용률이 일정 수준 이하로 유지되는 경우 노드의 수를 자동으로 조정하는 기능입니다. 이 기능은 노드 그룹 별로 설정할 수 있고, 서로 독립적으로 동작합니다. 이 기능은 쿠버네티스 프로젝트의 공식 지원 기능인 `cluster-autoscaler` 기능을 기반으로 합니다. 자세한 사항은 [여기](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler)를 참고하세요.
+오토 스케일러는 노드 그룹의 가용 리소스가 부족해 파드(pod)를 스케쥴링할 수 없거나 노드의 사용률이 일정 수준 이하로 유지되는 경우 노드의 수를 자동으로 조정하는 기능입니다. 이 기능은 노드 그룹별로 설정할 수 있고, 서로 독립적으로 동작합니다.  이 기능은 Kubernetes 프로젝트의 공식 지원 기능인 cluster-autoscaler 기능을 기반으로 합니다. 자세한 사항은 [Cluster Autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler)를 참고하세요.
 
 > [참고]
-> 쿠버네티스 서비스에 적용된 `cluster-autoscaler`의 버전은 `1.19.0` 입니다.
+> 쿠버네티스 서비스에 적용된 `cluster-autoscaler`의 버전은 `1.19.0`입니다.
 
 #### 용어 정리
 오토 스케일러 기능에서 사용하는 용어와 그 의미는 다음과 같습니다.
@@ -241,7 +241,7 @@ totalMemory: 14.73GiB freeMemory: 14.62GiB
 > * `k8s.gcr.io/autoscaling/cluster-autoscaler:v1.19.0`
 
 #### 오토 스케일러 설정
-오토 스케일러 기능은 노드 그룹 별로 설정하고 동작합니다. 오토 스케일러 기능은 아래 경로로 설정할 수 있습니다.
+오토 스케일러 기능은 노드 그룹별로 설정하고 동작합니다. 오토 스케일러 기능은 아래 경로로 설정할 수 있습니다.
 
 * 클러스터 생성 시 기본 노드 그룹에 설정
 * 노드 그룹 추가 시 추가 노드 그룹에 설정
@@ -354,7 +354,7 @@ nginx-deployment-756fd4cdf-x7ns5   0/1     Pending   0          34s
 ```
 
 3. 노드 증설 확인
-아래는 증설 전의 노드 목록 입니다.
+아래는 증설 전의 노드 목록입니다.
 
 ```
 # kubectl get nodes
@@ -448,13 +448,13 @@ LAST SEEN   TYPE     REASON      OBJECT                                         
 13m         Normal   ScaleDown   node/autoscaler-test-default-w-ohw5ab5wpzug-node-2   node removed by cluster autoscaler
 ```
 
-노드 그룹 별 오토 스케일러의 상태 정보는 `configmap/cluster-autoscaler-status`를 통해 확인할 수 있습니다. 이 컨피그맵(configmap)은 노드 그룹 별로 서로 다른 네임스페이스에 생성됩니다. 오토 스케일러가 생성하는 노드 그룹 별 네임스페이스의 이름 규칙은 다음과 같습니다.
+노드 그룹별 오토 스케일러의 상태 정보는 `configmap/cluster-autoscaler-status`를 통해 확인할 수 있습니다. 이 컨피그맵(configmap)은 노드 그룹별로 서로 다른 네임스페이스에 생성됩니다. 오토 스케일러가 생성하는 노드 그룹별 네임스페이스의 이름 규칙은 다음과 같습니다.
 
 * 형식: `nhn-ng-{노드그룹명}`
 * `{노드그룹명}`에는 노드 그룹의 이름이 들어갑니다.
-* 기본 노드 그룹의 노드 그룹 이름은 `default-worker` 입니다.
+* 기본 노드 그룹의 노드 그룹 이름은 `default-worker`입니다.
 
-예를 들어, 기본 노드 그룹에 대한 오토 스케일러의 상태 정보는 아래와 같이 조회할 수 있습니다. 이 정보를 통해 얻을 수 있는 정보는 [여기](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/FAQ.md)를 참조하세요.
+기본 노드 그룹에 대한 오토 스케일러의 상태 정보를 확인하는 방법은 다음과 같습니다. 보다 자세한 정보는 [Cluster Autoscaler FAQ](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/FAQ.md)를 참고하세요.
 
 ```
 # kubectl get configmap/cluster-autoscaler-status -n nhn-ng-default-worker -o yaml
@@ -499,7 +499,7 @@ metadata:
 ```
 
 > [참고]
-> 상태 정보의 내용 중 `Cluster-wide` 섹션의 내용은 `NodeGroups` 섹션의 내용과 같은 정보 입니다.
+> 상태 정보의 내용 중 `Cluster-wide` 영역의 내용은 `NodeGroups` 영역의 내용과 같습니다.
 
 ## 클러스터 관리
 원격의 호스트에서 클러스터를 조작하고 관리하려면 Kubernetes가 제공하는 명령줄 도구(CLI)인 `kubectl`이 필요합니다.
