@@ -1,8 +1,8 @@
 ## Container > Kubernetes > Release Notes
 
-### 2020. 08. 25.
-#### 기능 개선
-* 콘솔에서 Kubernetes 클러스터를 생성할 때, 임의의 영역(zone)을 선택할 수 있습니다.
+### August 25, 2020
+#### Feature Updates
+* A random zone can be selected when creating a Kubernetes cluster on console. 
 
 ### June 23, 2020
 #### Release of New Service 
