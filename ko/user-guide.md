@@ -605,7 +605,7 @@ NAME         REFERENCE               TARGETS    MINPODS   MAXPODS   REPLICAS   A
 php-apache   Deployment/php-apache   250%/50%   1         30        5          2m44s
 ```
 
-##### 5. 오토 스케일러 동작 확인
+##### 4. 오토 스케일러 동작 확인
 파드를 조회해보면 파드의 수가 늘어나면서 일부 파드는 `node-0`에 스케쥴링되어 Running 상태가 됐지만 일부는 Pending 상태인 것을 확인할 수 있습니다
 
 ```
