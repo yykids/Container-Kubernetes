@@ -1,5 +1,9 @@
 ## Container > Kubernetes > 릴리스 노트
 
+### 2020. 12. 29.
+#### 기능 개선
+* Kubernetes CSR(Certificate Signing Request) 기능을 사용할 수 있습니다.
+
 ### 2020. 11. 24.
 #### 기능 추가
 * 오토 스케일러 기능을 사용할 수 있습니다.
