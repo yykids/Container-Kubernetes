@@ -1,8 +1,8 @@
 ## Container > Kubernetes > 릴리스 노트
 
-### 2020. 12. 29.
-#### 기능 개선
-* Kubernetes CSR(Certificate Signing Request) 기능을 사용할 수 있습니다.
+### December 29, 2020
+#### Feature Updates
+* Kubernetes CSR (Certificate Signing Request) function can be used.
 
 ### 2020. 11. 24.
 #### 기능 추가
