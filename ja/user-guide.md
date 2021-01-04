@@ -8,7 +8,7 @@ Kubernetesサービスを使用するには、まずクラスターを作成す�
 
 | 項目 | 説明 |
 | --- | --- |
-| クラスター名 | Kubernetesクラスターの名前。20文字以内の英数字、(-)、(.)で構成 |
+| クラスター名 | Kubernetesクラスターの名前。20文字以内で小文字と数字、(-)のみ入力可能です。小文字で始まり、小文字または数字で終わる必要があります。 |
 | Kubernetesのバージョン | 使用するKubernetesのバージョン |
 | VPC | クラスターに接続するVPCネットワーク |
 | サブネット | VPCに定義されたサブネットのうち、クラスターを構成するインスタンスに接続するサブネット |
@@ -21,9 +21,6 @@ Kubernetesサービスを使用するには、まずクラスターを作成す�
 | ブロックストレージサイズ | 基本ノードグループインスタンスのブロックストレージサイズ |
 
 必要な情報を入力し、**クラスター作成**ボタンを押すと、クラスターの作成が始まります。クラスターリストで状態を確認できます。作成には約10分かかります。クラスターの設定によっては、さらに時間がかかる場合もあります。
-
-> [参考]
-> クラスターを作成すると、基本ノードグループが作成されます。基本ノードグループが作成された後は、ノード数を変更できません。追加ノードが必要な場合は、ノードグループを新たに作成する必要があります。
 
 
 ### クラスター照会
@@ -72,7 +69,7 @@ Kubernetesサービスを使用するには、まずクラスターを作成す�
 | 項目 | 説明 |
 | --- | --- |
 | アベイラビリティゾーン | クラスターを構成するインスタンスを作成する領域 |
-| ノードグループ名 | 追加ノードグループ名、20文字以内の英数字、(-)、(.)で構成 |
+| ノードグループ名 | 追加ノードグループの名前。20文字以内で小文字と数字、(-)のみ入力可能です。小文字で始まり、小文字または数字で終わる必要があります。 |
 | インスタンスタイプ | 追加ノードグループのインスタンス仕様 |
 | ノード数 | 追加ノードグループインスタンス数 |
 | キーペア | 追加ノードグループアクセスに使用するキーペア |
@@ -83,6 +80,424 @@ Kubernetesサービスを使用するには、まずクラスターを作成す�
 
 ### ノードグループ削除
 ノードグループリストから削除するノードグループを選択し、**ノードグループ削除**ボタンを押すと、削除が行われます。ノードグループの削除には約5分かかります。ノードグループの状態によっては、さらに時間がかかる場合もあります。
+
+### ノードグループにノード追加
+動作中のノードグループにノードを追加できます。ノードグループ情報照会ページのノードリストタブを押すと、現在のノードリストが表示されます。ノード追加ボタン押し、ノード数を入力するとノードが追加されます。
+
+>[注意]
+>オートスケーラーが有効になっているノードグループは、手動でノードを追加できません。
+
+### ノードグループからノード削除
+動作中のノードグループからノードを削除できます。ノードグループ情報照会ページのノードリストタブを押すと、現在のノードリストが表示されます。ノードリストの中から削除するノードを選択し、ノード削除ボタンを押すと、確認ダイアログボックスが表示されます。削除するノード名をもう一度確認して確認ボタンを押すとノードが削除されます。
+
+>[注意]
+>削除されるノードで動作していたPodは強制終了します。削除されるノードで動作中のPodを安全に他のノードへ移すにはdrainコマンドを実行する必要があります。ノードがdrainされた後も新しいPodはこのノードにスケジューリングされる場合があります。新しいPodが削除されるノードにスケジューリングされることを防止するにはcordonコマンドを実行する必要があります。ノードを安全に管理するためのより詳しい内容は、下記の文書を参照してください。
+
+>[注意]
+>オートスケーラーが有効になっているノードグループは、手動でノードを削除できません。
+
+* [安全なノードdrain](https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/)
+* [手動ノード管理](https://kubernetes.io/docs/concepts/architecture/nodes/#manual-node-administration)
+
+### GPUノードグループ使用 
+KubernetesでGPU基盤ワークロードの実行が必要な場合、 GPUインスタンスで構成されたノードグループを作成できます。
+クラスターまたはノードグループ作成プロセスでインスタンスタイプを選択する時、 `g2`タイプを選択するとGPUノードグループを作成できます。
+
+> [参考]
+> TOAST GPUインスタンスで提供されるGPUはNVIDIA系です。 ([使用可能なGPUの仕様を確認](/Compute/GPU%20Instance/ja/overview/#gpu))
+> NVIDIA GPUを利用するために必要なKubernetesのnvidia-device-pluginは、GPUノードグループの作成時に自動的にインストールされます。
+
+作成されたGPUノードの基本的な設定のヘルスチェックおよび簡単な動作テストは次のような方法を利用できます。
+
+#### ノード水準のヘルスチェック
+GPUノードに接続した後、`nvidia-smi`コマンドを実行します。
+次のような内容が出力されればGPU driverが正常に動作しているということです。
+
+```
+$ nvidia-smi
+Mon Jul 27 14:38:07 2020
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 418.152.00   Driver Version: 418.152.00   CUDA Version: 10.1     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|===============================+======================+======================|
+|   0  Tesla T4            Off  | 00000000:00:05.0 Off |                    0 |
+| N/A   30C    P8     9W /  70W |      0MiB / 15079MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+
++-----------------------------------------------------------------------------+
+| Processes:                                                       GPU Memory |
+|  GPU       PID   Type   Process name                             Usage      |
+|=============================================================================|
+|  No running processes found                                                 |
++-----------------------------------------------------------------------------+ 
+```
+
+#### Kubernetes水準のヘルスチェック
+`kubectl`コマンドを使用してクラスター水準で使用可能なGPUリソース情報を確認します。
+以下は各ノードで使用可能なGPUコアの個数を出力するコマンドおよび実行結果です。
+
+```
+$ kubectl get nodes -A -o custom-columns='NAME:.metadata.name,GPU Allocatable:.status.allocatable.nvidia\.com/gpu,GPU Capacity:.status.capacity.nvidia\.com/gpu'
+NAME                                       GPU Allocatable   GPU Capacity
+my-cluster-default-w-vdqxpwisjjsk-node-1   1                 1
+```
+
+#### GPUテストのためのサンプルワークロード実行
+Kubernetesクラスターに属すGPUノードはCPUとメモリの他に`nvidia.com/gpu`という名前のリソースを提供します。
+GPUを使用したい場合は`nvidia.com/gpu`リソースを割り当てられるように、下記のサンプルファイルのように入力してください。
+
+* resnet.yaml
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: resnet-gpu-pod
+spec:
+  imagePullSecrets:
+    - name: nvcr.dgxkey
+  containers:
+    - name: resnet
+      image: nvcr.io/nvidia/tensorflow:18.07-py3
+      command: ["mpiexec"]
+      args: ["--allow-run-as-root", "--bind-to", "socket", "-np", "1", "python", "/opt/tensorflow/nvidia-examples/cnn/resnet.py", "--layers=50", "--precision=fp16", "--batch_size=64", "--num_iter=90"]
+      resources:
+        limits:
+          nvidia.com/gpu: 1
+``` 
+
+上記のファイルを実行すると次のような結果を確認できます。
+
+```
+$ kubectl create -f resnet.yaml
+pod/resnet-gpu-pod created
+
+$ kubectl get pods resnet-gpu-pod
+NAME             READY   STATUS    RESTARTS   AGE
+resnet-gpu-pod   0/1     Running   0          17s 
+
+$ kubectl logs resnet-gpu-pod -n default -f
+PY 3.5.2 (default, Nov 23 2017, 16:37:01)
+[GCC 5.4.0 20160609]
+TF 1.8.0
+Script arguments:
+  --layers 50
+  --display_every 10
+  --iter_unit epoch
+  --batch_size 64
+  --num_iter 100
+  --precision fp16
+Training
+WARNING:tensorflow:Using temporary folder as model directory: /tmp/tmpjw90ypze
+2020-07-31 00:57:23.020712: I tensorflow/stream_executor/cuda/cuda_gpu_executor.cc:898] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero
+2020-07-31 00:57:23.023190: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1356] Found device 0 with properties:
+name: Tesla T4 major: 7 minor: 5 memoryClockRate(GHz): 1.59
+pciBusID: 0000:00:05.0
+totalMemory: 14.73GiB freeMemory: 14.62GiB
+2020-07-31 00:57:23.023226: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1435] Adding visible gpu devices: 0
+2020-07-31 00:57:23.846680: I tensorflow/core/common_runtime/gpu/gpu_device.cc:923] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-07-31 00:57:23.846743: I tensorflow/core/common_runtime/gpu/gpu_device.cc:929]      0
+2020-07-31 00:57:23.846753: I tensorflow/core/common_runtime/gpu/gpu_device.cc:942] 0:   N
+2020-07-31 00:57:23.847023: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1053] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 14151 MB memory) -> physical GPU (device: 0, name: Tesla T4, pci bus id: 0000:00:05.0, compute capability: 7.5)
+  Step Epoch Img/sec   Loss  LR
+     1   1.0     3.1  7.936  8.907 2.00000
+    10  10.0    68.3  1.989  2.961 1.65620
+    20  20.0   214.0  0.002  0.978 1.31220
+    30  30.0   213.8  0.008  0.979 1.00820
+    40  40.0   210.8  0.095  1.063 0.74420
+    50  50.0   211.9  0.261  1.231 0.52020
+    60  60.0   211.6  0.104  1.078 0.33620
+    70  70.0   211.3  0.340  1.317 0.19220
+    80  80.0   206.7  0.168  1.148 0.08820
+    90  90.0   210.4  0.092  1.073 0.02420
+   100 100.0   210.4  0.001  0.982 0.00020
+```
+
+> [参考]
+> GPUが必要ないワークロードがGPUノードに割り当てられることを防ぎたい場合は[TaintおよびTolerationの概要](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)を参照してください。
+
+### オートスケーラー
+オートスケーラーはノードグループの可用リソースが足りなくてPodをスケジューリングできなかったり、ノードの使用率が一定水準以下で維持する時、ノードの数を自動的に調整する機能です。この機能はノードグループごとに設定することができ、独立して動作します。この機能はKubernetesプロジェクトの公式サポート機能であるcluster-autoscaler機能をベースにします。詳細な事項は[Cluster Autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler)を参照してください。
+0
+> [参考]
+> Kubernetesサービスに適用された`cluster-autoscaler`のバージョンは`1.19.0`です。
+#### 用語整理
+オートスケーラー機能で使用する用語とその意味は次のとおりです。
+0
+| 用語 | 意味 |
+| --- | --- |
+| 増設 | ノードの数を増加させることです。 |
+| 削除 | ノードの数を減らすことです。 |
+0
+> [注意]
+> ワーカーノードがインターネットに接続できない環境で動作している場合、オートスケーラーコンテナイメージをワーカーノードに直接インストールする必要があります。この作業が必要な対象は次のとおりです。
+> 
+> * パンギョリージョン：2020年11月24日以前に作成したノードグループ
+> * 坪村リージョン：2020年11月19日以前に作成したノードグループ
+> 
+> オートスケーラーのコンテナイメージパスは次のとおりです。
+>
+> * k8s.gcr.io/autoscaling/cluster-autoscaler:v1.19.0
+#### オートスケーラー設定
+オートスケーラー機能はノードグループごとに設定して動作します。オートスケーラー機能は下記の方法で設定できます。
+0
+* クラスター作成時、基本ノードグループに設定
+* ノードグループを追加する時、追加ノードグループに設定
+* 作成されているノードグループに設定
+0
+オートスケーラーを有効にすると、下記の項目を設定できます。
+0
+| 設定項目 | 意味 | 有効範囲 | デフォルト値 | 単位 |
+| --- | --- | --- | --- | --- |
+| 最小ノード数 | 削除可能な最小ノード数| 1-10 | 1 | 台|
+| 最大ノード数 | 増設可能な最大ノード数| 1-10 | 10 | 台|
+| 削除 | ノードの削除を行うかどうかの設定 | 有効/無効 | 有効 | - |
+| リソース使用量しきい値 | 削除の基準であるリソース使用量しきい値の基準値 | 1-100 | 50 | % |
+| しきい値維持時間| 削除対象になるノードのしきい値以下のリソース使用量維持時間| 1-1440 | 10 | 分 |
+| 増設後の遅延時間 | ノード増設後、削除対象ノードでモニタリングを開始するまでの遅延時間| 1-1440 | 10 | 分 |
+0
+> [注意]
+> オートスケーラーが有効になっているノードグループは手動でノードを追加または削除できません。
+#### 増設および削除条件
+下記の条件を全て満たすとノードを増設します。
+0
+* Podがスケジューリングできるノードがない
+* 現在のノード数が最大ノード数より少ない
+0
+下記の条件を全て満たすとノードを減らします。
+0
+* ノードのリソース使用量がしきい値以下をしきい値維持時間継続
+* 現在のノード数が最小ノード数より多い
+0
+特定のノードに下記の条件を満たすPodが1つでも存在する場合は、そのノードはノード削除候補から除外されます。
+0
+* "PodDisruptionBudget"で制約を受けるPod
+* "kube-system"名前空間のPod
+* "deployment"、"replicaset"などの制御オブジェクトにより始まっていないPod
+* ローカルストレージを使用するPod
+* "node selector"などの制約により他のノードに移動できないPod
+0
+増設および削除条件の詳細は[Cluster Autoscaler FAQ](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/FAQ.md)を参照してください。
+0
+#### 動作例
+オートスケーラーの動作を例を用いて確認します。
+0
+##### 1. オートスケーラー有効化
+0
+対象クラスターの基本ノードグループのオートスケーラー機能を有効化します。この例では、基本ノードグループのノード数を1で作成し、オートスケーラー設定項目は下記のように設定しました。
+0
+| 設定項目 | 設定値 |
+| --- | --- |
+| 最小ノード数 | 1 |
+| 最大ノード数 | 5 |
+| 削除 | 有効 |
+| リソース使用量しきい値 | 50 |
+| しきい値維持時間| 3 |
+| 増設後の遅延時間 | 5 |
+0
+##### 2. Pod配布
+0
+下記のマニフェストでPodを配布します。
+0
+> [注意]
+> このマニフェストのようにコンテナのリソースリクエストが明示されている必要があります。
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 15
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: "100m"
+```
+0
+配布リクエストしたPodのCPUリソースの合計がノード1つのリソースより大きいため、以下のように複数のPodが`Pending`状態になります。この状況でノードの増設が発生します。
+0
+```
+# kubectl get pods
+NAME                               READY   STATUS    RESTARTS   AGE
+nginx-deployment-756fd4cdf-5gftm   1/1     Running   0          34s
+nginx-deployment-756fd4cdf-64gtv   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-7bsst   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-8892p   1/1     Running   0          34s
+nginx-deployment-756fd4cdf-8k4cc   1/1     Running   0          34s
+nginx-deployment-756fd4cdf-cprp7   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-cvs97   1/1     Running   0          34s
+nginx-deployment-756fd4cdf-h7ftk   1/1     Running   0          34s
+nginx-deployment-756fd4cdf-hv2fz   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-j789l   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-jrkfj   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-m887q   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-pvnfc   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-wrj8b   1/1     Running   0          34s
+nginx-deployment-756fd4cdf-x7ns5   0/1     Pending   0          34s
+```
+0
+##### 3. ノード増設確認
+0
+以下は、増設前のノードリストです。
+0
+```
+# kubectl get nodes
+NAME                                            STATUS   ROLES    AGE   VERSION
+autoscaler-test-default-w-ohw5ab5wpzug-node-0   Ready    <none>   45m   v1.17.6
+```
+0
+約5～10分後、以下のようにノードが増設されたことを確認できます。
+0
+```
+# kubectl get nodes
+NAME                                            STATUS   ROLES    AGE   VERSION
+autoscaler-test-default-w-ohw5ab5wpzug-node-0   Ready    <none>   48m   v1.17.6
+autoscaler-test-default-w-ohw5ab5wpzug-node-1   Ready    <none>   77s   v1.17.6
+autoscaler-test-default-w-ohw5ab5wpzug-node-2   Ready    <none>   78s   v1.17.6
+```
+0
+`Pending`状態だったPodがノード増設後に正常スケジューリングされたことを確認できます。
+0
+```
+# kubectl get pods -o wide
+NAME                               READY   STATUS    RESTARTS   AGE     IP            NODE                                            NOMINATED NODE   READINESS GATES
+nginx-deployment-756fd4cdf-5gftm   1/1     Running   0          4m29s   10.100.8.13   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+nginx-deployment-756fd4cdf-64gtv   1/1     Running   0          4m29s   10.100.22.5   autoscaler-test-default-w-ohw5ab5wpzug-node-1   <none>           <none>
+nginx-deployment-756fd4cdf-7bsst   1/1     Running   0          4m29s   10.100.22.4   autoscaler-test-default-w-ohw5ab5wpzug-node-1   <none>           <none>
+nginx-deployment-756fd4cdf-8892p   1/1     Running   0          4m29s   10.100.8.10   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+nginx-deployment-756fd4cdf-8k4cc   1/1     Running   0          4m29s   10.100.8.12   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+nginx-deployment-756fd4cdf-cprp7   1/1     Running   0          4m29s   10.100.12.7   autoscaler-test-default-w-ohw5ab5wpzug-node-2   <none>           <none>
+nginx-deployment-756fd4cdf-cvs97   1/1     Running   0          4m29s   10.100.8.14   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+nginx-deployment-756fd4cdf-h7ftk   1/1     Running   0          4m29s   10.100.8.11   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+nginx-deployment-756fd4cdf-hv2fz   1/1     Running   0          4m29s   10.100.12.5   autoscaler-test-default-w-ohw5ab5wpzug-node-2   <none>           <none>
+nginx-deployment-756fd4cdf-j789l   1/1     Running   0          4m29s   10.100.22.6   autoscaler-test-default-w-ohw5ab5wpzug-node-1   <none>           <none>
+nginx-deployment-756fd4cdf-jrkfj   1/1     Running   0          4m29s   10.100.12.4   autoscaler-test-default-w-ohw5ab5wpzug-node-2   <none>           <none>
+nginx-deployment-756fd4cdf-m887q   1/1     Running   0          4m29s   10.100.22.3   autoscaler-test-default-w-ohw5ab5wpzug-node-1   <none>           <none>
+nginx-deployment-756fd4cdf-pvnfc   1/1     Running   0          4m29s   10.100.12.6   autoscaler-test-default-w-ohw5ab5wpzug-node-2   <none>           <none>
+nginx-deployment-756fd4cdf-wrj8b   1/1     Running   0          4m29s   10.100.8.15   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+nginx-deployment-756fd4cdf-x7ns5   1/1     Running   0          4m29s   10.100.12.3   autoscaler-test-default-w-ohw5ab5wpzug-node-2   <none>           <none>
+```
+0
+ノード増設イベントは、以下のコマンドで確認できます。
+0
+```
+# kubectl get events --field-selector reason="TriggeredScaleUp"
+LAST SEEN   TYPE     REASON             OBJECT                                 MESSAGE
+4m          Normal   TriggeredScaleUp   pod/nginx-deployment-756fd4cdf-64gtv   pod triggered scale-up: [{default-worker-bf5999ab 1->3 (max: 5)}]
+4m          Normal   TriggeredScaleUp   pod/nginx-deployment-756fd4cdf-7bsst   pod triggered scale-up: [{default-worker-bf5999ab 1->3 (max: 5)}]
+...
+```
+0
+0
+##### 4. Pod削除後、ノード削除確認
+0
+配布されているデプロイメント(deployment)を削除すると、配布されていたPodが削除されます。
+0
+```
+# kubectl get pods
+NAME                               READY   STATUS        RESTARTS   AGE
+nginx-deployment-756fd4cdf-5gftm   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-64gtv   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-7bsst   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-8892p   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-8k4cc   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-cprp7   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-h7ftk   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-hv2fz   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-j789l   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-jrkfj   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-m887q   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-pvnfc   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-wrj8b   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-x7ns5   0/1     Terminating   0          20m
+#
+# kubectl get pods
+No resources found in default namespace.
+#
+```
+0
+監視後、ノード削除が発生してノード数が1個に減っていることを確認できます。ノード削除にかかる時間は設定によって異なります。
+0
+```
+# kubectl get nodes
+NAME                                            STATUS   ROLES    AGE   VERSION
+autoscaler-test-default-w-ohw5ab5wpzug-node-0   Ready    <none>   71m   v1.17.6
+```
+0
+ノード削除イベントは、下記のコマンドで確認できます。
+0
+```
+# kubectl get events --field-selector reason="ScaleDown"
+LAST SEEN   TYPE     REASON      OBJECT                                               MESSAGE
+13m         Normal   ScaleDown   node/autoscaler-test-default-w-ohw5ab5wpzug-node-1   node removed by cluster autoscaler
+13m         Normal   ScaleDown   node/autoscaler-test-default-w-ohw5ab5wpzug-node-2   node removed by cluster autoscaler
+```
+0
+各ノードグループのオートスケーラーの状態情報は`configmap/cluster-autoscaler-status`で確認できます。このconfigmapはノードグループごとに別々の名前空間に作成されます。オートスケーラーが作成する各ノードグループの名前空間の名前ルールは次のとおりです。
+0
+* 形式：nhn-ng-{ノードグループ名}
+* {ノードグループ名}にはノードグループの名前が入ります。
+* 基本ノードグループのノードグループ名は"default-worker"です。
+0
+基本ノードグループのオートスケーラーの状態情報を確認する方法は次のとおりです。より詳細な情報は[Cluster Autoscaler FAQ](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/FAQ.md)を参照してください。
+0
+```
+# kubectl get configmap/cluster-autoscaler-status -n nhn-ng-default-worker -o yaml
+apiVersion: v1
+data:
+  status: |+
+    Cluster-autoscaler status at 2020-11-03 12:39:12.190150095 +0000 UTC:
+    Cluster-wide:
+      Health:      Healthy (ready=1 unready=0 notStarted=0 longNotStarted=0 registered=1 longUnregistered=0)
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+      ScaleUp:     NoActivity (ready=1 registered=1)
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+      ScaleDown:   NoCandidates (candidates=0)
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+    NodeGroups:
+      Name:        default-worker-f9a9ee5e
+      Health:      Healthy (ready=1 unready=0 notStarted=0 longNotStarted=0 registered=1 longUnregistered=0 cloudProviderTarget=1 (minSize=1, maxSize=5))
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+      ScaleUp:     NoActivity (ready=1 cloudProviderTarget=1)
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+      ScaleDown:   NoCandidates (candidates=0)
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+kind: ConfigMap
+metadata:
+  annotations:
+    cluster-autoscaler.kubernetes.io/last-updated: 2020-11-03 12:39:12.190150095 +0000
+      UTC
+  creationTimestamp: "2020-11-03T12:38:28Z"
+  name: cluster-autoscaler-status
+  namespace: nhn-ng-default-worker
+  resourceVersion: "1610"
+  selfLink: /api/v1/namespaces/nhn-ng-default-worker/configmaps/cluster-autoscaler-status
+  uid: e72bd1a2-a56f-41b4-92ee-d11600386558
+```
+0
+> [参考]
+> 状態情報の内容のうち、`Cluster-wide`領域の内容は`NodeGroups`領域の内容と同じです。
 
 ## クラスター管理
 遠隔のホストからクラスターを操作し、管理するには、Kubernetesが提供するコマンドラインツール(CLI)、`kubectl`が必要です。
@@ -820,7 +1235,7 @@ PVをPodにマウントして使用します。
 | 方法 | 説明 |
 | --- | --- |
 | 削除(Delete) | PVを削除する時、接続されたボリュームを一緒に削除します。|
-| 保存(Retain) | PVを削除する時、接続されたボリュームを削除しません。ボリュームはユーザーが直接削除したり、再使用できます。|
+| 保存(Retain) | PVを削除する時、接続されたボリュームを削除しません。ボリュームはユーザーが直接削除または、再使用できます。|
 | 再使用(Recycle) | PVを削除する時、接続されたボリュームを削除せず、再使用できる状態にします。この方法は使用を中断(deprecated)しています。|
 
 

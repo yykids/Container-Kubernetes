@@ -8,7 +8,7 @@ Kubernetes 서비스를 사용하려면 먼저 클러스터를 생성해야 합�
 
 | 항목 | 설명 |
 | --- | --- |
-| 클러스터 이름 | Kubernetes 클러스터의 이름, 20자 이내의 영문자와 숫자, '-', '.'로 구성 |
+| 클러스터 이름 | Kubernetes 클러스터의 이름, 20자 이내로 영문 소문자와 숫자, '-'만 입력 가능하며 영문 소문자로 시작해야 하고 영문 소문자 또는 숫자로 끝나야 합니다. |
 | 쿠버네티스 버전 | 사용할 Kubernetes 버전 |
 | VPC | 클러스터에 연결할 VPC 네트워크 |
 | 서브넷 | VPC에 정의된 서브넷 중 클러스터를 구성하는 인스턴스에 연결할 서브넷 |
@@ -69,7 +69,7 @@ Kubernetes 서비스를 사용하려면 먼저 클러스터를 생성해야 합�
 | 항목 | 설명 |
 | --- | --- |
 | 가용성 영역 | 클러스터를 구성하는 인스턴스를 생성할 영역 |
-| 노드 그룹 이름 | 추가 노드 그룹 이름, 20자 이내의 영문자와 숫자, '-', '.'로 구성 |
+| 노드 그룹 이름 | 추가 노드 그룹 이름, 20자 이내로 영문 소문자와 숫자, '-'만 입력 가능하며 영문 소문자로 시작해야 하고 영문 소문자 또는 숫자로 끝나야 합니다. |
 | 인스턴스 타입 | 추가 노드 그룹 인스턴스 사양 |
 | 노드 수 | 추가 노드 그룹 인스턴스 수 |
 | 키 페어 | 추가 노드 그룹 접근에 사용할 키 페어 |
@@ -84,11 +84,17 @@ Kubernetes 서비스를 사용하려면 먼저 클러스터를 생성해야 합�
 ### 노드 그룹에 노드 추가
 동작 중인 노드 그룹에 노드를 추가할 수 있습니다. 노드 그룹 정보 조회 페이지의 노드 목록 탭을 클릭하면 현재 노드 목록이 나타납니다. 노드 추가 버튼을 클릭하고 노드 수를 입력하면 노드가 추가됩니다.
 
+>[주의]
+>오토 스케일러가 활성화된 노드 그룹은 수동으로 노드를 추가할 수 없습니다.
+
 ### 노드 그룹에서 노드 삭제
 동작 중인 노드 그룹에서 노드를 삭제할 수 있습니다. 노드 그룹 정보 조회 페이지의 노드 목록 탭을 클릭하면 현재 노드 목록이 나타납니다. 노드 목록 중 삭제할 노드를 선택하고 노드 삭제 버튼을 클릭하면 확인 대화 상자가 나타납니다. 삭제할 노드 이름을 다시 한번 확인하고 확인 버튼을 클릭하면 노드가 삭제됩니다.
 
 >[주의]
 >삭제되는 노드에서 동작하고 있던 파드는 강제 종료 됩니다. 삭제될 노드에서 동작 중인 파드를 안전하게 다른 노드로 옮기기 위해서는 drain 명령을 내려야 합니다. 노드가 drain 된 후에도 새로운 파드는 이 노드에 스케쥴링 될 수 있습니다. 새로운 파드가 삭제될 노드에 스케쥴링되는 것을 방지하기 위해서는 cordon 명령을 내려야 합니다. 안전한 노드 관리에 대한 좀 더 자세한 내용은 아래 문서를 참고하세요.
+
+>[주의]
+>오토 스케일러가 활성화된 노드 그룹은 수동으로 노드를 삭제할 수 없습니다.
 
 * [안전한 노드 drain](https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/)
 * [수동 노드 관리](https://kubernetes.io/docs/concepts/architecture/nodes/#manual-node-administration)
@@ -211,6 +217,480 @@ totalMemory: 14.73GiB freeMemory: 14.62GiB
 > [참고]
 > GPU가 필요없는 워크로드가 GPU 노드에 할당되는 것을 막고 싶다면 [Taint 및 Toleration 개요](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)를 참고하세요.
 
+### 오토 스케일러
+오토 스케일러는 노드 그룹의 가용 리소스가 부족해 파드(pod)를 스케쥴링할 수 없거나 노드의 사용률이 일정 수준 이하로 유지되는 경우 노드의 수를 자동으로 조정하는 기능입니다. 이 기능은 노드 그룹별로 설정할 수 있고, 서로 독립적으로 동작합니다.  이 기능은 Kubernetes 프로젝트의 공식 지원 기능인 cluster-autoscaler 기능을 기반으로 합니다. 자세한 사항은 [Cluster Autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler)를 참고하세요.
+
+> [참고]
+> 쿠버네티스 서비스에 적용된 `cluster-autoscaler`의 버전은 `1.19.0`입니다.
+
+#### 용어 정리
+오토 스케일러 기능에서 사용하는 용어와 그 의미는 다음과 같습니다.
+
+| 용어 | 의미 |
+| --- | --- |
+| 증설 | 노드의 수를 증가시키는 것을 말합니다 |
+| 감축 | 노드의 수를 감소시키는 것을 말합니다 |
+
+> [주의]
+> 워커 노드가 인터넷 연결이 불가능한 환경에서 동작하고 있다면 오토 스케일러 컨테이너 이미지를 워커 노드에 직접 설치해야 합니다. 이 작업이 필요한 대상은 다음과 같습니다.
+> 
+> * 판교 리전: 2020년 11월 24일 이전에 생성한 노드 그룹
+> * 평촌 리전: 2020년 11월 19일 이전에 생성한 노드 그룹
+> 
+> 오토 스케일러의 컨테이너 이미지 경로는 다음과 같습니다.
+>
+> * k8s.gcr.io/autoscaling/cluster-autoscaler:v1.19.0
+
+#### 오토 스케일러 설정
+오토 스케일러 기능은 노드 그룹별로 설정하고 동작합니다. 오토 스케일러 기능은 아래 경로로 설정할 수 있습니다.
+
+* 클러스터 생성 시 기본 노드 그룹에 설정
+* 노드 그룹 추가 시 추가 노드 그룹에 설정
+* 생성되어 있는 노드 그룹에 설정
+
+오토 스케일러 활성화 시 아래의 항목에 대해 설정할 수 있습니다.
+
+| 설정 항목 | 의미 | 유효 범위 | 기본값 | 단위 |
+| --- | --- | --- | --- | --- |
+| 최소 노드 수 | 감축 가능한 최소 노드 수| 1-10 | 1 | 대|
+| 최대 노드 수 | 증설 가능한 최대 노드 수| 1-10 | 10 | 대|
+| 감축 | 노드 감축 활성 여부 설정 | 활성/비활성 | 활성 | - |
+| 리소스 사용량 임계치 | 감축의 기준인 리소스 사용량 임계 영역의 기준값 | 1-100 | 50 | % |
+| 임계 영역 유지 시간| 감축 대상이 될 노드의 임계치 이하의 리소스 사용량 유지 시간| 1-1440 | 10 | 분 |
+| 증설 후 지연 시간 | 노드 증설 후 감축 대상 노드로 모니터링하기 시작까지의 지연 시간| 1-1440 | 10 | 분 |
+
+> [주의]
+> 오토 스케일러가 활성화된 노드 그룹은 수동으로 노드를 추가하거나 삭제할 수 없습니다.
+
+#### 증설 및 감축 조건
+아래의 조건을 모두 만족하면 노드를 증설합니다.
+
+* 파드가 스케쥴링될 수 있는 노드가 없음
+* 현재 노드 수가 최대 노드 수보다 작음
+
+아래의 조건을 모두 만족하면 노드를 감축합니다.
+
+* 노드의 리소스 사용량이 임계치 이하로 임계 영역 유지 시간 동안 유지
+* 현재 노드 수가 최소 노드 수보다 큼
+
+특정 노드에 아래 조건을 만족하는 파드가 하나라도 존재한다면 해당 노드는 노드 감축 후보에서 제외됩니다.
+
+* "PodDisruptionBudget"으로 제약 받는 파드
+* "kube-system" 네임스페이스의 파드
+* "deployment", "replicaset" 등의 제어 오브젝트에 의해 시작되지 않은 파드
+* 로컬 스토리지를 사용하는 파드
+* "node selector" 등의 제약으로 인해 다른 노드로 이동이 불가능한 파드
+
+좀 더 자세한 증설 및 감축 조건은 [Cluster Autoscaler FAQ](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/FAQ.md)를 참고하세요.
+
+#### 동작 예시
+오토 스케일러의 동작을 예시를 통해 알아봅니다.
+
+##### 1. 오토 스케일러 활성화
+
+대상 클러스터의 기본 노드 그룹의 오토 스케일러 기능을 활성화 합니다. 이 예시에서는 기본 노드 그룹의 노드 수를 1로 생성하였고, 오토 스케일러 설정 항목은 아래와 같이 설정했습니다.
+
+| 설정 항목 | 설정값 |
+| --- | --- |
+| 최소 노드 수 | 1 |
+| 최대 노드 수 | 5 |
+| 감축 | 활성 |
+| 리소스 사용량 임계치 | 50 |
+| 임계 영역 유지 시간| 3 |
+| 증설 후 지연 시간 | 5 |
+
+##### 2. 파드 배포
+
+아래의 매니페스트로 파드를 배포합니다.
+
+> [주의]
+> 이 매니페스트처럼 컨테이너의 리소스 요청이 명시되어 있어야 합니다.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 15
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: "100m"
+```
+
+배포 요청한 파드의 CPU 리소스 총합이 노드 한 대의 리소스보다 크기 때문에 아래와 같이 몇몇 파드가 `Pending` 상태로 남게 됩니다. 이 상황에서 노드의 증설이 발생합니다.
+
+```
+# kubectl get pods
+NAME                               READY   STATUS    RESTARTS   AGE
+nginx-deployment-756fd4cdf-5gftm   1/1     Running   0          34s
+nginx-deployment-756fd4cdf-64gtv   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-7bsst   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-8892p   1/1     Running   0          34s
+nginx-deployment-756fd4cdf-8k4cc   1/1     Running   0          34s
+nginx-deployment-756fd4cdf-cprp7   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-cvs97   1/1     Running   0          34s
+nginx-deployment-756fd4cdf-h7ftk   1/1     Running   0          34s
+nginx-deployment-756fd4cdf-hv2fz   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-j789l   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-jrkfj   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-m887q   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-pvnfc   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-wrj8b   1/1     Running   0          34s
+nginx-deployment-756fd4cdf-x7ns5   0/1     Pending   0          34s
+```
+
+##### 3. 노드 증설 확인
+
+아래는 증설 전의 노드 목록입니다.
+
+```
+# kubectl get nodes
+NAME                                            STATUS   ROLES    AGE   VERSION
+autoscaler-test-default-w-ohw5ab5wpzug-node-0   Ready    <none>   45m   v1.17.6
+```
+
+약5~10분 후 아래와 같이 노드가 증설된 것을 확인할 수 있습니다.
+
+```
+# kubectl get nodes
+NAME                                            STATUS   ROLES    AGE   VERSION
+autoscaler-test-default-w-ohw5ab5wpzug-node-0   Ready    <none>   48m   v1.17.6
+autoscaler-test-default-w-ohw5ab5wpzug-node-1   Ready    <none>   77s   v1.17.6
+autoscaler-test-default-w-ohw5ab5wpzug-node-2   Ready    <none>   78s   v1.17.6
+```
+
+`Pending` 상태였던 파드가 노드 증설 이후 정상 스케쥴링된 것을 확인할 수 있습니다.
+
+```
+# kubectl get pods -o wide
+NAME                               READY   STATUS    RESTARTS   AGE     IP            NODE                                            NOMINATED NODE   READINESS GATES
+nginx-deployment-756fd4cdf-5gftm   1/1     Running   0          4m29s   10.100.8.13   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+nginx-deployment-756fd4cdf-64gtv   1/1     Running   0          4m29s   10.100.22.5   autoscaler-test-default-w-ohw5ab5wpzug-node-1   <none>           <none>
+nginx-deployment-756fd4cdf-7bsst   1/1     Running   0          4m29s   10.100.22.4   autoscaler-test-default-w-ohw5ab5wpzug-node-1   <none>           <none>
+nginx-deployment-756fd4cdf-8892p   1/1     Running   0          4m29s   10.100.8.10   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+nginx-deployment-756fd4cdf-8k4cc   1/1     Running   0          4m29s   10.100.8.12   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+nginx-deployment-756fd4cdf-cprp7   1/1     Running   0          4m29s   10.100.12.7   autoscaler-test-default-w-ohw5ab5wpzug-node-2   <none>           <none>
+nginx-deployment-756fd4cdf-cvs97   1/1     Running   0          4m29s   10.100.8.14   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+nginx-deployment-756fd4cdf-h7ftk   1/1     Running   0          4m29s   10.100.8.11   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+nginx-deployment-756fd4cdf-hv2fz   1/1     Running   0          4m29s   10.100.12.5   autoscaler-test-default-w-ohw5ab5wpzug-node-2   <none>           <none>
+nginx-deployment-756fd4cdf-j789l   1/1     Running   0          4m29s   10.100.22.6   autoscaler-test-default-w-ohw5ab5wpzug-node-1   <none>           <none>
+nginx-deployment-756fd4cdf-jrkfj   1/1     Running   0          4m29s   10.100.12.4   autoscaler-test-default-w-ohw5ab5wpzug-node-2   <none>           <none>
+nginx-deployment-756fd4cdf-m887q   1/1     Running   0          4m29s   10.100.22.3   autoscaler-test-default-w-ohw5ab5wpzug-node-1   <none>           <none>
+nginx-deployment-756fd4cdf-pvnfc   1/1     Running   0          4m29s   10.100.12.6   autoscaler-test-default-w-ohw5ab5wpzug-node-2   <none>           <none>
+nginx-deployment-756fd4cdf-wrj8b   1/1     Running   0          4m29s   10.100.8.15   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+nginx-deployment-756fd4cdf-x7ns5   1/1     Running   0          4m29s   10.100.12.3   autoscaler-test-default-w-ohw5ab5wpzug-node-2   <none>           <none>
+```
+
+노드 증설에 대한 이벤트는 아래 명령어로 확인할 수 있습니다.
+
+```
+# kubectl get events --field-selector reason="TriggeredScaleUp"
+LAST SEEN   TYPE     REASON             OBJECT                                 MESSAGE
+4m          Normal   TriggeredScaleUp   pod/nginx-deployment-756fd4cdf-64gtv   pod triggered scale-up: [{default-worker-bf5999ab 1->3 (max: 5)}]
+4m          Normal   TriggeredScaleUp   pod/nginx-deployment-756fd4cdf-7bsst   pod triggered scale-up: [{default-worker-bf5999ab 1->3 (max: 5)}]
+...
+```
+
+
+##### 4. 파드 삭제 후 노드 감축 확인
+
+배포되어 있는 디플로이먼트(deployment)를 삭제하면 배포되어 있던 파드가 삭제됩니다.
+
+```
+# kubectl get pods
+NAME                               READY   STATUS        RESTARTS   AGE
+nginx-deployment-756fd4cdf-5gftm   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-64gtv   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-7bsst   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-8892p   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-8k4cc   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-cprp7   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-h7ftk   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-hv2fz   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-j789l   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-jrkfj   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-m887q   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-pvnfc   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-wrj8b   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-x7ns5   0/1     Terminating   0          20m
+#
+# kubectl get pods
+No resources found in default namespace.
+#
+```
+
+잠시 후 노드 감축이 발생하여 노드 수가 1개로 줄어든 것을 확인할 수 있습니다. 노드 감축에 걸리는 시간은 설정에 따라 달라질 수 있습니다.
+
+```
+# kubectl get nodes
+NAME                                            STATUS   ROLES    AGE   VERSION
+autoscaler-test-default-w-ohw5ab5wpzug-node-0   Ready    <none>   71m   v1.17.6
+```
+
+노드 감축에 대한 이벤트는 아래 명령어로 확인할 수 있습니다.
+
+```
+# kubectl get events --field-selector reason="ScaleDown"
+LAST SEEN   TYPE     REASON      OBJECT                                               MESSAGE
+13m         Normal   ScaleDown   node/autoscaler-test-default-w-ohw5ab5wpzug-node-1   node removed by cluster autoscaler
+13m         Normal   ScaleDown   node/autoscaler-test-default-w-ohw5ab5wpzug-node-2   node removed by cluster autoscaler
+```
+
+노드 그룹별 오토 스케일러의 상태 정보는 `configmap/cluster-autoscaler-status`를 통해 확인할 수 있습니다. 이 컨피그맵(configmap)은 노드 그룹별로 서로 다른 네임스페이스에 생성됩니다. 오토 스케일러가 생성하는 노드 그룹별 네임스페이스의 이름 규칙은 다음과 같습니다.
+
+* 형식: nhn-ng-{노드그룹명}
+* {노드그룹명}에는 노드 그룹의 이름이 들어갑니다.
+* 기본 노드 그룹의 노드 그룹 이름은 "default-worker" 입니다.
+
+기본 노드 그룹에 대한 오토 스케일러의 상태 정보를 확인하는 방법은 다음과 같습니다. 보다 자세한 정보는 [Cluster Autoscaler FAQ](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/FAQ.md)를 참고하세요.
+
+```
+# kubectl get configmap/cluster-autoscaler-status -n nhn-ng-default-worker -o yaml
+apiVersion: v1
+data:
+  status: |+
+    Cluster-autoscaler status at 2020-11-03 12:39:12.190150095 +0000 UTC:
+    Cluster-wide:
+      Health:      Healthy (ready=1 unready=0 notStarted=0 longNotStarted=0 registered=1 longUnregistered=0)
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+      ScaleUp:     NoActivity (ready=1 registered=1)
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+      ScaleDown:   NoCandidates (candidates=0)
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+
+    NodeGroups:
+      Name:        default-worker-f9a9ee5e
+      Health:      Healthy (ready=1 unready=0 notStarted=0 longNotStarted=0 registered=1 longUnregistered=0 cloudProviderTarget=1 (minSize=1, maxSize=5))
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+      ScaleUp:     NoActivity (ready=1 cloudProviderTarget=1)
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+      ScaleDown:   NoCandidates (candidates=0)
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+
+kind: ConfigMap
+metadata:
+  annotations:
+    cluster-autoscaler.kubernetes.io/last-updated: 2020-11-03 12:39:12.190150095 +0000
+      UTC
+  creationTimestamp: "2020-11-03T12:38:28Z"
+  name: cluster-autoscaler-status
+  namespace: nhn-ng-default-worker
+  resourceVersion: "1610"
+  selfLink: /api/v1/namespaces/nhn-ng-default-worker/configmaps/cluster-autoscaler-status
+  uid: e72bd1a2-a56f-41b4-92ee-d11600386558
+```
+
+> [참고]
+> 상태 정보의 내용 중 `Cluster-wide` 영역의 내용은 `NodeGroups` 영역의 내용과 같습니다.
+
+#### HPA(HorizontalPodAutoscale) 기능과 연동한 동작 예시
+HPA(Horizontal Pod Autoscaler) 기능은 CPU 사용량 등의 리소스 사용량을 관찰하여 레플리케이션 컨트롤러(ReplicationController), 디플로이먼트(Deployment), 레플리카셋(ReplicaSet), 스테이트풀셋(StatefulSet)의 파드 개수를 자동으로 스케일합니다. 파드 개수를 조절하다 보면 노드에 가용 리소스가 부족하거나 리소스가 많이 남는 상황이 발생할 수 있습니다. 이때 오토 스케일러 기능과 연동하여 노드의 수를 늘이거나 줄일 수 있습니다. 이 예제에서는 HPA 기능과 오토 스케일러 기능을 연동해 동작하는 것을 보여줍니다. HPA에 대한 자세한 설명은 [Horizontal Pod Autoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) 문서를 참고하세요. 
+
+##### 1. 오토 스케일러 활성화
+위의 예제와 같이 오토 스케일러를 활성화 합니다.
+
+##### 2. HPA 설정
+웹 요청을 받으면 일정 시간동안 CPU 부하를 생성하는 컨테이너를 배포합니다. 그리고 서비스를 노출시킵니다. 다음은 `php-apache.yaml` 파일의 내용입니다.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-apache
+spec:
+  selector:
+    matchLabels:
+      run: php-apache
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: php-apache
+    spec:
+      containers:
+      - name: php-apache
+        image: k8s.gcr.io/hpa-example
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 500m
+          requests:
+            cpu: 200m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-apache
+  labels:
+    run: php-apache
+spec:
+  ports:
+  - port: 80
+  selector:
+    run: php-apache
+```
+
+```
+# kubectl apply -f php-apache.yaml
+deployment.apps/php-apache created
+service/php-apache created
+```
+
+이제 HPA를 설정합니다. 위에서 방금 생성한 php-apache deployment 객체에 대해 최소 파드 수 1, 최대 파드 수 30, 목표 CPU load는 50%로 설정합니다.
+
+```
+# kubectl autoscale deployment php-apache --cpu-percent=50 --min=1 --max=30
+horizontalpodautoscaler.autoscaling/php-apache autoscaled
+```
+
+HPA의 상태를 조회해보면 설정값과 현재 상태를 볼 수 있습니다. 아직 CPU 부하를 일으키는 web request를 보내지 않았기 때문에 CPU load가 0% 입니다.
+
+```
+# kubectl get hpa
+NAME         REFERENCE               TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
+php-apache   Deployment/php-apache   0%/50%    1         30        1          80s
+```
+
+##### 3. 부하 인가
+이제 새로운 터미널에서 부하를 일으키는 파드를 실행합니다. 이 파드는 무한히 웹 요청을 보내게 됩니다. `Ctrl+C`로 멈출 수 있습니다.
+
+```
+# kubectl run -i --tty load-generator --rm --image=busybox --restart=Never -- /bin/sh -c "while sleep 0.01; do wget -q -O- http://php-apache; done"
+If you don't see a command prompt, try pressing enter.
+OK!OK!OK!OK!OK!OK!OK!
+```
+
+`kubectl top nodes` 커맨드를 이용해 노드의 현재 리소스 사용량을 확인할 수 있습니다. 부하를 일으키는 파드 실행 후 시간이 흐르면서 CPU 부하가 커지는 것을 확인할 수 있습니다.
+
+```
+# kubectl top nodes
+NAME                                            CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%
+autoscaler-test-default-w-ohw5ab5wpzug-node-0   66m          6%     1010Mi          58%
+
+(잠시 후)
+
+# kubectl top nodes
+NAME                                            CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%
+autoscaler-test-default-w-ohw5ab5wpzug-node-0   574m         57%    1013Mi          58%
+```
+
+HPA의 상태를 조회해보면 CPU load가 증가했고, 이를 맞추기 위해 REPLICAS(=파드 수)가 수가 늘어난 것을 확인할 수 있습니다.
+
+```
+# kubectl get hpa
+NAME         REFERENCE               TARGETS    MINPODS   MAXPODS   REPLICAS   AGE
+php-apache   Deployment/php-apache   250%/50%   1         30        5          2m44s
+```
+
+##### 4. 오토 스케일러 동작 확인
+파드를 조회해보면 파드의 수가 늘어나면서 일부 파드는 `node-0`에 스케쥴링되어 Running 상태가 됐지만 일부는 Pending 상태인 것을 확인할 수 있습니다
+
+```
+# kubectl get pods -o wide
+NAME                          READY   STATUS    RESTARTS   AGE     IP            NODE                                            NOMINATED NODE   READINESS GATES
+load-generator                1/1     Running   0          2m      10.100.8.39   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+php-apache-79544c9bd9-6f7nm   0/1     Pending   0          65s     <none>        <none>                                          <none>           <none>
+php-apache-79544c9bd9-82xkn   1/1     Running   0          80s     10.100.8.41   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+php-apache-79544c9bd9-cjj9q   0/1     Pending   0          80s     <none>        <none>                                          <none>           <none>
+php-apache-79544c9bd9-k6nnt   1/1     Running   0          4m27s   10.100.8.38   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+php-apache-79544c9bd9-mplnn   0/1     Pending   0          19s     <none>        <none>                                          <none>           <none>
+php-apache-79544c9bd9-t2knw   1/1     Running   0          80s     10.100.8.40   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+```
+
+파드를 스케쥴링하지 못하는 상황이 바로 오토 스케일러의 노드 증설 조건입니다. Cluster Autoscaler 파드가 제공하는 상태 정보를 조회해보면 ScaleUp이 InProgress 상태가 된 것을 확인할 수 있습니다.
+
+```
+# kubectl get cm/cluster-autoscaler-status -n nhn-ng-default-worker -o yaml
+apiVersion: v1
+data:
+  status: |+
+    Cluster-autoscaler status at 2020-11-24 13:00:40.210137143 +0000 UTC:
+    Cluster-wide:
+      Health:      Healthy (ready=1 unready=0 notStarted=0 longNotStarted=0 registered=1 longUnregistered=0)
+                   LastProbeTime:      2020-11-24 13:00:39.930763305 +0000 UTC m=+1246178.729396969
+                   LastTransitionTime: 2020-11-10 02:51:14.353177175 +0000 UTC m=+13.151810823
+      ScaleUp:     InProgress (ready=1 registered=1)
+                   LastProbeTime:      2020-11-24 13:00:39.930763305 +0000 UTC m=+1246178.729396969
+                   LastTransitionTime: 2020-11-24 12:58:34.83642035 +0000 UTC m=+1246053.635054003
+      ScaleDown:   NoCandidates (candidates=0)
+                   LastProbeTime:      2020-11-24 13:00:39.930763305 +0000 UTC m=+1246178.729396969
+                   LastTransitionTime: 2020-11-20 01:42:32.287146552 +0000 UTC m=+859891.085780205
+
+    NodeGroups:
+      Name:        default-worker-bf5999ab
+      Health:      Healthy (ready=1 unready=0 notStarted=0 longNotStarted=0 registered=1 longUnregistered=0 cloudProviderTarget=2 (minSize=1, maxSize=3))
+                   LastProbeTime:      2020-11-24 13:00:39.930763305 +0000 UTC m=+1246178.729396969
+                   LastTransitionTime: 2020-11-10 02:51:14.353177175 +0000 UTC m=+13.151810823
+      ScaleUp:     InProgress (ready=1 cloudProviderTarget=2)
+                   LastProbeTime:      2020-11-24 13:00:39.930763305 +0000 UTC m=+1246178.729396969
+                   LastTransitionTime: 2020-11-24 12:58:34.83642035 +0000 UTC m=+1246053.635054003
+      ScaleDown:   NoCandidates (candidates=0)
+                   LastProbeTime:      2020-11-24 13:00:39.930763305 +0000 UTC m=+1246178.729396969
+                   LastTransitionTime: 2020-11-20 01:42:32.287146552 +0000 UTC m=+859891.085780205
+...
+```
+
+잠시 후 노드(node-8)가 하나 늘어난 것을 확인할 수 있습니다.
+
+```
+# kubectl get nodes
+NAME                                            STATUS     ROLES    AGE   VERSION
+autoscaler-test-default-w-ohw5ab5wpzug-node-0   Ready      <none>   22d   v1.17.6
+autoscaler-test-default-w-ohw5ab5wpzug-node-8   Ready      <none>   90s   v1.17.6
+```
+
+Pending 상태였던 파드 모두 정상 스케쥴링되어 Running 상태가 된 것을 확인할 수 있습니다.
+
+```
+# kubectl get pods -o wide
+NAME                          READY   STATUS    RESTARTS   AGE     IP            NODE                                            NOMINATED NODE   READINESS GATES
+load-generator                1/1     Running   0          5m32s   10.100.8.39   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+php-apache-79544c9bd9-6f7nm   1/1     Running   0          4m37s   10.100.42.3   autoscaler-test-default-w-ohw5ab5wpzug-node-8   <none>           <none>
+php-apache-79544c9bd9-82xkn   1/1     Running   0          4m52s   10.100.8.41   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+php-apache-79544c9bd9-cjj9q   1/1     Running   0          4m52s   10.100.42.5   autoscaler-test-default-w-ohw5ab5wpzug-node-8   <none>           <none>
+php-apache-79544c9bd9-k6nnt   1/1     Running   0          7m59s   10.100.8.38   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+php-apache-79544c9bd9-mplnn   1/1     Running   0          3m51s   10.100.42.4   autoscaler-test-default-w-ohw5ab5wpzug-node-8   <none>           <none>
+php-apache-79544c9bd9-t2knw   1/1     Running   0          4m52s   10.100.8.40   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+```
+
+부하를 위해 실행해두었던 파드(`load-generator`)를 `Ctrl+C`로 중단시키면 잠시 후 부하가 줄어들게 됩니다. 부하가 줄면 파드가 점유하던 CPU 사용량이 줄어들어 파드의 수가 줄어들게 됩니다.
+
+```
+# kubectl get hpa
+NAME         REFERENCE               TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
+php-apache   Deployment/php-apache   0%/50%    1         30        1          31m
+```
+
+파드의 수가 줄어들어 노드의 리소스 사용량이 줄어들면 결국 노드 감축이 발생합니다. 새로 추가되었던 node-8이 감축된 것을 확인할 수 있습니다.
+
+```
+# kubectl get nodes
+NAME                                            STATUS   ROLES    AGE   VERSION
+autoscaler-test-default-w-ohw5ab5wpzug-node-0   Ready    <none>   22d   v1.17.6
+```
 
 ## 클러스터 관리
 원격의 호스트에서 클러스터를 조작하고 관리하려면 Kubernetes가 제공하는 명령줄 도구(CLI)인 `kubectl`이 필요합니다.
@@ -272,6 +752,109 @@ Server Version: version.Info{Major:"1", Minor:"15", GitVersion:"v1.15.7", GitCom
 
 * Client Version: 실행한 kubectl 파일의 버전 정보
 * Server Version: 클러스터를 구성하고 있는 Kubernetes 버전 정보
+
+### CSR(CertificateSigningRequest)
+쿠버네티스의 인증 API(Certificate API)를 통해 쿠버네티스 API 클라이언트를 위한 X.509 인증서(certificate)를 요청하고 발급할 수 있습니다. CSR 자원은 인증서를 요청하고, 요청에 대해 승인/거부를 결정할 수 있도록 합니다. 자세한 사항은 [Certificate Signing Requests](https://kubernetes.io/docs/reference/access-authn-authz/certificate-signing-requests/) 문서를 참고하세요.
+
+#### CSR 요청과 발급 승인 예제
+먼저 개인키(private key)를 생성합니다. 인증서 생성에 관한 자세한 내용은 [Certificates](https://kubernetes.io/docs/concepts/cluster-administration/certificates/) 문서를 참고하세요.
+
+```
+# openssl genrsa -out dev-user1.key 2048
+Generating RSA private key, 2048 bit long modulus
+...........................................................................+++++
+..................+++++
+e is 65537 (0x010001)
+
+# openssl req -new -key dev-user1.key -subj "/CN=dev-user1" -out dev-user1.csr
+```
+
+생성한 개인키 정보를 포함하는 CSR 자원을 생성해 인증서 발급을 요청합니다.
+
+```
+# BASE64_CSR=$(cat dev-user1.csr | base64 | tr -d '\n')
+# cat <<EOF > csr.yaml -
+apiVersion: certificates.k8s.io/v1beta1
+kind: CertificateSigningRequest
+metadata:
+  name: dev-user1
+spec:
+  groups:
+  - system:authenticated
+  request: ${BASE64_CSR}
+  usages:
+  - digital signature
+  - key encipherment
+  - server auth
+  - client auth
+EOF
+
+# kubectl apply -f csr.yaml
+certificatesigningrequest.certificates.k8s.io/dev-user1 created
+```
+
+등록된 CSR은 `Pending` 상태입니다. 이 상태는 발급 승인 또는 거부를 기다리는 상태입니다.
+
+```
+# kubectl get csr
+NAME        AGE   REQUESTOR          CONDITION
+dev-user1   6s    system:unsecured   Pending
+```
+
+이 인증서 발급 요청에 대해 승인 처리합니다.
+
+```
+# kubectl certificate approve dev-user1
+certificatesigningrequest.certificates.k8s.io/dev-user1 approved
+```
+
+CSR을 다시 확인해보면 `Approved,Issued` 상태로 변경된 것을 확인할 수 있습니다.
+```
+# kubectl get csr
+NAME        AGE    REQUESTOR          CONDITION
+dev-user1   114s   system:unsecured   Approved,Issued
+```
+
+인증서는 다음과 같이 조회할 수 있습니다. 인증서는 status의 certificate 필드의 값입니다.
+
+```
+# kubectl get csr/dev-user1 -o yaml
+apiVersion: certificates.k8s.io/v1beta1
+kind: CertificateSigningRequest
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"certificates.k8s.io/v1beta1","kind":"CertificateSigningRequest","metadata":{"annotations":{},"name":"dev-user1"},"spec":{"groups":["system:authenticated"],"request":"LS0tLS...(이하 생략)","usages":["digital signature","key encipherment","server auth","client auth"]}}
+  creationTimestamp: "2020-12-07T06:32:53Z"
+  name: dev-user1
+  resourceVersion: "3202"
+  selfLink: /apis/certificates.k8s.io/v1beta1/certificatesigningrequests/dev-user1
+  uid: b22477eb-0abc-4fc4-8a79-f6516751a940
+spec:
+  groups:
+  - system:masters
+  - system:authenticated
+  request: LS0tLS...(이하 생략)
+  usages:
+  - digital signature
+  - key encipherment
+  - server auth
+  - client auth
+  username: system:unsecured
+status:
+  certificate: LS0tLS...(이하 생략)
+  conditions:
+  - lastUpdateTime: "2020-12-07T06:34:43Z"
+    message: This CSR was approved by kubectl certificate approve.
+    reason: KubectlApprove
+    type: Approved
+```
+
+> [주의]
+> 이 기능은 클러스터 생성 시점이 아래 기간에 해당하는 경우에만 제공됩니다.
+> 
+> * 판교 리전: 2020년 12월 29일 이후에 생성한 클러스터
+> * 평촌 리전: 2020년 12월 24일 이후에 생성한 클러스터
 
 ## LoadBalancer 서비스
 Kubernetes 애플리케이션의 기본 실행 단위인 파드(pod)는 CNI(Container Network Interface)로 클러스터 네트워크에 연결됩니다. 기본적으로 클러스터 외부에서 파드로는 접근할 수 없습니다. 파드의 서비스를 클러스터 외부에 공개하려면 Kubernetes의 `LoadBalancer` 서비스(Service) 객체(object)를 이용해 외부에 공개할 경로를 만들어야 합니다. LoadBalancer 서비스 객체를 만들면 클러스터 외부에 TOAST Load Balancer가 생성되어 서비스 객체와 연결됩니다.
