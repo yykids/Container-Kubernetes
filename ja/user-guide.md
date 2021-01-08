@@ -219,17 +219,17 @@ totalMemory: 14.73GiB freeMemory: 14.62GiB
 
 ### オートスケーラー
 オートスケーラーはノードグループの可用リソースが足りなくてPodをスケジューリングできなかったり、ノードの使用率が一定水準以下で維持する時、ノードの数を自動的に調整する機能です。この機能はノードグループごとに設定することができ、独立して動作します。この機能はKubernetesプロジェクトの公式サポート機能であるcluster-autoscaler機能をベースにします。詳細な事項は[Cluster Autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler)を参照してください。
-0
+
 > [参考]
 > Kubernetesサービスに適用された`cluster-autoscaler`のバージョンは`1.19.0`です。
 #### 用語整理
 オートスケーラー機能で使用する用語とその意味は次のとおりです。
-0
+
 | 用語 | 意味 |
 | --- | --- |
 | 増設 | ノードの数を増加させることです。 |
 | 削除 | ノードの数を減らすことです。 |
-0
+
 > [注意]
 > ワーカーノードがインターネットに接続できない環境で動作している場合、オートスケーラーコンテナイメージをワーカーノードに直接インストールする必要があります。この作業が必要な対象は次のとおりです。
 > 
@@ -241,13 +241,13 @@ totalMemory: 14.73GiB freeMemory: 14.62GiB
 > * k8s.gcr.io/autoscaling/cluster-autoscaler:v1.19.0
 #### オートスケーラー設定
 オートスケーラー機能はノードグループごとに設定して動作します。オートスケーラー機能は下記の方法で設定できます。
-0
+
 * クラスター作成時、基本ノードグループに設定
 * ノードグループを追加する時、追加ノードグループに設定
 * 作成されているノードグループに設定
-0
+
 オートスケーラーを有効にすると、下記の項目を設定できます。
-0
+
 | 設定項目 | 意味 | 有効範囲 | デフォルト値 | 単位 |
 | --- | --- | --- | --- | --- |
 | 最小ノード数 | 削除可能な最小ノード数| 1-10 | 1 | 台|
@@ -256,37 +256,37 @@ totalMemory: 14.73GiB freeMemory: 14.62GiB
 | リソース使用量しきい値 | 削除の基準であるリソース使用量しきい値の基準値 | 1-100 | 50 | % |
 | しきい値維持時間| 削除対象になるノードのしきい値以下のリソース使用量維持時間| 1-1440 | 10 | 分 |
 | 増設後の遅延時間 | ノード増設後、削除対象ノードでモニタリングを開始するまでの遅延時間| 1-1440 | 10 | 分 |
-0
+
 > [注意]
 > オートスケーラーが有効になっているノードグループは手動でノードを追加または削除できません。
 #### 増設および削除条件
 下記の条件を全て満たすとノードを増設します。
-0
+
 * Podがスケジューリングできるノードがない
 * 現在のノード数が最大ノード数より少ない
-0
+
 下記の条件を全て満たすとノードを減らします。
-0
+
 * ノードのリソース使用量がしきい値以下をしきい値維持時間継続
 * 現在のノード数が最小ノード数より多い
-0
+
 特定のノードに下記の条件を満たすPodが1つでも存在する場合は、そのノードはノード削除候補から除外されます。
-0
+
 * "PodDisruptionBudget"で制約を受けるPod
 * "kube-system"名前空間のPod
 * "deployment"、"replicaset"などの制御オブジェクトにより始まっていないPod
 * ローカルストレージを使用するPod
 * "node selector"などの制約により他のノードに移動できないPod
-0
+
 増設および削除条件の詳細は[Cluster Autoscaler FAQ](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/FAQ.md)を参照してください。
-0
+
 #### 動作例
 オートスケーラーの動作を例を用いて確認します。
-0
+
 ##### 1. オートスケーラー有効化
-0
+
 対象クラスターの基本ノードグループのオートスケーラー機能を有効化します。この例では、基本ノードグループのノード数を1で作成し、オートスケーラー設定項目は下記のように設定しました。
-0
+
 | 設定項目 | 設定値 |
 | --- | --- |
 | 最小ノード数 | 1 |
@@ -295,11 +295,11 @@ totalMemory: 14.73GiB freeMemory: 14.62GiB
 | リソース使用量しきい値 | 50 |
 | しきい値維持時間| 3 |
 | 増設後の遅延時間 | 5 |
-0
+
 ##### 2. Pod配布
-0
+
 下記のマニフェストでPodを配布します。
-0
+
 > [注意]
 > このマニフェストのようにコンテナのリソースリクエストが明示されている必要があります。
 ```yaml
@@ -328,9 +328,9 @@ spec:
           requests:
             cpu: "100m"
 ```
-0
+
 配布リクエストしたPodのCPUリソースの合計がノード1つのリソースより大きいため、以下のように複数のPodが`Pending`状態になります。この状況でノードの増設が発生します。
-0
+
 ```
 # kubectl get pods
 NAME                               READY   STATUS    RESTARTS   AGE
@@ -350,19 +350,19 @@ nginx-deployment-756fd4cdf-pvnfc   0/1     Pending   0          34s
 nginx-deployment-756fd4cdf-wrj8b   1/1     Running   0          34s
 nginx-deployment-756fd4cdf-x7ns5   0/1     Pending   0          34s
 ```
-0
+
 ##### 3. ノード増設確認
-0
+
 以下は、増設前のノードリストです。
-0
+
 ```
 # kubectl get nodes
 NAME                                            STATUS   ROLES    AGE   VERSION
 autoscaler-test-default-w-ohw5ab5wpzug-node-0   Ready    <none>   45m   v1.17.6
 ```
-0
+
 約5～10分後、以下のようにノードが増設されたことを確認できます。
-0
+
 ```
 # kubectl get nodes
 NAME                                            STATUS   ROLES    AGE   VERSION
@@ -370,9 +370,9 @@ autoscaler-test-default-w-ohw5ab5wpzug-node-0   Ready    <none>   48m   v1.17.6
 autoscaler-test-default-w-ohw5ab5wpzug-node-1   Ready    <none>   77s   v1.17.6
 autoscaler-test-default-w-ohw5ab5wpzug-node-2   Ready    <none>   78s   v1.17.6
 ```
-0
+
 `Pending`状態だったPodがノード増設後に正常スケジューリングされたことを確認できます。
-0
+
 ```
 # kubectl get pods -o wide
 NAME                               READY   STATUS    RESTARTS   AGE     IP            NODE                                            NOMINATED NODE   READINESS GATES
@@ -392,9 +392,9 @@ nginx-deployment-756fd4cdf-pvnfc   1/1     Running   0          4m29s   10.100.1
 nginx-deployment-756fd4cdf-wrj8b   1/1     Running   0          4m29s   10.100.8.15   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
 nginx-deployment-756fd4cdf-x7ns5   1/1     Running   0          4m29s   10.100.12.3   autoscaler-test-default-w-ohw5ab5wpzug-node-2   <none>           <none>
 ```
-0
+
 ノード増設イベントは、以下のコマンドで確認できます。
-0
+
 ```
 # kubectl get events --field-selector reason="TriggeredScaleUp"
 LAST SEEN   TYPE     REASON             OBJECT                                 MESSAGE
@@ -402,12 +402,12 @@ LAST SEEN   TYPE     REASON             OBJECT                                 M
 4m          Normal   TriggeredScaleUp   pod/nginx-deployment-756fd4cdf-7bsst   pod triggered scale-up: [{default-worker-bf5999ab 1->3 (max: 5)}]
 ...
 ```
-0
-0
+
+
 ##### 4. Pod削除後、ノード削除確認
-0
+
 配布されているデプロイメント(deployment)を削除すると、配布されていたPodが削除されます。
-0
+
 ```
 # kubectl get pods
 NAME                               READY   STATUS        RESTARTS   AGE
@@ -430,32 +430,32 @@ nginx-deployment-756fd4cdf-x7ns5   0/1     Terminating   0          20m
 No resources found in default namespace.
 #
 ```
-0
+
 監視後、ノード削除が発生してノード数が1個に減っていることを確認できます。ノード削除にかかる時間は設定によって異なります。
-0
+
 ```
 # kubectl get nodes
 NAME                                            STATUS   ROLES    AGE   VERSION
 autoscaler-test-default-w-ohw5ab5wpzug-node-0   Ready    <none>   71m   v1.17.6
 ```
-0
+
 ノード削除イベントは、下記のコマンドで確認できます。
-0
+
 ```
 # kubectl get events --field-selector reason="ScaleDown"
 LAST SEEN   TYPE     REASON      OBJECT                                               MESSAGE
 13m         Normal   ScaleDown   node/autoscaler-test-default-w-ohw5ab5wpzug-node-1   node removed by cluster autoscaler
 13m         Normal   ScaleDown   node/autoscaler-test-default-w-ohw5ab5wpzug-node-2   node removed by cluster autoscaler
 ```
-0
+
 各ノードグループのオートスケーラーの状態情報は`configmap/cluster-autoscaler-status`で確認できます。このconfigmapはノードグループごとに別々の名前空間に作成されます。オートスケーラーが作成する各ノードグループの名前空間の名前ルールは次のとおりです。
-0
+
 * 形式：nhn-ng-{ノードグループ名}
 * {ノードグループ名}にはノードグループの名前が入ります。
 * 基本ノードグループのノードグループ名は"default-worker"です。
-0
+
 基本ノードグループのオートスケーラーの状態情報を確認する方法は次のとおりです。より詳細な情報は[Cluster Autoscaler FAQ](https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/FAQ.md)を参照してください。
-0
+
 ```
 # kubectl get configmap/cluster-autoscaler-status -n nhn-ng-default-worker -o yaml
 apiVersion: v1
@@ -495,9 +495,196 @@ metadata:
   selfLink: /api/v1/namespaces/nhn-ng-default-worker/configmaps/cluster-autoscaler-status
   uid: e72bd1a2-a56f-41b4-92ee-d11600386558
 ```
-0
+
 > [参考]
 > 状態情報の内容のうち、`Cluster-wide`領域の内容は`NodeGroups`領域の内容と同じです。
+
+#### HPA(HorizontalPodAutoscale)機能と連携した動作例
+HPA(Horizontal Pod Autoscaler)機能はCPU使用量などのリソース使用量を監視してレプリケーションコントローラー(ReplicationController)、デプロイメント(Deployment)、レプリカセット(ReplicaSet)、ステートフルセット(StatefulSet)のPod数を自動的にスケールします。Pod数を調節しているとノードに可用リソースが不足したりリソースが多く残る状況が発生する場合があります。この時、オートスケーラー機能と連携してノードの数を増やしたり減らすことができます。この例ではHPA機能とオートスケーラー機能を連携して動作することを示しています。HPAの詳細な説明は[Horizontal Pod Autoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)文書を参照してください。 
+
+##### 1. オートスケーラー有効化
+上の例のようにオートスケーラーを有効化します。
+
+##### 2. HPA設定
+Webリクエストを受けると一定時間CPU負荷を作成するコンテナを配布します。そしてサービスを表示させます。次は`php-apache.yaml`ファイルの内容です。
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-apache
+spec:
+  selector:
+    matchLabels:
+      run: php-apache
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: php-apache
+    spec:
+      containers:
+      - name: php-apache
+        image: k8s.gcr.io/hpa-example
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 500m
+          requests:
+            cpu: 200m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-apache
+  labels:
+    run: php-apache
+spec:
+  ports:
+  - port: 80
+  selector:
+    run: php-apache
+```
+
+```
+# kubectl apply -f php-apache.yaml
+deployment.apps/php-apache created
+service/php-apache created
+```
+
+HPAを設定します。上で作成したphp-apache deploymentオブジェクトに対して最小Pod数1、最大Pod数、目標CPU loadは50%に設定します。
+
+```
+# kubectl autoscale deployment php-apache --cpu-percent=50 --min=1 --max=30
+horizontalpodautoscaler.autoscaling/php-apache autoscaled
+```
+
+HPAの状態を照会すると、設定値と現在の状態を確認できます。まだCPU負荷をかけるweb requestを送っていないためCPU loadが0%です。
+
+```
+# kubectl get hpa
+NAME         REFERENCE               TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
+php-apache   Deployment/php-apache   0%/50%    1         30        1          80s
+```
+
+##### 3. 負荷認可
+新しいターミナルで負荷をかけるPodを実行します。このPodは無限にWebリクエストを送ります。`Ctrl+C`で止めることができます。
+
+```
+# kubectl run -i --tty load-generator --rm --image=busybox --restart=Never -- /bin/sh -c "while sleep 0.01; do wget -q -O- http://php-apache; done"
+If you don't see a command prompt, try pressing enter.
+OK!OK!OK!OK!OK!OK!OK!
+```
+
+`kubectl top nodes`コマンドを利用してノードの現在リソース使用量を確認できます。負荷をかけるPod実行後、時間が経つとCPU負荷が大きくなることを確認できます。
+
+```
+# kubectl top nodes
+NAME                                            CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%
+autoscaler-test-default-w-ohw5ab5wpzug-node-0   66m          6%     1010Mi          58%
+
+(しばらくすると)
+
+# kubectl top nodes
+NAME                                            CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%
+autoscaler-test-default-w-ohw5ab5wpzug-node-0   574m         57%    1013Mi          58%
+```
+
+HPAの状態を照会するとCPU loadが増加して、これを合わせるためにREPLICAS(=Pod数)の数が増えたことを確認できます。
+
+```
+# kubectl get hpa
+NAME         REFERENCE               TARGETS    MINPODS   MAXPODS   REPLICAS   AGE
+php-apache   Deployment/php-apache   250%/50%   1         30        5          2m44s
+```
+
+##### 4. オートスケーラー動作確認
+Podを照会するとPodの数が増えて一部Podは`node-0`にスケジューリングされてRunning状態になりますが、一部はPending状態になっていることを確認できます。
+
+```
+# kubectl get pods -o wide
+NAME                          READY   STATUS    RESTARTS   AGE     IP            NODE                                            NOMINATED NODE   READINESS GATES
+load-generator                1/1     Running   0          2m      10.100.8.39   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+php-apache-79544c9bd9-6f7nm   0/1     Pending   0          65s     <none>        <none>                                          <none>           <none>
+php-apache-79544c9bd9-82xkn   1/1     Running   0          80s     10.100.8.41   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+php-apache-79544c9bd9-cjj9q   0/1     Pending   0          80s     <none>        <none>                                          <none>           <none>
+php-apache-79544c9bd9-k6nnt   1/1     Running   0          4m27s   10.100.8.38   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+php-apache-79544c9bd9-mplnn   0/1     Pending   0          19s     <none>        <none>                                          <none>           <none>
+php-apache-79544c9bd9-t2knw   1/1     Running   0          80s     10.100.8.40   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+```
+
+Podをスケジューリングできない状況がオートスケーラーのノード増設条件です。 Cluster Autoscaler Podが提供する状態情報を照会するとScaleUpがInProgress状態になったことを確認できます。
+
+```
+# kubectl get cm/cluster-autoscaler-status -n nhn-ng-default-worker -o yaml
+apiVersion: v1
+data:
+  status: |+
+    Cluster-autoscaler status at 2020-11-24 13:00:40.210137143 +0000 UTC:
+    Cluster-wide:
+      Health:      Healthy (ready=1 unready=0 notStarted=0 longNotStarted=0 registered=1 longUnregistered=0)
+                   LastProbeTime:      2020-11-24 13:00:39.930763305 +0000 UTC m=+1246178.729396969
+                   LastTransitionTime: 2020-11-10 02:51:14.353177175 +0000 UTC m=+13.151810823
+      ScaleUp:     InProgress (ready=1 registered=1)
+                   LastProbeTime:      2020-11-24 13:00:39.930763305 +0000 UTC m=+1246178.729396969
+                   LastTransitionTime: 2020-11-24 12:58:34.83642035 +0000 UTC m=+1246053.635054003
+      ScaleDown:   NoCandidates (candidates=0)
+                   LastProbeTime:      2020-11-24 13:00:39.930763305 +0000 UTC m=+1246178.729396969
+                   LastTransitionTime: 2020-11-20 01:42:32.287146552 +0000 UTC m=+859891.085780205
+
+    NodeGroups:
+      Name:        default-worker-bf5999ab
+      Health:      Healthy (ready=1 unready=0 notStarted=0 longNotStarted=0 registered=1 longUnregistered=0 cloudProviderTarget=2 (minSize=1, maxSize=3))
+                   LastProbeTime:      2020-11-24 13:00:39.930763305 +0000 UTC m=+1246178.729396969
+                   LastTransitionTime: 2020-11-10 02:51:14.353177175 +0000 UTC m=+13.151810823
+      ScaleUp:     InProgress (ready=1 cloudProviderTarget=2)
+                   LastProbeTime:      2020-11-24 13:00:39.930763305 +0000 UTC m=+1246178.729396969
+                   LastTransitionTime: 2020-11-24 12:58:34.83642035 +0000 UTC m=+1246053.635054003
+      ScaleDown:   NoCandidates (candidates=0)
+                   LastProbeTime:      2020-11-24 13:00:39.930763305 +0000 UTC m=+1246178.729396969
+                   LastTransitionTime: 2020-11-20 01:42:32.287146552 +0000 UTC m=+859891.085780205
+...
+```
+
+しばらくするとノード(node-8)が1つ増えていることを確認できます。
+
+```
+# kubectl get nodes
+NAME                                            STATUS     ROLES    AGE   VERSION
+autoscaler-test-default-w-ohw5ab5wpzug-node-0   Ready      <none>   22d   v1.17.6
+autoscaler-test-default-w-ohw5ab5wpzug-node-8   Ready      <none>   90s   v1.17.6
+```
+
+Pending状態だったPodが全て正常スケジューリングされてRunning状態になったことを確認できます。
+
+```
+# kubectl get pods -o wide
+NAME                          READY   STATUS    RESTARTS   AGE     IP            NODE                                            NOMINATED NODE   READINESS GATES
+load-generator                1/1     Running   0          5m32s   10.100.8.39   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+php-apache-79544c9bd9-6f7nm   1/1     Running   0          4m37s   10.100.42.3   autoscaler-test-default-w-ohw5ab5wpzug-node-8   <none>           <none>
+php-apache-79544c9bd9-82xkn   1/1     Running   0          4m52s   10.100.8.41   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+php-apache-79544c9bd9-cjj9q   1/1     Running   0          4m52s   10.100.42.5   autoscaler-test-default-w-ohw5ab5wpzug-node-8   <none>           <none>
+php-apache-79544c9bd9-k6nnt   1/1     Running   0          7m59s   10.100.8.38   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+php-apache-79544c9bd9-mplnn   1/1     Running   0          3m51s   10.100.42.4   autoscaler-test-default-w-ohw5ab5wpzug-node-8   <none>           <none>
+php-apache-79544c9bd9-t2knw   1/1     Running   0          4m52s   10.100.8.40   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+```
+
+負荷のために実行しておいたPod(`load-generator`)を`Ctrl+C`で中断させてしばらくすると負荷が減ります。負荷が減るとPodが占有していたCPU使用量が減ってPodの数が減ります。
+
+```
+# kubectl get hpa
+NAME         REFERENCE               TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
+php-apache   Deployment/php-apache   0%/50%    1         30        1          31m
+```
+
+Podの数が減ってノードのリソース使用量が減るとノードが縮小します。新たに追加されたnode-8が縮小したことを確認できます。
+
+```
+# kubectl get nodes
+NAME                                            STATUS   ROLES    AGE   VERSION
+autoscaler-test-default-w-ohw5ab5wpzug-node-0   Ready    <none>   22d   v1.17.6
+```
 
 ## クラスター管理
 遠隔のホストからクラスターを操作し、管理するには、Kubernetesが提供するコマンドラインツール(CLI)、`kubectl`が必要です。
@@ -559,6 +746,109 @@ Server Version: version.Info{Major:"1", Minor:"15", GitVersion:"v1.15.7", GitCom
 
 * Client Version：実行したkubectlファイルのバージョン情報
 * Server Version：クラスターを構成しているKubernetesのバージョン情報
+
+### CSR(CertificateSigningRequest)
+Kubernetesの認証API(Certificate API)を通してKubernetes APIクライアントのためのX.509証明書(certificate)をリクエストして発行できます。 CSRリソースは証明書をリクエストして、リクエストに対して承認/拒否を決定できるようにします。詳細事項は[Certificate Signing Requests](https://kubernetes.io/docs/reference/access-authn-authz/certificate-signing-requests/)文書を参照してください。
+
+#### CSRリクエストと発行承認例
+まず秘密鍵(private key)を作成します。証明書作成に関する詳細は[Certificates](https://kubernetes.io/docs/concepts/cluster-administration/certificates/)文書を参照してください。
+
+```
+# openssl genrsa -out dev-user1.key 2048
+Generating RSA private key, 2048 bit long modulus
+...........................................................................+++++
+..................+++++
+e is 65537 (0x010001)
+
+# openssl req -new -key dev-user1.key -subj "/CN=dev-user1" -out dev-user1.csr
+```
+
+作成した秘密鍵情報を含むCSRリソースを作成して証明書発行をリクエストします。
+
+```
+# BASE64_CSR=$(cat dev-user1.csr | base64 | tr -d '\n')
+# cat <<EOF > csr.yaml -
+apiVersion: certificates.k8s.io/v1beta1
+kind: CertificateSigningRequest
+metadata:
+  name: dev-user1
+spec:
+  groups:
+  - system:authenticated
+  request: ${BASE64_CSR}
+  usages:
+  - digital signature
+  - key encipherment
+  - server auth
+  - client auth
+EOF
+
+# kubectl apply -f csr.yaml
+certificatesigningrequest.certificates.k8s.io/dev-user1 created
+```
+
+登録されたCSRは`Pending`状態です。この状態は発行承認または拒否を待っている状態です。
+
+```
+# kubectl get csr
+NAME        AGE   REQUESTOR          CONDITION
+dev-user1   6s    system:unsecured   Pending
+```
+
+この証明書発行リクエストに対して承認処理を行います。
+
+```
+# kubectl certificate approve dev-user1
+certificatesigningrequest.certificates.k8s.io/dev-user1 approved
+```
+
+CSRをもう一度確認すると`Approved,Issued`状態に変更されたことを確認できます。
+```
+# kubectl get csr
+NAME        AGE    REQUESTOR          CONDITION
+dev-user1   114s   system:unsecured   Approved,Issued
+```
+
+証明書は次のように照会できます。証明書はstatusのcertificateフィールドの値です。
+
+```
+# kubectl get csr/dev-user1 -o yaml
+apiVersion: certificates.k8s.io/v1beta1
+kind: CertificateSigningRequest
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"certificates.k8s.io/v1beta1","kind":"CertificateSigningRequest","metadata":{"annotations":{},"name":"dev-user1"},"spec":{"groups":["system:authenticated"],"request":"LS0tLS...(以下省略)","usages":["digital signature","key encipherment","server auth","client auth"]}}
+  creationTimestamp: "2020-12-07T06:32:53Z"
+  name: dev-user1
+  resourceVersion: "3202"
+  selfLink: /apis/certificates.k8s.io/v1beta1/certificatesigningrequests/dev-user1
+  uid: b22477eb-0abc-4fc4-8a79-f6516751a940
+spec:
+  groups:
+  - system:masters
+  - system:authenticated
+  request: LS0tLS...(以下省略)
+  usages:
+  - digital signature
+  - key encipherment
+  - server auth
+  - client auth
+  username: system:unsecured
+status:
+  certificate: LS0tLS...(以下省略)
+  conditions:
+  - lastUpdateTime: "2020-12-07T06:34:43Z"
+    message: This CSR was approved by kubectl certificate approve.
+    reason: KubectlApprove
+    type: Approved
+```
+
+> [注意]
+> この機能はクラスター作成時点が下記の期間に該当する場合にのみ提供されます。
+> 
+> * パンギョリージョン：2020年12月29日以降に作成したクラスター
+> * 坪村リージョン：2020年12月24日以降に作成したクラスター
 
 ## LoadBalancerサービス
 Kubernetesアプリケーションの基本実行単位Podは、CNI(Container Network Interface)でクラスターネットワークに接続されます。基本的にクラスターの外部からPodにはアクセスできません。Podのサービスをクラスターの外部に公開するにはKubernetesの`LoadBalancer`サービス(Service)オブジェクト(object)を利用して外部に公開するパスを作成する必要があります。LoadBalancerサービスオブジェクトを作成すると、クラスターの外部にTOAST Load Balancerが作成され、サービスオブジェクトと接続されます。
