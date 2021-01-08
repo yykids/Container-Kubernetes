@@ -1,5 +1,9 @@
 ## Container > Kubernetes > リリースノート
 
+### 2020. 12. 29.
+#### 機能改善
+* Kubernetes CSR(Certificate Signing Request)機能を使用できます。
+
 ### 2020. 11. 24.
 #### 機能追加
 * オートスケーラー機能を使用できます。
