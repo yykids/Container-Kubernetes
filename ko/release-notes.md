@@ -1,5 +1,9 @@
 ## Container > Kubernetes > 릴리스 노트
 
+### 2020. 01. 26.
+#### 기능 개선
+* Kubernetes 승인 컨트롤러(admission controller)에 PodSecurityPolicy 플러그인이 추가되었습니다.
+
 ### 2020. 12. 29.
 #### 기능 개선
 * Kubernetes CSR(Certificate Signing Request) 기능을 사용할 수 있습니다.

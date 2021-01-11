@@ -856,6 +856,46 @@ status:
 > * 판교 리전: 2020년 12월 29일 이후에 생성한 클러스터
 > * 평촌 리전: 2020년 12월 24일 이후에 생성한 클러스터
 
+### 승인 컨트롤러(admission controller) 플러그인
+승인 컨트롤러는 Kubernetes API 서버 요청을 가로채 객체를 변경하거나 요청을 거부할 수 있습니다. 승인 컨트롤러에 대한 자세한 설명은 [승인 컨트롤러](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/)를 참고하세요. 그리고 승인 컨트롤러의 사용 에제는 [승인 컨트롤러 가이드](https://kubernetes.io/blog/2019/03/21/a-guide-to-kubernetes-admission-controllers/)를 참고하세요.
+
+클러스터 생성 시점에 따라 승인 컨트롤러에 적용되는 플러그인의 종류가 다릅니다. 자세한 내용은 리전별 생성 시점에 따른 플러그인 목록을 참고하세요.
+
+#### 판교 리전 2021년 1월 25일 이전에 생성한 클러스터 및 평촌 리전 2021년 1월 20일 이전에 생성한 클러스터
+
+* DefaultStorageClass
+* DefaultTolerationSeconds
+* LimitRanger
+* MutatingAdmissionWebhook
+* NamespaceLifecycle
+* NodeRestriction
+* PersistentVolumeClaimResize
+* Priority
+* ResourceQuota
+* RuntimeClass
+* ServiceAccount
+* StorageObjectInUseProtection
+* TaintNodesByCondition
+* ValidatingAdmissionWebhook
+
+#### 판교 리전 2021년 1월 26일 이후에 생성한 클러스터 및 평촌 리전 2021년 1월 21일 이후에 생성한 클러스터
+
+* DefaultStorageClass
+* DefaultTolerationSeconds
+* LimitRanger
+* MutatingAdmissionWebhook
+* NamespaceLifecycle
+* NodeRestriction
+* PersistentVolumeClaimResize
+* PodSecurityPolicy(신규 추가)
+* Priority
+* ResourceQuota
+* RuntimeClass
+* ServiceAccount
+* StorageObjectInUseProtection
+* TaintNodesByCondition
+* ValidatingAdmissionWebhook
+
 ## LoadBalancer 서비스
 Kubernetes 애플리케이션의 기본 실행 단위인 파드(pod)는 CNI(Container Network Interface)로 클러스터 네트워크에 연결됩니다. 기본적으로 클러스터 외부에서 파드로는 접근할 수 없습니다. 파드의 서비스를 클러스터 외부에 공개하려면 Kubernetes의 `LoadBalancer` 서비스(Service) 객체(object)를 이용해 외부에 공개할 경로를 만들어야 합니다. LoadBalancer 서비스 객체를 만들면 클러스터 외부에 TOAST Load Balancer가 생성되어 서비스 객체와 연결됩니다.
 
