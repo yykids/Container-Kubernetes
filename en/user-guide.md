@@ -8,7 +8,7 @@ To enable Kubernetes, a cluster must be created. Go to **Container > Kubernetes*
 
 | Item | Description |
 | --- | --- |
-| Cluster Name | Name of a Kubernetes cluster, to be comprised of less than 20 characters, including alphabets, numbers, '-', and '.'|
+| Cluster Name | Kubernetes cluster names can only contain up to 20 lower-case alphabet letters, numbers, and "-". They must begin with a lower-case alphabet letter and end with a lower-case alphabet letter or a number|
 | Kubernetes Version | Kubernetes version to use |
 | VPC | VPC network to be attached to clusters |
 | Subnet | subnet, among those defined for VPC, to be associated with instances that comprise a cluster VPC |
@@ -72,7 +72,7 @@ Along with a new cluste, a default node group is created, but more node groups c
 | Item | Description |
 | --- | --- |
 | Availability Area | Area to create instances comprising a cluster |
-| Node Group Name | Name of additional node group, comprised of alphabets, numbers, '-', and '.' |
+| Node Group Name | The added node group names can only contain up to 20 lower-case alphabet letters, numbers, and "-". They must begin with a lower-case alphabet letter and end with a lower-case alphabet letter or a number |
 | Instance Type | Specificiations of an instance for additional node group |
 | Node Count | Number of instances for additional node group |
 | Keypair | Keypair to access additional node group |
@@ -83,6 +83,478 @@ Enter information as required and click **Create Node Groups**, and a node group
 
 ### Deleting Node Groups 
 Select a node group to delete from the list of node groups, and click **Delete Node Groups** and it is deleted. It takes about 5 minutes to delete a node group; more time may be required depending on the node group status. 
+
+
+### Autoscaler
+
+The autoscaler feature automatically adjusts the number of nodes in a node group if it runs out of available resources to schedule pods or if its node usage rate drops below a certain threshold. The autoscaler feature can be individually added to node groups which then work independently from each other. This function is based on Kubernetes Project official feature, cluster-autoscaler. For more information, please visit [here] (https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler).
+
+> [Note]
+> The version of the cluster-autoscaler applied to the Kubernetes service is 1.19.0.
+
+#### Glossary
+
+Terms used in relation to the autoscaler and their meanings are as follows:
+
+| Term       | Meaning                        |
+| ---------- | ------------------------------ |
+| Scale Up   | To increase a number of nodes. |
+| Scale Down | To decrease a number of nodes. |
+
+> [Caution]
+> If worker nodes are working in an environment with no Internet connection, autoscaler container images must be manually added to the worker nodes. This task is applied to the following targets:
+> 
+> * Pangyo region: Node groups created before November 24, 2020
+> * Pyeongchon region: Node groups created before November 19, 2020
+> 
+> Autoscaler container images are in the following directory:
+> * `k8s.gcr.io/autoscaling/cluster-autoscaler:v1.19.0`
+> 
+
+#### Autoscaler Settings
+
+Autoscaler can be added per node group and it works independently from each other. Autoscaler can be set up in various ways, as listed below:
+
+* Set up on the default node groups upon creating a cluster.
+* Set up on additional node groups upon adding the node groups.
+* Set up on the existing node groups.
+
+Activating the autoscaler enables the following options:
+
+| Setting                  | Meaning                                                      | Effective Range | Default | Unit   |
+| ------------------------ | ------------------------------------------------------------ | --------------- | ------- | ------ |
+| Min. Node Qty            | The minimum number of nodes that can be scaled down          | 1-10             | 1       | unit   |
+| Max. Node Qty            | The maximum number of nodes that can be scaled up            | 1 -10            | 10       | unit   |
+| Scale Down               | Enable/disable node scale-down                               | Enable/disable  | Enable  | -      |
+| Resource Usage Threshold | The default for resource usage threshold, which is the reference point for a scale down | 1-100           | 50      | %      |
+| Threshold Duration       | The resource usage duration at or below the threshold for the nodes to be scaled down | 1-1,440         | 10      | minute |
+| Post Scale-up Delay      | The delay it takes to start to monitor for scale-down targets after scaling up | 1-1,440         | 10      | minute |
+
+> [Caution]
+> Nodes cannot be manually added to or deleted from node groups on which autoscaler is enabled.
+
+#### Scale-up/down Conditions
+
+Scales up if all of the following conditions are met:
+
+* There are no available nodes to schedule pods.
+* The current number of nodes is below the maximum limit.
+
+Scales down if all of the following conditions are met:
+
+* Nodes use resources below the threshold for the set critical area duration.
+* The current number of nodes exceeds the minimum limit.
+
+If some nodes contain at least one pod that meets the following conditions, then they will be excluded from the list of nodes to be scaled down:
+
+* Pods restricted by "PodDisruptionBudget"
+* Pods in the "kube-system" namespace
+* Pods that were not started by control objects such as "deployment" or "replicaset"
+* Pods that cannot be moved to other nodes because of the restrictions such as "node selector"
+
+For more information on the conditions for scale-up/down, visit [Cluster Autoscaler FAQ] (https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/FAQ.md).
+
+#### Operation Example
+
+Let's check how the autoscaler work through the following example:
+
+##### 1. Enabling Autoscaler
+
+Enables autoscaling on the default node group of the cluster you want. For this example, the number of nodes for the default group has been set to 1 and autoscaler settings are configured as follows:
+
+| Setting                  | Setting Value |
+| ------------------------ | ------------- |
+| Min. Node Qty            | 1             |
+| Max. Node Qty            | 5             |
+| Scale Down               | Enable        |
+| Resource Usage Threshold | 50            |
+| Threshold Duration       | 3             |
+| Post Scale-up Delay      | 5             |
+
+##### 2. Distributing Pods
+   Distribute pods with the following manifest:
+
+> [Caution]
+> Just like this manifest, all manifests must have a container resource request defined on them.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 15
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: "100m"
+```
+
+Because the total amount of CPU resources for the requested pods is bigger than the resources that a single node can handle, some of the pods are left behind in the "pending" status, as shown below. In this case, the nodes will scale up.
+
+```
+# kubectl get pods
+NAME                               READY   STATUS    RESTARTS   AGE
+nginx-deployment-756fd4cdf-5gftm   1/1     Running   0          34s
+nginx-deployment-756fd4cdf-64gtv   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-7bsst   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-8892p   1/1     Running   0          34s
+nginx-deployment-756fd4cdf-8k4cc   1/1     Running   0          34s
+nginx-deployment-756fd4cdf-cprp7   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-cvs97   1/1     Running   0          34s
+nginx-deployment-756fd4cdf-h7ftk   1/1     Running   0          34s
+nginx-deployment-756fd4cdf-hv2fz   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-j789l   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-jrkfj   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-m887q   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-pvnfc   0/1     Pending   0          34s
+nginx-deployment-756fd4cdf-wrj8b   1/1     Running   0          34s
+nginx-deployment-756fd4cdf-x7ns5   0/1     Pending   0          34s
+```
+
+##### 3. Checking Node Scale-up
+   The following is the node list before scale-up:
+
+```
+# kubectl get nodes
+NAME                                            STATUS   ROLES    AGE   VERSION
+autoscaler-test-default-w-ohw5ab5wpzug-node-0   Ready    <none>   45m   v1.17.6
+```
+
+After 5-10 minutes, the nodes will be scaled up as shown below:
+
+```
+# kubectl get nodes
+NAME                                            STATUS   ROLES    AGE   VERSION
+autoscaler-test-default-w-ohw5ab5wpzug-node-0   Ready    <none>   48m   v1.17.6
+autoscaler-test-default-w-ohw5ab5wpzug-node-1   Ready    <none>   77s   v1.17.6
+autoscaler-test-default-w-ohw5ab5wpzug-node-2   Ready    <none>   78s   v1.17.6
+```
+
+The hitherto "pending" pods are now normally scheduled after the scale-up.
+
+```
+# kubectl --kubeconfig ~/Downloads/autoscaler-test_kubeconfig.yaml get pods -o wide
+NAME                               READY   STATUS    RESTARTS   AGE     IP            NODE                                            NOMINATED NODE   READINESS GATES
+nginx-deployment-756fd4cdf-5gftm   1/1     Running   0          4m29s   10.100.8.13   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+nginx-deployment-756fd4cdf-64gtv   1/1     Running   0          4m29s   10.100.22.5   autoscaler-test-default-w-ohw5ab5wpzug-node-1   <none>           <none>
+nginx-deployment-756fd4cdf-7bsst   1/1     Running   0          4m29s   10.100.22.4   autoscaler-test-default-w-ohw5ab5wpzug-node-1   <none>           <none>
+nginx-deployment-756fd4cdf-8892p   1/1     Running   0          4m29s   10.100.8.10   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+nginx-deployment-756fd4cdf-8k4cc   1/1     Running   0          4m29s   10.100.8.12   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+nginx-deployment-756fd4cdf-cprp7   1/1     Running   0          4m29s   10.100.12.7   autoscaler-test-default-w-ohw5ab5wpzug-node-2   <none>           <none>
+nginx-deployment-756fd4cdf-cvs97   1/1     Running   0          4m29s   10.100.8.14   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+nginx-deployment-756fd4cdf-h7ftk   1/1     Running   0          4m29s   10.100.8.11   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+nginx-deployment-756fd4cdf-hv2fz   1/1     Running   0          4m29s   10.100.12.5   autoscaler-test-default-w-ohw5ab5wpzug-node-2   <none>           <none>
+nginx-deployment-756fd4cdf-j789l   1/1     Running   0          4m29s   10.100.22.6   autoscaler-test-default-w-ohw5ab5wpzug-node-1   <none>           <none>
+nginx-deployment-756fd4cdf-jrkfj   1/1     Running   0          4m29s   10.100.12.4   autoscaler-test-default-w-ohw5ab5wpzug-node-2   <none>           <none>
+nginx-deployment-756fd4cdf-m887q   1/1     Running   0          4m29s   10.100.22.3   autoscaler-test-default-w-ohw5ab5wpzug-node-1   <none>           <none>
+nginx-deployment-756fd4cdf-pvnfc   1/1     Running   0          4m29s   10.100.12.6   autoscaler-test-default-w-ohw5ab5wpzug-node-2   <none>           <none>
+nginx-deployment-756fd4cdf-wrj8b   1/1     Running   0          4m29s   10.100.8.15   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+nginx-deployment-756fd4cdf-x7ns5   1/1     Running   0          4m29s   10.100.12.3   autoscaler-test-default-w-ohw5ab5wpzug-node-2   <none>           <none>
+```
+
+You can check scale-up events with the following command:
+
+```
+# kubectl get events --field-selector reason="TriggeredScaleUp"
+LAST SEEN   TYPE     REASON             OBJECT                                 MESSAGE
+4m          Normal   TriggeredScaleUp   pod/nginx-deployment-756fd4cdf-64gtv   pod triggered scale-up: [{default-worker-bf5999ab 1->3 (max: 5)}]
+4m          Normal   TriggeredScaleUp   pod/nginx-deployment-756fd4cdf-7bsst   pod triggered scale-up: [{default-worker-bf5999ab 1->3 (max: 5)}]
+...
+```
+
+
+##### 4. Checking Node Scale-down after Deleting Pods
+   Delete distributed deployments to delete the distributed pods.
+
+```
+# kubectl get pods
+NAME                               READY   STATUS        RESTARTS   AGE
+nginx-deployment-756fd4cdf-5gftm   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-64gtv   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-7bsst   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-8892p   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-8k4cc   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-cprp7   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-h7ftk   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-hv2fz   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-j789l   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-jrkfj   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-m887q   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-pvnfc   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-wrj8b   0/1     Terminating   0          20m
+nginx-deployment-756fd4cdf-x7ns5   0/1     Terminating   0          20m
+#
+# kubectl get pods
+No resources found in default namespace.
+#
+```
+
+After a while, you can see nodes are scaled down to 1. The time it takes to scale down may vary depending on your settings.
+
+```
+# kubectl get nodes
+NAME                                            STATUS   ROLES    AGE   VERSION
+autoscaler-test-default-w-ohw5ab5wpzug-node-0   Ready    <none>   71m   v1.17.6
+```
+
+You can check scale-down events with the following command:
+
+```
+# kubectl get events --field-selector reason="ScaleDown"
+LAST SEEN   TYPE     REASON      OBJECT                                               MESSAGE
+13m         Normal   ScaleDown   node/autoscaler-test-default-w-ohw5ab5wpzug-node-1   node removed by cluster autoscaler
+13m         Normal   ScaleDown   node/autoscaler-test-default-w-ohw5ab5wpzug-node-2   node removed by cluster autoscaler
+```
+
+You can check the status of each node group's autoscaler through "configmap/cluster-autoscaler-status." Configmaps are created ind different namespaces for different node groups. The following is the naming convention for each node group namespace created by the autoscaler:
+
+* Format: nhn-ng-{node group name}
+* Enter a node group name in {node group name}.
+* The default node group name is "default-worker."
+
+For example, the status of the default node group's autoscaler can be viewed as below. To understand what you can learn from this information, visit [here] (https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/FAQ.md).
+
+```
+# kubectl get configmap/cluster-autoscaler-status -n nhn-ng-default-worker -o yaml
+apiVersion: v1
+data:
+  status: |+
+    Cluster-autoscaler status at 2020-11-03 12:39:12.190150095 +0000 UTC:
+    Cluster-wide:
+      Health:      Healthy (ready=1 unready=0 notStarted=0 longNotStarted=0 registered=1 longUnregistered=0)
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+      ScaleUp:     NoActivity (ready=1 registered=1)
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+      ScaleDown:   NoCandidates (candidates=0)
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+    NodeGroups:
+      Name:        default-worker-f9a9ee5e
+      Health:      Healthy (ready=1 unready=0 notStarted=0 longNotStarted=0 registered=1 longUnregistered=0 cloudProviderTarget=1 (minSize=1, maxSize=5))
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+      ScaleUp:     NoActivity (ready=1 cloudProviderTarget=1)
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+      ScaleDown:   NoCandidates (candidates=0)
+                   LastProbeTime:      2020-11-03 12:39:12.185954244 +0000 UTC m=+43.664545435
+                   LastTransitionTime: 2020-11-03 12:38:41.705407217 +0000 UTC m=+13.183998415
+kind: ConfigMap
+metadata:
+  annotations:
+    cluster-autoscaler.kubernetes.io/last-updated: 2020-11-03 12:39:12.190150095 +0000
+      UTC
+  creationTimestamp: "2020-11-03T12:38:28Z"
+  name: cluster-autoscaler-status
+  namespace: nhn-ng-default-worker
+  resourceVersion: "1610"
+  selfLink: /api/v1/namespaces/nhn-ng-default-worker/configmaps/cluster-autoscaler-status
+  uid: e72bd1a2-a56f-41b4-92ee-d11600386558
+```
+
+> [Note]
+> As for the status information, the "Cluster-wide" section has the same information as "NodeGroups."
+
+#### Example of an action working with HPA (HorizontalPodAutoscale)
+Horizontal Pod Autoscaler (HPA) observes resource usage, such as CPU usage, to auto-scale the number of pods of ReplicationController, Deployment, ReplicaSet, and StatefulSet. As the number of pods is adjusted, there could be too many or too few resources available in the node. At this moment, utilize the Autoscaler function to increase or decrease the number of nodes. In this example, we will see how HPA and Autoscaler can work together to deal with this issue. For more information on HPA, see [Horizontal Pod Autoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/). 
+
+##### 1. Enabling Autoscaler
+Enable Autoscaler as shown in the above example.
+
+##### 2. Configuring HPA
+Deploy a container that creates CPU load for a certain amount of time after receiving a web request. The, expose the service. The following is taken from the "php-apache.yaml" file.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-apache
+spec:
+  selector:
+    matchLabels:
+      run: php-apache
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: php-apache
+    spec:
+      containers:
+      - name: php-apache
+        image: k8s.gcr.io/hpa-example
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 500m
+          requests:
+            cpu: 200m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-apache
+  labels:
+    run: php-apache
+spec:
+  ports:
+  - port: 80
+  selector:
+    run: php-apache
+```
+
+```
+# kubectl apply -f php-apache.yaml
+deployment.apps/php-apache created
+service/php-apache created
+```
+
+Now, set up HPA. For the php-apache deployment object just created in the previous step, set as follows: min pod count = 1, max pod count = 30, target CPU load = 50%.
+
+```
+# kubectl autoscale deployment php-apache --cpu-percent=50 --min=1 --max=30
+horizontalpodautoscaler.autoscaling/php-apache autoscaled
+```
+
+If you look up the state of HPA, you can see the settings and the current state. Since no web request that causes CPU load has been sent yet, CPU load is still at 0%.
+
+```
+# kubectl get hpa
+NAME         REFERENCE               TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
+php-apache   Deployment/php-apache   0%/50%    1         30        1          80s
+```
+
+##### 3. Authorizing Load
+Now run the pod that triggers load in the new terminal. This pod sends web requests without stopping. You can stop this requesting action with 'Ctrl+C.'
+
+```
+# kubectl run -i --tty load-generator --rm --image=busybox --restart=Never -- /bin/sh -c "while sleep 0.01; do wget -q -O- http://php-apache; done"
+If you don't see a command prompt, try pressing enter.
+OK!OK!OK!OK!OK!OK!OK!
+```
+
+Using the 'kubectl top nodes' command, you can see the current resource usage of the node. You can observe the increase in CPU load as time goes after running the pod that causes load.
+
+```
+# kubectl top nodes
+NAME                                            CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%
+autoscaler-test-default-w-ohw5ab5wpzug-node-0   66m          6%     1010Mi          58%
+(A moment later)
+# kubectl top nodes
+NAME                                            CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%
+autoscaler-test-default-w-ohw5ab5wpzug-node-0   574m         57%    1013Mi          58%
+```
+
+If you look up the status of HPA, you can see the increase in CPU load and the resultant increase in REPLICAS (number of pods).
+
+```
+# kubectl get hpa
+NAME         REFERENCE               TARGETS    MINPODS   MAXPODS   REPLICAS   AGE
+php-apache   Deployment/php-apache   250%/50%   1         30        5          2m44s
+```
+
+##### 4. Checking the Operation of Autoscaler
+If you look up pods, due to the increase in the number of pods, you can see some pods are running as they are scheduled to 'node-0,' but some are still pending
+
+```
+# kubectl get pods -o wide
+NAME                          READY   STATUS    RESTARTS   AGE     IP            NODE                                            NOMINATED NODE   READINESS GATES
+load-generator                1/1     Running   0          2m      10.100.8.39   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+php-apache-79544c9bd9-6f7nm   0/1     Pending   0          65s     <none>        <none>                                          <none>           <none>
+php-apache-79544c9bd9-82xkn   1/1     Running   0          80s     10.100.8.41   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+php-apache-79544c9bd9-cjj9q   0/1     Pending   0          80s     <none>        <none>                                          <none>           <none>
+php-apache-79544c9bd9-k6nnt   1/1     Running   0          4m27s   10.100.8.38   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+php-apache-79544c9bd9-mplnn   0/1     Pending   0          19s     <none>        <none>                                          <none>           <none>
+php-apache-79544c9bd9-t2knw   1/1     Running   0          80s     10.100.8.40   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+```
+
+This situation of not being able to schedule pods is the node extension condition for Autoscaler. If you look up the state information provided by Cluster Autoscaler pod, you can see that ScaleUp is in InProgress state.
+
+```
+# kubectl get cm/cluster-autoscaler-status -n nhn-ng-default-worker -o yaml
+apiVersion: v1
+data:
+  status: |+
+    Cluster-autoscaler status at 2020-11-24 13:00:40.210137143 +0000 UTC:
+    Cluster-wide:
+      Health:      Healthy (ready=1 unready=0 notStarted=0 longNotStarted=0 registered=1 longUnregistered=0)
+                   LastProbeTime:      2020-11-24 13:00:39.930763305 +0000 UTC m=+1246178.729396969
+                   LastTransitionTime: 2020-11-10 02:51:14.353177175 +0000 UTC m=+13.151810823
+      ScaleUp:     InProgress (ready=1 registered=1)
+                   LastProbeTime:      2020-11-24 13:00:39.930763305 +0000 UTC m=+1246178.729396969
+                   LastTransitionTime: 2020-11-24 12:58:34.83642035 +0000 UTC m=+1246053.635054003
+      ScaleDown:   NoCandidates (candidates=0)
+                   LastProbeTime:      2020-11-24 13:00:39.930763305 +0000 UTC m=+1246178.729396969
+                   LastTransitionTime: 2020-11-20 01:42:32.287146552 +0000 UTC m=+859891.085780205
+    NodeGroups:
+      Name:        default-worker-bf5999ab
+      Health:      Healthy (ready=1 unready=0 notStarted=0 longNotStarted=0 registered=1 longUnregistered=0 cloudProviderTarget=2 (minSize=1, maxSize=3))
+                   LastProbeTime:      2020-11-24 13:00:39.930763305 +0000 UTC m=+1246178.729396969
+                   LastTransitionTime: 2020-11-10 02:51:14.353177175 +0000 UTC m=+13.151810823
+      ScaleUp:     InProgress (ready=1 cloudProviderTarget=2)
+                   LastProbeTime:      2020-11-24 13:00:39.930763305 +0000 UTC m=+1246178.729396969
+                   LastTransitionTime: 2020-11-24 12:58:34.83642035 +0000 UTC m=+1246053.635054003
+      ScaleDown:   NoCandidates (candidates=0)
+                   LastProbeTime:      2020-11-24 13:00:39.930763305 +0000 UTC m=+1246178.729396969
+                   LastTransitionTime: 2020-11-20 01:42:32.287146552 +0000 UTC m=+859891.085780205
+...
+```
+
+After a while, you can see another node (node-8) has been added.
+
+```
+# kubectl get nodes
+NAME                                            STATUS     ROLES    AGE   VERSION
+autoscaler-test-default-w-ohw5ab5wpzug-node-0   Ready      <none>   22d   v1.17.6
+autoscaler-test-default-w-ohw5ab5wpzug-node-8   Ready      <none>   90s   v1.17.6
+```
+
+You can see all pods that were in Pending state are properly scheduled and now in the Running state.
+
+```
+# kubectl get pods -o wide
+NAME                          READY   STATUS    RESTARTS   AGE     IP            NODE                                            NOMINATED NODE   READINESS GATES
+load-generator                1/1     Running   0          5m32s   10.100.8.39   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+php-apache-79544c9bd9-6f7nm   1/1     Running   0          4m37s   10.100.42.3   autoscaler-test-default-w-ohw5ab5wpzug-node-8   <none>           <none>
+php-apache-79544c9bd9-82xkn   1/1     Running   0          4m52s   10.100.8.41   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+php-apache-79544c9bd9-cjj9q   1/1     Running   0          4m52s   10.100.42.5   autoscaler-test-default-w-ohw5ab5wpzug-node-8   <none>           <none>
+php-apache-79544c9bd9-k6nnt   1/1     Running   0          7m59s   10.100.8.38   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+php-apache-79544c9bd9-mplnn   1/1     Running   0          3m51s   10.100.42.4   autoscaler-test-default-w-ohw5ab5wpzug-node-8   <none>           <none>
+php-apache-79544c9bd9-t2knw   1/1     Running   0          4m52s   10.100.8.40   autoscaler-test-default-w-ohw5ab5wpzug-node-0   <none>           <none>
+```
+
+If you press `Ctrl+C` to stop the pod (`load-generator`) that was executed for load, load will decrease after a while. The lower the load, the lower the CPU usage occupied by the pod, which in return decrease the number of pods.
+
+```
+# kubectl get hpa
+NAME         REFERENCE               TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
+php-apache   Deployment/php-apache   0%/50%    1         30        1          31m
+```
+
+As the number of pods decreases, the resource usage of the node also decreases, which results in the reduction in nodes. You can see the newly added node-8 has been reduced.
+
+```
+# kubectl get nodes
+NAME                                            STATUS   ROLES    AGE   VERSION
+autoscaler-test-default-w-ohw5ab5wpzug-node-0   Ready    <none>   22d   v1.17.6
+```
 
 ## Cluster Management
 To run and manage clusters from a remote host, 'kubectl', which is the command line tool (CLI) as provided by Kubernetes, is required.
@@ -144,6 +616,108 @@ Server Version: version.Info{Major:"1", Minor:"15", GitVersion:"v1.15.7", GitCom
 
 * Client Version: Version information of executed kubectl file 
 * Server Version: Kubernetes version information comprising a cluster 
+
+### CertificateSigningRequest (CSR)
+
+Using Certificate API of Kubernetes, you can request and issue the X.509 certificate for a Kubernetes API client . CSR resource lets you request certificate and decide to accept/reject the request. For more information, see the [Certificate Signing Requests](https://kubernetes.io/docs/reference/access-authn-authz/certificate-signing-requests/).
+
+#### CSR Request and Issue Approval Example
+First of all, create a private key. For more information on certificate creation, see the [Certificates] (https://kubernetes.io/docs/concepts/cluster-administration/certificates/) document.
+
+```
+# openssl genrsa -out dev-user1.key 2048
+Generating RSA private key, 2048 bit long modulus
+...........................................................................+++++
+..................+++++
+e is 65537 (0x010001)
+# openssl req -new -key dev-user1.key -subj "/CN=dev-user1" -out dev-user1.csr
+```
+
+Create a CSR resource that includes created private key information and request certificate issuance.
+
+```
+# BASE64_CSR=$(cat dev-user1.csr | base64 | tr -d '\n')
+# cat <<EOF > csr.yaml -
+apiVersion: certificates.k8s.io/v1beta1
+kind: CertificateSigningRequest
+metadata:
+  name: dev-user1
+spec:
+  groups:
+  - system:authenticated
+  request: ${BASE64_CSR}
+  usages:
+  - digital signature
+  - key encipherment
+  - server auth
+  - client auth
+EOF
+# kubectl apply -f csr.yaml
+certificatesigningrequest.certificates.k8s.io/dev-user1 created
+```
+
+The registered CSR is in `Pending` state. This state indicates waiting for issuance approval or rejection.
+
+```
+# kubectl get csr
+NAME        AGE   REQUESTOR          CONDITION
+dev-user1   6s    system:unsecured   Pending
+```
+
+Approves this certificate issuance request.
+
+```
+# kubectl certificate approve dev-user1
+certificatesigningrequest.certificates.k8s.io/dev-user1 approved
+```
+
+If you check the CSR again, you can see that it has been changed to the `Approved,Issued` state.
+```
+# kubectl get csr
+NAME        AGE    REQUESTOR          CONDITION
+dev-user1   114s   system:unsecured   Approved,Issued
+```
+
+You can look up the certificate as below. The certificate is a value for the Certificate field under Status.
+
+```
+# kubectl get csr/dev-user1 -o yaml
+apiVersion: certificates.k8s.io/v1beta1
+kind: CertificateSigningRequest
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"certificates.k8s.io/v1beta1","kind":"CertificateSigningRequest","metadata":{"annotations":{},"name":"dev-user1"},"spec":{"groups":["system:authenticated"],"request":"LS0tLS... (omitted)","usages":["digital signature","key encipherment","server auth","client auth"]}}
+  creationTimestamp: "2020-12-07T06:32:53Z"
+  name: dev-user1
+  resourceVersion: "3202"
+  selfLink: /apis/certificates.k8s.io/v1beta1/certificatesigningrequests/dev-user1
+  uid: b22477eb-0abc-4fc4-8a79-f6516751a940
+spec:
+  groups:
+  - system:masters
+  - system:authenticated
+  request: LS0tLS... (omitted)
+  usages:
+  - digital signature
+  - key encipherment
+  - server auth
+  - client auth
+  username: system:unsecured
+status:
+  certificate: LS0tLS... (omitted)
+  conditions:
+  - lastUpdateTime: "2020-12-07T06:34:43Z"
+    message: This CSR was approved by kubectl certificate approve.
+    reason: KubectlApprove
+    type: Approved
+```
+
+> [Caution]
+> This function is provided only when the time of cluster creation falls within the following period:
+> 
+> * Pangyo region: Cluster created as of December 29, 2020
+> * Pyeongchon region: Cluster created as of December 24, 2020
 
 ## LoadBalancer Service
 Pod is a basic executio unit of a Kubernetes application and it is connected to a cluster network via CNI (Container Network Interface). Basically, access to pod is unavailble from cluster externals. To open up pod services outside of a cluster, a path to be made public must be created by using Kubernetes' `LoadBalancer` service object. 
